@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      id="viewport-metadata"
+      name="viewport"
+      content="width=device-width, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="Damian M. Garcia. Talent You Can Verify. Pharmacist, Web Developer and Designer."
+    />
+    <link
+      rel="preload"
+      href="/fonts/open-sans-wght-300.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/comic-neue.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link id="favicon" rel="icon" href="charm-logo-with-background.svg" />
+    <link rel="apple-touch-icon" href="charm-logo-square-background-180.png" />
+    <title>Meow, nothing Here</title>
+    <style>
+      @font-face {
+        font-display: block;
+        font-family: "Open Sans";
+        font-stretch: 100%;
+        font-style: normal;
+        font-weight: 300;
+        src: url(/fonts/open-sans-wght-300.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+          U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      @font-face {
+        font-display: block;
+        font-family: "Comic Neue";
+        font-style: normal;
+        font-weight: 400;
+        src: url(/fonts/comic-neue.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+          U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
+        -webkit-user-select: none;
+        user-select: var(--user-select);
+      }
+
+      :root {
+        --body-background-color: hsl(0, 0%, 80%);
+        --logo-background-fill-color: hsl(0, 0%, 20%);
+        --text-color: hsl(0, 0%, 20%);
+        background: var(--body-background-color);
+        color: var(--text-color);
+        font: 300 24px "Open Sans", sans-serif;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+        width: 100%;
+      }
+
+      body {
+        background: var(--body-background-color);
+        height: 100%;
+        margin: 0 auto;
+        padding: 0;
+        width: 100%;
+      }
+
+      a {
+        text-decoration: none;
+        -webkit-touch-callout: none;
+      }
+
+      main {
+        display: grid;
+        height: 100%;
+        margin: auto;
+        place-content: center;
+        place-items: center;
+        width: 80%;
+      }
+
+      #logo {
+        grid-row: 1 / 2;
+        align-self: end;
+        width: 100%;
+      }
+
+      #caption {
+        grid-row: 2 / 3;
+        align-self: start;
+        text-align: center;
+      }
+    </style>
+    <script>
+      "use strict";
+
+      function setCssProperties(
+        cssPropertiesToSet,
+        { constantSelector, constantProperty } = {}
+      ) {
+        for (const { selectors, property, value } of cssPropertiesToSet) {
+          document
+            .querySelectorAll(constantSelector || selectors)
+            .forEach((item) =>
+              item.style.setProperty(constantProperty || property, value)
+            );
+        }
+      }
+
+      class AppearanceSwitcher {
+        #currentAppearance;
+
+        currentAppearance() {
+          return this.#currentAppearance;
+        }
+
+        applyAppearance(appearance) {
+          const cssStyleDictionary = [
+            {
+              property: "--body-background-color",
+              valueDark: "hsl(0, 0%, 20%)",
+              valueLight: "hsl(0, 0%, 80%)",
+            },
+            {
+              property: "--charm-fur-color",
+              valueDark: "hsl(0, 0%, 0%)",
+              valueLight: "hsl(0, 0%, 20%)",
+            },
+            {
+              property: "--text-color",
+              valueDark: "hsl(0, 0%, 80%)",
+              valueLight: "hsl(0, 0%, 20%)",
+            },
+          ];
+
+          const value = appearance == "dark" ? "valueDark" : "valueLight";
+          const cssStylesToSet = cssStyleDictionary.map((style) => {
+            return {
+              property: style.property,
+              value: style[value],
+            };
+          });
+
+          setCssProperties(cssStylesToSet, { constantSelector: ":root" });
+
+          localStorage.setItem("appearancePreference", appearance);
+          this.#currentAppearance = appearance;
+        }
+
+        initialize() {
+          matchMedia("(prefers-color-scheme: dark)").addEventListener(
+            "change",
+            (event) => {
+              this.switchAppearance();
+            }
+          );
+
+          const appearancePreference = localStorage.getItem(
+            "appearancePreference"
+          );
+          if (appearancePreference) {
+            return this.applyAppearance(appearancePreference);
+          } else if (!appearancePreference) {
+            const initialAppearance = matchMedia(
+              "(prefers-color-scheme: dark)".matches
+            )
+              ? "dark"
+              : "light";
+
+            this.applyAppearance(initialAppearance);
+          }
+        }
+
+        switchAppearance() {
+          if (this.#currentAppearance == "dark") {
+            this.applyAppearance("light");
+          } else if (this.#currentAppearance == "light") {
+            this.applyAppearance("dark");
+          }
+        }
+      }
+      const appearanceSwitcher = new AppearanceSwitcher();
+      appearanceSwitcher.initialize();
+    </script>
+  </head>
+  <body>
+    <main>
+      <a aria-label="Charm Logo" href="/" id="logo" role="img">
+        <svg
+          viewBox="43.4 70 413.201 413.2"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+        >
+          <defs>
+            <path
+              id="dmg-text-path"
+              d="M 127.786 133.33 C 186.879 81.564 352.378 120.286 411.472 172.052"
+            />
+            <clipPath id="left-eye-clip">
+              <path
+                d="M 214.768 255.253 C 208.387 241.371 147.803 231.913 146.804 234.787 C 122.672 296.86 217.521 311.741 214.768 255.253 Z"
+              ></path>
+            </clipPath>
+            <clipPath id="right-eye-clip">
+              <path
+                d="M 285.049 249.847 L 333.339 223.346 C 388.849 270.474 281.291 335.727 285.049 249.847 Z"
+              ></path>
+            </clipPath>
+          </defs>
+          <path
+            id="charm-logo-head"
+            style="
+              stroke-width: 3px;
+              stroke: rgb(0, 0, 0);
+              stroke-opacity: 0;
+              fill: var(--charm-fur-color);
+              stroke-linejoin: round;
+              stroke-linecap: round;
+            "
+            d="M 155.839 416.452 C 74.076 414.246 -9.163 317.554 85.521 211.184 C 88.642 202.702 89.567 107.184 91.313 107.184 C 93.447 89.745 150.151 171.369 158.89 184.258 C 218.415 143.708 315.724 157.224 341.157 186.578 C 345.771 181.239 380.902 130.582 391.357 122.043 C 407.86 120.218 401.213 222.267 402.943 220.47 C 482.816 260.759 477.595 399.802 359.651 416.452"
+          ></path>
+          <g style="clip-path: url(#left-eye-clip)">
+            <path
+              id="charm-logo-left-eye"
+              style="
+                stroke-width: 3px;
+                fill: rgb(255, 255, 0);
+                stroke: rgb(0, 0, 0);
+                stroke-opacity: 0;
+                stroke-linejoin: round;
+                stroke-linecap: round;
+              "
+              d="M 214.768 255.253 C 208.387 241.371 147.803 231.913 146.804 234.787 C 122.672 296.86 217.521 311.741 214.768 255.253 Z"
+            ></path>
+            <path
+              id="charm-logo-left-eye-pupil"
+              style="
+                fill: black;
+                stroke-width: 3px;
+                stroke: black;
+                stroke-linejoin: round;
+                stroke-linecap: round;
+              "
+              d="M 169.232 238.541 C 164.496 240.806 158.937 268.553 168.383 274.458 C 181.214 279.697 208.634 252.081 198.524 245.975 C 194.377 243.919 170.2 237.767 169.232 238.541 Z"
+            ></path>
+          </g>
+          <g style="clip-path: url(#right-eye-clip)">
+            <path
+              id="charm-logo-right-eye"
+              style="
+                stroke-width: 3px;
+                fill: rgb(255, 255, 0);
+                stroke: rgb(0, 0, 0);
+                stroke-opacity: 0;
+                stroke-linejoin: round;
+                stroke-linecap: round;
+              "
+              d="M 285.049 249.847 L 333.339 223.346 C 388.849 270.474 281.291 335.727 285.049 249.847 Z"
+            ></path>
+            <path
+              id="charm-logo-right-eye-pupil"
+              style="
+                fill: black;
+                stroke-width: 3px;
+                stroke: black;
+                stroke-linejoin: round;
+                stroke-linecap: round;
+              "
+              d="M 296.094 245.378 L 314.081 235.588 C 321.11 237.808 327.078 271.989 309.864 276.822 C 292.65 281.657 295.966 247.777 296.094 245.378 Z"
+            ></path>
+          </g>
+          <path
+            id="charm-logo-nose"
+            style="
+              stroke-width: 3px;
+              stroke: rgb(128, 128, 128);
+              fill: rgb(128, 128, 128);
+              stroke-linejoin: round;
+              stroke-linecap: round;
+            "
+            d="M 233.32 303.41 C 233.32 302.919 267.736 300.274 267.736 301.963 C 270.98 301.963 267.194 332.711 265.99 332.711 C 262.439 338.218 230.936 307.108 233.32 303.41 Z"
+            transform="matrix(-0.679305, 0.733856, -0.733856, -0.679305, 654.596726, 348.709857)"
+          ></path>
+          <path
+            id="charm-logo-left lip"
+            style="
+              fill: none;
+              stroke: rgb(128, 128, 128);
+              stroke-width: 6px;
+              stroke-linejoin: round;
+              stroke-linecap: round;
+            "
+            d="M 250.589 336.034 L 252.443 361.372 C 230.077 409.832 166.815 377.88 183.845 340.978"
+          ></path>
+          <path
+            id="charm-logo-right-lip"
+            style="
+              fill: none;
+              stroke: rgb(128, 128, 128);
+              stroke-width: 6px;
+              stroke-linejoin: round;
+              stroke-linecap: round;
+            "
+            d="M 252.443 359.518 C 278.217 395.377 308.936 368.31 298.175 353.337"
+          ></path>
+          <text
+            transform="matrix(1, 0, 0, 1, 38.023438, 25.962273)"
+            style="
+              fill: var(--text-color);
+              font-family: 'Comic Neue';
+              font-size: 86px;
+              letter-spacing: 10px;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+            "
+          >
+            <textPath startOffset="0" xlink:href="#dmg-text-path">dmg</textPath>
+          </text>
+        </svg>
+      </a>
+      <div id="caption">Meow, nothing here</div>
+    </main>
+  </body>
+</html>
