@@ -9822,8 +9822,16 @@ onSmoothScrollStop,
           this.#pointerIsDown = false;
           this.pointerDownCompensationY = 0;
 
+          const endTime = event.timeStamp;
+
+          const meetsMomentumScrollCriteria =
+            this.#pointerMoveLog.length > 0 &&
+            endTime - this.#pointerMoveLog[this.#pointerMoveLog.length - 1][2] <
+              100;
+
           if (this.#onMomentumScrollPointerUp)
             this.#onMomentumScrollPointerUp.call(this, {
+              meetsMomentumScrollCriteria: meetsMomentumScrollCriteria,
               momentumScroller: this,
               scrollContainer: this.#scrollContainer,
             });
@@ -9840,8 +9848,6 @@ onSmoothScrollStop,
 
           if (this.#paused) return;
 
-          const endTime = event.timeStamp;
-
           let endPositionX;
           let velocityX = 0;
           if (this.#xAxisIsScrollable) {
@@ -9857,6 +9863,8 @@ onSmoothScrollStop,
           }
 
           function getVelocity(movementLog, axisIndex, endPosition) {
+            if (!meetsMomentumScrollCriteria) return 0;
+
             for (let i = 1; i < 5; i++) {
               if (movementLog.length < i) return 0;
 
@@ -10261,8 +10269,11 @@ onSmoothScrollStop,
             },
 
             onMomentumScrollPointerUp: (event) => {
-              if (event.momentumScroller.isActive) {
-                activateOrDeactivateDemoMomentumScrollerSelectors("activate");
+              if (
+                event.momentumScroller.isActive &&
+                !event.meetsMomentumScrollCriteria
+              ) {
+                enableOrDisableDemoMomentumScrollerSelectors("enable");
               }
             },
             onMomentumScrollStart: () =>
