@@ -690,6 +690,24 @@
         background: transparent;
         pointer-events: none;
         width: 104.55208587646484px;
+        z-index: 1;
+      }
+
+      #project-selector {
+        position: absolute;
+        width: 60px;
+        z-index: 0;
+      }
+
+      #project-selector[data-hidden="false"] {
+        opacity: 1;
+        transform: translateX(calc(750px / 34 * 1));
+      }
+
+      #project-selector[data-hidden="true"] {
+        left: 100%;
+        opacity: 0;
+        pointer-events: none;
       }
 
       .selector * {
@@ -712,6 +730,10 @@
         -webkit-user-select: none;
         user-select: none;
         white-space: nowrap;
+      }
+
+      #project-selector .selector-item {
+        padding: 10px;
       }
 
       #slogan-spacer {
@@ -906,6 +928,7 @@
         grid-auto-flow: column;
         grid-column: 2 / 3;
         grid-row: 1 / 2;
+        position: relative;
       }
 
       #overflow-button {
@@ -1411,9 +1434,9 @@
 
           if (kitteh != "same") {
             this.appointedKitteh = kitteh;
-            this.appointedKittehElement = document
-              .querySelector("#logo")
-              .querySelector(`#${kitteh}-logo`);
+            this.appointedKittehElement = document.querySelector(
+              `#logo #${kitteh}-logo`
+            );
             this.changeKitteh();
           }
           if (theme != "same") {
@@ -1451,8 +1474,9 @@
         changeKitteh() {
           const allKittehs = document.querySelectorAll("#logo .subject > g");
           allKittehs.forEach((kitteh) => {
-            if (kitteh != this.appointedKittehElement.id)
+            if (kitteh != this.appointedKittehElement) {
               kitteh.style.setProperty("visibility", "hidden");
+            }
           });
 
           this.appointedKittehElement.style.setProperty(
@@ -1484,7 +1508,7 @@
         switchHalloweenFangs() {
           const allKittehs = document.querySelectorAll("#logo .subject > g");
           allKittehs.forEach((kitteh) => {
-            if (kitteh != this.appointedKittehElement.id)
+            if (kitteh != this.appointedKittehElement)
               kitteh
                 .querySelectorAll(".halloween")
                 .forEach((element) =>
@@ -1809,7 +1833,7 @@
         {
           property: "--selector-transitions",
           value:
-            "background-color 400ms ease 0ms, box-shadow 200ms ease 0ms, filter 200ms ease 0ms, transform 200ms ease 0ms, width 400ms ease 0ms",
+            "background-color 400ms ease 0ms, box-shadow 200ms ease 0ms, filter 200ms ease 0ms, opacity 200ms ease 0ms, transform 200ms ease 0ms, width 400ms ease 0ms",
         },
         {
           property: "--number-input-selector-transitions",
@@ -1949,6 +1973,14 @@
             }, 1100);
           });
 
+        document
+          .querySelectorAll("#project-selector .selector-item")
+          .forEach((element) => {
+            setTimeout(() => {
+              projectSelectorObserver.observe(element);
+            }, 1100);
+          });
+
         await backgroundAnimation.finished;
 
         document
@@ -2012,9 +2044,11 @@
             element.style.setProperty("display", "none");
           });
 
-        document.querySelectorAll("article").forEach((element) => {
-          mainArticleObserver.observe(element);
-        });
+        document
+          .querySelectorAll("article, .project-section")
+          .forEach((element) => {
+            mainArticleObserver.observe(element);
+          });
 
         document
           .querySelector("#article-selector")
@@ -2767,8 +2801,8 @@
           async function startOpeningAnimationSequenceAndKittehIntroduction() {
             await openingAnimationSequence();
             document
-              .querySelector("#article-selector")
-              .setAttribute("tabindex", "0");
+              .querySelectorAll("#article-selector, #project-selector")
+              .forEach((selector) => selector.setAttribute("tabindex", "0"));
             await awaitTimeout(400);
             kittehBlinkAnimation.blink();
             await awaitTimeout(200);
@@ -4537,36 +4571,55 @@
         </script>
 
         <div id="slogan">
-          <span class="selector" id="article-selector">
-            <div
-              class="selector-item"
-              data-article-id="#projects-article"
-              id="article-selector-projects"
-            >
-              Talent
-            </div>
-            <div
-              class="selector-item"
-              data-article-id="#education-article"
-              id="article-selector-education"
-            >
-              Education
-            </div>
-            <div
-              class="selector-item"
-              data-article-id="#credentials-article"
-              id="article-selector-credentials"
-            >
-              Credentials
-            </div>
-            <div
-              class="selector-item"
-              data-article-id="#experience-article"
-              id="article-selector-experience"
-            >
-              Experience
-            </div>
-          </span>
+          <div class="main-selectors-container">
+            <span class="selector" id="article-selector">
+              <div
+                class="selector-item"
+                data-id-to-scroll-to="#projects-article"
+                id="article-selector-projects"
+              >
+                Talent
+              </div>
+              <div
+                class="selector-item"
+                data-id-to-scroll-to="#education-article"
+                id="article-selector-education"
+              >
+                Education
+              </div>
+              <div
+                class="selector-item"
+                data-id-to-scroll-to="#credentials-article"
+                id="article-selector-credentials"
+              >
+                Credentials
+              </div>
+              <div
+                class="selector-item"
+                data-id-to-scroll-to="#experience-article"
+                id="article-selector-experience"
+              >
+                Experience
+              </div>
+            </span>
+            <span class="selector" data-hidden="true" id="project-selector">
+              <div
+                class="selector-item"
+                data-id-to-scroll-to="#project-portfolio"
+                id="project-selector-portfolio"
+              >
+                <img src="/charm-logo-with-background.svg" />
+              </div>
+              <div
+                class="selector-item"
+                data-id-to-scroll-to="#project-charms-jobs"
+                id="project-selector-charms-jobs"
+              >
+                <img src="/images/charms-jobs-icon.png" />
+              </div>
+            </span>
+          </div>
+
           <span id="slogan-spacer"></span>
           <span id="slogan-end">You Can Verify</span>
           <script>
@@ -4701,11 +4754,15 @@
     </div>
     <main tabindex="-1">
       <article
-        data-article-selector-id="#article-selector-projects"
+        data-selector-id="#article-selector-projects"
         id="projects-article"
       >
         <div class="title">Projects</div>
-        <section>
+        <section
+          class="project-section"
+          data-selector-id="#project-selector-portfolio"
+          id="project-portfolio"
+        >
           <div class="section-header">
             <div class="date-range-container">
               <div class="start-date">2021-09</div>
@@ -6081,7 +6138,11 @@ onSmoothScrollStop,
             </div>
           </div>
         </section>
-        <section>
+        <section
+          class="project-section"
+          data-selector-id="#project-selector-charms-jobs"
+          id="project-charms-jobs"
+        >
           <div class="section-header">
             <div class="date-range-container">
               <div class="start-date">2021-09</div>
@@ -6365,7 +6426,7 @@ onSmoothScrollStop,
         </section>
       </article>
       <article
-        data-article-selector-id="#article-selector-education"
+        data-selector-id="#article-selector-education"
         id="education-article"
       >
         <div class="title">Education</div>
@@ -6475,7 +6536,7 @@ onSmoothScrollStop,
         </section>
       </article>
       <article
-        data-article-selector-id="#article-selector-credentials"
+        data-selector-id="#article-selector-credentials"
         id="credentials-article"
       >
         <div class="title">Credentials</div>
@@ -6629,7 +6690,7 @@ onSmoothScrollStop,
         </section>
       </article>
       <article
-        data-article-selector-id="#article-selector-experience"
+        data-selector-id="#article-selector-experience"
         id="experience-article"
       >
         <div class="title">Experience</div>
@@ -7172,6 +7233,14 @@ onSmoothScrollStop,
       }
     );
 
+    const projectSelectorObserver = new IntersectionObserver(
+      selectorObserverProcessor,
+      {
+        root: document.querySelector("#project-selector"),
+        threshold: 0.5,
+      }
+    );
+
     const scrollerTypeSelectorObserver = new IntersectionObserver(
       selectorObserverProcessor,
       {
@@ -7234,6 +7303,8 @@ onSmoothScrollStop,
 
       if (incoming) {
         this.incoming = incoming.target;
+        if (incoming.target.closest("#project-selector")) return;
+
         const incomingWidth = incoming.target.clientWidth;
         const padding = 12;
         this.root.style.setProperty("width", `${incomingWidth + padding}px`);
@@ -7307,26 +7378,52 @@ onSmoothScrollStop,
       }
     }
 
-    let positionOfCurrentArticleInMain;
     const mainArticleObserver = new IntersectionObserver(
       (entries) => {
-        const incomingArticle = entries.find(
-          (article) => article.isIntersecting
+        const incoming = entries.find(
+          (item) =>
+            (item.target.matches("article") ||
+              item.target.matches(".project-section")) &&
+            item.isIntersecting
+        );
+        const outgoingProjectsArticle = entries.find(
+          (item) =>
+            item.target.matches("#projects-article") && !item.isIntersecting
         );
 
-        if (incomingArticle) {
-          const matchingArticleSelectorNamePosition = incomingArticle.target
-            .dataset.articleSelectorId
-            ? document.querySelector(
-                incomingArticle.target.dataset.articleSelectorId
-              ).offsetTop
+        if (outgoingProjectsArticle)
+          document.querySelector("#project-selector").dataset.hidden = "true";
+
+        if (incoming) {
+          const matchingSelectorItemOffsetTop = incoming.target.dataset
+            .selectorId
+            ? document.querySelector(incoming.target.dataset.selectorId)
+                .offsetTop
             : 0;
 
-          positionOfCurrentArticleInMain = matchingArticleSelectorNamePosition;
+          if (incoming.target.matches("article")) {
+            mainArticleObserver.currentArticleSelectorItemOffsetTop =
+              matchingSelectorItemOffsetTop;
+          } else if (incoming.target.matches(".project-section")) {
+            mainArticleObserver.currentProjectSelectorItemOffsetTop =
+              matchingSelectorItemOffsetTop;
+          }
 
-          articleSelectorSmoothScroller.smoothScrollTo({
-            y: matchingArticleSelectorNamePosition,
-          });
+          if (incoming.target.matches("#projects-article"))
+            document.querySelector("#project-selector").dataset.hidden =
+              "false";
+
+          if (mainArticleObserver.requestToPause) return;
+
+          if (incoming.target.matches("article")) {
+            articleSelectorSmoothScroller.smoothScrollTo({
+              y: matchingSelectorItemOffsetTop,
+            });
+          } else if (incoming.target.matches(".project-section")) {
+            projectSelectorSmoothScroller.smoothScrollTo({
+              y: matchingSelectorItemOffsetTop,
+            });
+          }
         }
       },
       {
@@ -7358,12 +7455,11 @@ onSmoothScrollStop,
               console.log(error);
             }
           }
-        } else if (incoming && incoming.target.id == "charm-cursor") {
+        } else if (incoming?.target.matches("#charm-cursor")) {
           if (!charmCursorDemo.requestToLoop)
             charmCursorDemo.play({ loop: true });
         } else if (
-          incoming &&
-          incoming.target.id == "overlap-gallery-calendar-container"
+          incoming?.target.matches("#overlap-gallery-calendar-container")
         ) {
           if (!themedLogoAnimationDemo.requestToLoop)
             themedLogoAnimationDemo.play({ loop: true });
@@ -7383,14 +7479,13 @@ onSmoothScrollStop,
       (entries) => {
         const outgoing = entries.find((entry) => !entry.isIntersecting);
 
-        if (outgoing && outgoing.target.nodeName == "VIDEO") {
+        if (outgoing?.target.matches("video")) {
           outgoing.target.pause();
           insideMainViewport.observe(outgoing.target);
-        } else if (outgoing && outgoing.target.id == "charm-cursor") {
+        } else if (outgoing?.target.matches("#charm-cursor")) {
           charmCursorDemo.stop();
         } else if (
-          outgoing &&
-          outgoing.target.id == "overlap-gallery-calendar-container"
+          outgoing?.target.matches("#overlap-gallery-calendar-container")
         ) {
           themedLogoAnimationDemo.stop();
         }
@@ -7680,7 +7775,6 @@ onSmoothScrollStop,
       static allSmoothScrollers = [];
       static pointerIsDown;
 
-      #abortiveElements;
       #cubicBezierSolver;
       #scrollContainer;
       #defaultScrollDuration;
@@ -7694,7 +7788,6 @@ onSmoothScrollStop,
       constructor(
         scrollContainer,
         {
-          abortiveElements = [],
           defaultScrollDuration = 600,
           defaultScrollEasing = [0.25, 0.1, 0.25, 1],
           onSmoothScrollPointerDown,
@@ -7706,18 +7799,6 @@ onSmoothScrollStop,
       ) {
         if (!(scrollContainer instanceof Element))
           throw new TypeError("scrollContainer must be an instance of Element");
-
-        if (!Array.isArray(abortiveElements))
-          throw new TypeError("abortiveElements must be of type array");
-
-        if (
-          Array.from(abortiveElements).some(
-            (abortiveElement) => !(abortiveElement instanceof Element)
-          )
-        )
-          throw new TypeError(
-            "abortiveElements must all be instances of Element"
-          );
 
         if (!Number.isFinite(defaultScrollDuration))
           throw new TypeError("scrollDuration must be a finite number");
@@ -7733,7 +7814,6 @@ onSmoothScrollStop,
         )
           throw new TypeError("Callback must be of type function");
 
-        this.#abortiveElements = abortiveElements;
         this.#scrollContainer = scrollContainer;
         this.#defaultScrollDuration = defaultScrollDuration;
         this.#cubicBezierSolver = new CubicBezierSolver(defaultScrollEasing);
@@ -7776,22 +7856,10 @@ onSmoothScrollStop,
             });
         });
 
-        if (this.#abortiveElements.length > 0) {
-          this.#abortiveElements.forEach((abortiveElement) => {
-            abortiveElement.addEventListener("pointerdown", () => {
-              this.#pointerIsDownOnAbortiveElement = true;
-            });
-            abortiveElement.addEventListener("pointerup", () => {
-              this.#pointerIsDownOnAbortiveElement = false;
-            });
-          });
-        }
-
         SmoothScroller.allSmoothScrollers.push(this);
       }
 
       #pointerIsDown;
-      #pointerIsDownOnAbortiveElement;
       get scrollContainer() {
         return this.#scrollContainer;
       }
@@ -7992,23 +8060,6 @@ onSmoothScrollStop,
           });
         }
 
-        if (this.#pointerIsDownOnAbortiveElement) {
-          this.abortPriorScrolls();
-          this.smoothScrollTo({
-            y: positionOfCurrentArticleInMain,
-          });
-          this.#pointerIsDownOnAbortiveElement = false;
-          return resolve({
-            aborted: true,
-            abortReason:
-              "Interrupted by pointer down event on abortive element",
-            elapsedTime: elapsedTime,
-            x: this.#scrollContainer.scrollLeft,
-            y: this.#scrollContainer.scrollTop,
-            scrollContainer: this.#scrollContainer,
-          });
-        }
-
         const scrollRatio = this.#cubicBezierSolver.solve(
           elapsedTimeRatio,
           1 / (200 * duration)
@@ -8046,8 +8097,6 @@ onSmoothScrollStop,
             );
           });
         } else if (elapsedTimeRatio >= 1) {
-          if (this.#onSmoothScrollStop)
-            this.#onSmoothScrollStop.call(this, getEventData.call(this));
           this.abortPriorScrolls();
           return resolve({
             aborted: false,
@@ -8061,6 +8110,16 @@ onSmoothScrollStop,
       }
 
       abortPriorScrolls() {
+        if (this.#onSmoothScrollStop)
+          this.#onSmoothScrollStop.call(this, {
+            smoothScroller: this,
+            scrollContainer: this.#scrollContainer,
+          });
+
+        if (isIOsSafari) {
+          this.#scrollContainer.style.removeProperty("overflow"); // Stops Safari's momentum scrolling to prevent scroll interference
+        }
+
         cancelAnimationFrame(this.#scrollRafId);
         this.#scrollStartingPointX = null;
         this.#scrollStartingPointY = null;
@@ -8068,10 +8127,6 @@ onSmoothScrollStop,
         this.#scrollDistanceY = null;
         this.#startTime = null;
         this.#isCurrentlyScrolling = false;
-
-        if (isIOsSafari) {
-          this.#scrollContainer.style.removeProperty("overflow"); // Stops Safari's momentum scrolling to prevent scroll interference
-        }
       }
     }
 
@@ -8081,12 +8136,23 @@ onSmoothScrollStop,
         onSmoothScrollStart: () => {
           if (mayUseMomentumScroller) mainMomentumScroller.abortPriorScrolls();
         },
+        onSmoothScrollStop: () => {
+          articleSelectorSmoothScroller.smoothScrollTo({
+            y: mainArticleObserver.currentArticleSelectorItemOffsetTop,
+          });
+          projectSelectorSmoothScroller.smoothScrollTo({
+            y: mainArticleObserver.currentProjectSelectorItemOffsetTop,
+          });
+        },
       }
     );
 
     const articleSelectorSmoothScroller = new SmoothScroller(
-      document.querySelector("#article-selector"),
-      { abortiveElements: [document.querySelector("main")] }
+      document.querySelector("#article-selector")
+    );
+
+    const projectSelectorSmoothScroller = new SmoothScroller(
+      document.querySelector("#project-selector")
     );
 
     const easingSelectorSmoothScroller = new SmoothScroller(
@@ -8448,6 +8514,7 @@ onSmoothScrollStop,
 
               const observer = [
                 articleSelectorObserver,
+                projectSelectorObserver,
                 scrollerTypeSelectorObserver,
                 decelerationSelectorObserver,
                 easingSelectorObserver,
@@ -8459,8 +8526,10 @@ onSmoothScrollStop,
 
               const isArticleSelector =
                 target == document.querySelector("#article-selector");
+              const isProjectSelector =
+                target == document.querySelector("#project-selector");
 
-              if (isArticleSelector) {
+              if (isArticleSelector || isProjectSelector) {
                 if (isIOsSafari) {
                   document
                     .querySelector("main")
@@ -8481,7 +8550,12 @@ onSmoothScrollStop,
                   "box-shadow",
                   "0 0 0.5rem 0.0625rem hsl(0, 0%, 0%, 0.0625), 0 0 0.3125rem 0 hsl(0, 0%, 0%, 0.125)"
                 );
-                target.style.setProperty("transform", "scale(1.4)");
+                target.style.setProperty(
+                  "transform",
+                  `scale(1.4) ${
+                    isProjectSelector ? "translateX(calc(750px / 34 * 1))" : ""
+                  }`
+                );
               }
               applyPointerDownTransitions();
 
@@ -8502,7 +8576,7 @@ onSmoothScrollStop,
                   movementY = event.screenY - previousScreenY;
 
                   target.scrollTop -=
-                    movementY * (isProbablyATouchScreenDevice ? 3 : 1);
+                    movementY * (isProbablyATouchScreenDevice ? 4 : 1);
 
                   previousScreenY = event.screenY;
                 },
@@ -8526,6 +8600,9 @@ onSmoothScrollStop,
               const isArticleSelector =
                 target == document.querySelector("#article-selector");
 
+              const isProjectSelector =
+                target == document.querySelector("#project-selector");
+
               const isKittehSelectorOrThemeSelector =
                 target == document.querySelector("#kitteh-selector") ||
                 target == document.querySelector("#kitteh-theme-selector");
@@ -8539,52 +8616,50 @@ onSmoothScrollStop,
               const isDecelerationSelector =
                 target == document.querySelector("#deceleration-selector");
 
-              let positionOfArticleInMain;
-              if (isArticleSelector) {
-                if (isIOsSafari) {
-                  document
-                    .querySelector("main")
-                    .style.removeProperty("overflow");
-                }
-                mainArticleObserver.disconnect();
-
-                const main = document.querySelector("main");
-                const article =
-                  event.type == "pointerup"
-                    ? articleSelectorObserver.incoming
-                    : articleSelectorObserver.incoming.nextElementSibling &&
-                      targetsMatch
-                    ? articleSelectorObserver.incoming.nextElementSibling
-                    : target.querySelector(".selector-item") && targetsMatch
-                    ? target.querySelector(".selector-item")
-                    : articleSelectorObserver.incoming;
-
-                if (!article)
-                  return document
-                    .querySelectorAll("article")
-                    .forEach((element) => {
-                      mainArticleObserver.observe(element);
-                    });
-
-                positionOfArticleInMain = article.dataset.articleId
-                  ? Math.abs(
-                      document
-                        .querySelector(article.dataset.articleId)
-                        .getBoundingClientRect().top -
-                        main.getBoundingClientRect().top +
-                        main.scrollTop
-                    )
-                  : 0;
-              }
-
               const observer = [
                 articleSelectorObserver,
+                projectSelectorObserver,
                 scrollerTypeSelectorObserver,
                 decelerationSelectorObserver,
                 easingSelectorObserver,
                 kittehSelectorObserver,
                 kittehThemeSelectorObserver,
               ].find((observer) => observer.root == target);
+
+              let matchingMainScrollTop;
+              if (isArticleSelector || isProjectSelector) {
+                if (isIOsSafari) {
+                  document
+                    .querySelector("main")
+                    .style.removeProperty("overflow");
+                }
+
+                mainArticleObserver.requestToPause = true;
+
+                const main = document.querySelector("main");
+                const selectorItem =
+                  event.type == "pointerup"
+                    ? observer.incoming
+                    : observer.incoming.nextElementSibling && targetsMatch
+                    ? observer.incoming.nextElementSibling
+                    : target.querySelector(".selector-item") && targetsMatch
+                    ? target.querySelector(".selector-item")
+                    : observer.incoming;
+
+                if (!selectorItem)
+                  return (mainArticleObserver.requestToPause = false);
+
+                matchingMainScrollTop = selectorItem.dataset.idToScrollTo
+                  ? Math.abs(
+                      document
+                        .querySelector(selectorItem.dataset.idToScrollTo)
+                        .getBoundingClientRect().top -
+                        main.getBoundingClientRect().top +
+                        main.scrollTop +
+                        1
+                    )
+                  : 0;
+              }
 
               const incomingOffsetTop =
                 event.type == "pointerup" && targetsMatch
@@ -8595,14 +8670,7 @@ onSmoothScrollStop,
                   ? target.querySelector("div").offsetTop
                   : this.currentOffsetTop;
 
-              const smoothScroller = [
-                articleSelectorSmoothScroller,
-                scrollerTypeSelectorSmoothScroller,
-                easingSelectorSmoothScroller,
-                decelerationSelectorSmoothScroller,
-                kittehSelectorSmoothScroller,
-                kittehThemeSelectorSmoothScroller,
-              ].find(
+              const smoothScroller = SmoothScroller.allSmoothScrollers.find(
                 (smoothScroller) => smoothScroller.scrollContainer == target
               );
 
@@ -8620,10 +8688,10 @@ onSmoothScrollStop,
               if (event.type == "keyup")
                 inputEventDelegator.awaitingKeyUpSmoothScroller = true;
 
-              if (isArticleSelector) {
+              if (isArticleSelector || isProjectSelector) {
                 const mainSmoothScrollerPromise = targetsMatch
                   ? mainSmoothScroller.smoothScrollTo({
-                      y: positionOfArticleInMain,
+                      y: matchingMainScrollTop,
                     })
                   : null;
 
@@ -8632,9 +8700,8 @@ onSmoothScrollStop,
                   mainSmoothScrollerPromise,
                 ]);
 
-                document.querySelectorAll("article").forEach((element) => {
-                  mainArticleObserver.observe(element);
-                });
+                mainArticleObserver.requestToPause = false;
+
                 if (event.type == "keyup")
                   inputEventDelegator.awaitingKeyUpSmoothScroller = false;
               } else if (isKittehSelectorOrThemeSelector) {
@@ -8765,7 +8832,7 @@ onSmoothScrollStop,
                   movementX = event.screenX - previousScreenX;
 
                   target.scrollLeft -=
-                    movementX * (isProbablyATouchScreenDevice ? 3 : 1);
+                    movementX * (isProbablyATouchScreenDevice ? 4 : 1);
 
                   previousScreenX = event.screenX;
                 },
@@ -8945,7 +9012,7 @@ onSmoothScrollStop,
               const target = event.target;
 
               if (
-                target.id == "message-submit-button" &&
+                target.matches("#message-submit-button") &&
                 target.dataset.validMessage == "false"
               )
                 return;
@@ -9042,7 +9109,7 @@ onSmoothScrollStop,
 
             async inputUpHandler(event, target, targetsMatch) {
               if (
-                target.id == "message-submit-button" &&
+                target.matches("#message-submit-button") &&
                 target.dataset.validMessage == "false"
               )
                 return;
@@ -9054,15 +9121,21 @@ onSmoothScrollStop,
                 this.pointerMoveListenerController = new AbortController();
               }
 
-              if (targetsMatch && target.id == "appearance-switcher-button") {
+              if (
+                targetsMatch &&
+                target.matches("#appearance-switcher-button")
+              ) {
                 return appearanceSwitcher.switchAppearance();
-              } else if (targetsMatch && target.id == "overflow-button") {
+              } else if (targetsMatch && target.matches("#overflow-button")) {
                 await switchOverflowMenu();
-              } else if (targetsMatch && target.id == "touch-app-button") {
+              } else if (targetsMatch && target.matches("#touch-app-button")) {
                 MomentumScroller.allMomentumScrollers.forEach(
                   (momentumScroller) => momentumScroller.toggleOnOff()
                 );
-              } else if (targetsMatch && target.id == "message-submit-button") {
+              } else if (
+                targetsMatch &&
+                target.matches("#message-submit-button")
+              ) {
                 const message = document.querySelector("#message-input").value;
                 kittehMessages.submitMessage(message);
                 document.querySelector("#message-input").value = "";
@@ -9071,7 +9144,7 @@ onSmoothScrollStop,
                 );
               } else if (
                 targetsMatch &&
-                target.id == "kitteh-messages-sound-button"
+                target.matches("#kitteh-messages-sound-button")
               ) {
                 target.dataset.userInteraction = "true";
 
@@ -9097,7 +9170,7 @@ onSmoothScrollStop,
                   target.dataset.toggleButtonState == "on" ? "off" : "on";
               } else if (
                 targetsMatch &&
-                target.id == "smooth-scroller-go-button"
+                target.matches("#smooth-scroller-go-button")
               ) {
                 const demoContainer = target.closest(".demo-container");
 
@@ -9170,7 +9243,7 @@ onSmoothScrollStop,
                 });
               } else if (
                 targetsMatch &&
-                target.id == "smooth-scroller-randomize-button"
+                target.matches("#smooth-scroller-randomize-button")
               ) {
                 const demoContainer = target.closest(".demo-container");
 
@@ -9224,7 +9297,10 @@ onSmoothScrollStop,
                   );
               }
 
-              if (target.id == "appearance-switcher-button" && !targetsMatch) {
+              if (
+                target.matches("#appearance-switcher-button") &&
+                !targetsMatch
+              ) {
                 const boxShadow =
                   appearanceSwitcher.currentAppearance == "dark"
                     ? "inset calc(1rem / 1.7) calc(-0.625rem / 1.7) 0 1px hsl(60, 100%, 90%), 0 0 0 calc(-2rem / 1.7) transparent"
@@ -10450,7 +10526,7 @@ onSmoothScrollStop,
       const nonCredentialElements = Array.from(
         document.querySelectorAll(".duration")
       ).filter(
-        (result) => result.closest("article").id != "credentials-article"
+        (result) => !result.closest("article").matches("#credentials-article")
       );
 
       const yearsElapsedAndElements = nonCredentialElements.map((element) => {
