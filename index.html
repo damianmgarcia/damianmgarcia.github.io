@@ -663,24 +663,35 @@
       .selector {
         background: var(--button-background-color-active);
         border-radius: calc(750px / 17 / 4);
+        box-shadow: 0 0 0.5rem 0.0625rem hsl(0, 0%, 0%, 0),
+          0 0 0.3125rem 0 hsl(0, 0%, 0%, 0);
         cursor: var(--selector-cursor);
         display: inline-grid;
+        filter: brightness(100%);
         height: 60px;
         overflow: hidden;
         place-items: start;
         position: relative;
         text-align: right;
         touch-action: none;
+        transform: scale(1) translateZ(0); /* Safari: translateZ(0) prevents selector-item overflow */
         transition: var(--selector-transitions);
         -webkit-user-select: none;
         user-select: none;
       }
 
-      .selector[data-active-selector="true"] {
+      .selector.pressed {
+        box-shadow: 0 0 0.5rem 0.0625rem hsl(0, 0%, 0%, 0.0625),
+          0 0 0.3125rem 0 hsl(0, 0%, 0%, 0.125);
+        filter: brightness(110%);
+        transform: scale(1.4) translateZ(0);
+      }
+
+      .selector[data-disabled-selector="false"] {
         opacity: 1;
       }
 
-      .selector[data-active-selector="false"]:not(.demo-container[data-active-demo="false"]
+      .selector[data-disabled-selector="true"]:not(.demo-container[data-disabled-demo="true"]
           .selector) {
         opacity: 0.25;
         pointer-events: none;
@@ -701,13 +712,18 @@
 
       #project-selector[data-hidden="false"] {
         opacity: 1;
-        transform: translateX(calc(750px / 34 * 1));
+        transform: scale(1) translateX(calc(750px / 34 * 1)) translateZ(0);
+      }
+
+      #project-selector[data-hidden="false"].pressed {
+        transform: scale(1.4) translateX(calc(750px / 34 * 1)) translateZ(0);
       }
 
       #project-selector[data-hidden="true"] {
         left: 100%;
         opacity: 0;
         pointer-events: none;
+        transform: scale(1) translateX(0) translateZ(0);
       }
 
       .selector * {
@@ -1177,11 +1193,11 @@
         transition: var(--demo-container-title-transitions);
       }
 
-      .demo-container[data-active-demo="true"] .demo-container-title {
+      .demo-container[data-disabled-demo="false"] .demo-container-title {
         opacity: 1;
       }
 
-      .demo-container[data-active-demo="false"] .demo-container-title {
+      .demo-container[data-disabled-demo="true"] .demo-container-title {
         opacity: 0.25;
       }
 
@@ -1212,11 +1228,11 @@
         margin: calc(750px / 34 * 2);
       }
 
-      .demo-container[data-active-demo="true"] .demo-container-contents {
+      .demo-container[data-disabled-demo="false"] .demo-container-contents {
         opacity: 1;
       }
 
-      .demo-container[data-active-demo="false"] .demo-container-contents {
+      .demo-container[data-disabled-demo="true"] .demo-container-contents {
         opacity: 0.25;
         pointer-events: none;
       }
@@ -5033,7 +5049,7 @@ onMomentumScrollStop,
                 </div>
                 <div
                   class="demo-container"
-                  data-active-demo="false"
+                  data-disabled-demo="true"
                   id="demo-container-for-momentum-scroller"
                 >
                   <div class="demo-container-title">Momentum Scroller Demo</div>
@@ -5046,7 +5062,7 @@ onMomentumScrollStop,
                         <div class="input-label">Axes</div>
                         <div
                           class="selector"
-                          data-active-selector="false"
+                          data-disabled-selector="true"
                           id="scroller-type-selector"
                           tabindex="-1"
                         >
@@ -5074,7 +5090,7 @@ onMomentumScrollStop,
                         <div class="input-label">Deceleration</div>
                         <div
                           class="selector"
-                          data-active-selector="false"
+                          data-disabled-selector="true"
                           id="deceleration-selector"
                           tabindex="-1"
                         >
@@ -5248,7 +5264,7 @@ onSmoothScrollStop,
                 </div>
                 <div
                   class="demo-container"
-                  data-active-demo="true"
+                  data-disabled-demo="false"
                   id="demo-container-for-smooth-scroller"
                 >
                   <div class="demo-container-title">Smooth Scroller Demo</div>
@@ -5258,7 +5274,7 @@ onSmoothScrollStop,
                         <div class="input-label">Easing</div>
                         <div
                           class="selector"
-                          data-active-selector="true"
+                          data-disabled-selector="false"
                           id="easing-selector"
                           tabindex="0"
                         >
@@ -5868,7 +5884,7 @@ onSmoothScrollStop,
                       .toUpperCase() +
                     kittehAppointerAndThemer.appointedKittehTheme.slice(1);
                 </script>
-                <div class="demo-container" data-active-demo="true">
+                <div class="demo-container" data-disabled-demo="false">
                   <div class="demo-container-title">
                     Kitteh Logo and Theme Demo
                   </div>
@@ -5878,7 +5894,7 @@ onSmoothScrollStop,
                         <div class="input-label">Kitteh</div>
                         <div
                           class="selector"
-                          data-active-selector="true"
+                          data-disabled-selector="false"
                           id="kitteh-selector"
                           tabindex="0"
                         >
@@ -5894,7 +5910,7 @@ onSmoothScrollStop,
                         <div class="input-label">Theme</div>
                         <div
                           class="selector"
-                          data-active-selector="true"
+                          data-disabled-selector="false"
                           id="kitteh-theme-selector"
                           tabindex="0"
                         >
@@ -6036,7 +6052,7 @@ onSmoothScrollStop,
                 </div>
                 <div
                   class="demo-container"
-                  data-active-demo="true"
+                  data-disabled-demo="false"
                   id="demo-container-for-kitteh-messages"
                 >
                   <div class="demo-container-title">Message Typing Demo</div>
@@ -8537,27 +8553,7 @@ onSmoothScrollStop,
                 }
               }
 
-              document
-                .querySelector(":root")
-                .style.setProperty(
-                  "--selector-cursor",
-                  `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-                );
-
-              function applyPointerDownTransitions() {
-                target.style.setProperty("filter", "brightness(110%)");
-                target.style.setProperty(
-                  "box-shadow",
-                  "0 0 0.5rem 0.0625rem hsl(0, 0%, 0%, 0.0625), 0 0 0.3125rem 0 hsl(0, 0%, 0%, 0.125)"
-                );
-                target.style.setProperty(
-                  "transform",
-                  `scale(1.4) ${
-                    isProjectSelector ? "translateX(calc(750px / 34 * 1))" : ""
-                  }`
-                );
-              }
-              applyPointerDownTransitions();
+              target.classList.toggle("pressed");
 
               if (event.type == "keydown") return;
 
@@ -8678,12 +8674,7 @@ onSmoothScrollStop,
                 y: incomingOffsetTop,
               });
 
-              function applyPointerUpTransitions() {
-                target.style.removeProperty("filter");
-                target.style.removeProperty("box-shadow");
-                target.style.removeProperty("transform");
-              }
-              applyPointerUpTransitions();
+              target.classList.toggle("pressed");
 
               if (event.type == "keyup")
                 inputEventDelegator.awaitingKeyUpSmoothScroller = true;
@@ -10243,25 +10234,25 @@ onSmoothScrollStop,
             onMomentumScrollActivation: (event) => {
               const demoContainer =
                 event.scrollContainer.closest(".demo-container");
-              demoContainer.dataset.activeDemo = "true";
+              demoContainer.dataset.disabledDemo = "false";
               const demoContainerAlert = demoContainer.querySelector(
                 ".demo-container-alert"
               );
               demoContainerAlert.dataset.activeAlert = "false";
-              activateOrDeactivateDemoMomentumScrollerSelectors("activate");
+              enableOrDisableDemoMomentumScrollerSelectors("enable");
             },
             onMomentumScrollDeactivation: (event) => {
               const demoContainer =
                 event.scrollContainer.closest(".demo-container");
-              demoContainer.dataset.activeDemo = "false";
+              demoContainer.dataset.disabledDemo = "true";
               const demoContainerAlert = demoContainer.querySelector(
                 ".demo-container-alert"
               );
               demoContainerAlert.dataset.activeAlert = "true";
-              activateOrDeactivateDemoMomentumScrollerSelectors("deactivate");
+              enableOrDisableDemoMomentumScrollerSelectors("disable");
             },
             onMomentumScrollPointerDown: (event) => {
-              activateOrDeactivateDemoMomentumScrollerSelectors("deactivate");
+              enableOrDisableDemoMomentumScrollerSelectors("disable");
               const dataLabels = event.scrollContainer
                 .closest(".demo-container")
                 .querySelectorAll("[data-label]");
@@ -10277,13 +10268,13 @@ onSmoothScrollStop,
               }
             },
             onMomentumScrollStart: () =>
-              activateOrDeactivateDemoMomentumScrollerSelectors("deactivate"),
+              enableOrDisableDemoMomentumScrollerSelectors("disable"),
             onMomentumScrollStop: (event) => {
               if (
                 event.momentumScroller.isActive &&
                 !event.momentumScroller.pointerIsDown
               ) {
-                activateOrDeactivateDemoMomentumScrollerSelectors("activate");
+                enableOrDisableDemoMomentumScrollerSelectors("enable");
                 const demoContainer =
                   event.scrollContainer.closest(".demo-container");
 
@@ -10360,19 +10351,19 @@ onSmoothScrollStop,
       duration: 0,
     });
 
-    function activateOrDeactivateDemoMomentumScrollerSelectors(request) {
+    function enableOrDisableDemoMomentumScrollerSelectors(request) {
       const selectors = document.querySelectorAll(
         "#demo-container-for-momentum-scroller .selector"
       );
 
       selectors.forEach((selector) => {
-        request == "activate"
-          ? (selector.dataset.activeSelector = "true")
-          : (selector.dataset.activeSelector = "false");
-        request == "activate"
+        request == "enable"
+          ? (selector.dataset.disabledSelector = "false")
+          : (selector.dataset.disabledSelector = "true");
+        request == "enable"
           ? selector.setAttribute("tabindex", "0")
           : selector.setAttribute("tabindex", "-1");
-        if (request == "deactivate") selector.blur();
+        if (request == "disable") selector.blur();
       });
     }
 
