@@ -7410,8 +7410,12 @@ onSmoothScrollStop,
             item.target.matches("#projects-article") && !item.isIntersecting
         );
 
-        if (outgoingProjectsArticle)
-          document.querySelector("#project-selector").dataset.hidden = "true";
+        if (outgoingProjectsArticle) {
+          const projectSelector = document.querySelector("#project-selector");
+          projectSelector.dataset.hidden = "true";
+          projectSelector.setAttribute("tabindex", "-1");
+          projectSelector.blur();
+        }
 
         if (incoming) {
           const matchingSelectorItemOffsetTop = incoming.target.dataset
@@ -7428,9 +7432,11 @@ onSmoothScrollStop,
               matchingSelectorItemOffsetTop;
           }
 
-          if (incoming.target.matches("#projects-article"))
-            document.querySelector("#project-selector").dataset.hidden =
-              "false";
+          if (incoming.target.matches("#projects-article")) {
+            const projectSelector = document.querySelector("#project-selector");
+            projectSelector.dataset.hidden = "false";
+            projectSelector.setAttribute("tabindex", "0");
+          }
 
           if (mainArticleObserver.requestToPause) return;
 
@@ -10417,9 +10423,10 @@ onSmoothScrollStop,
         kittehMessages.unhideMessageContainer();
         header.style.setProperty("height", `${(750 / 17) * 4}px`);
         overflowButton.dataset.toggleButtonState = "off";
-        overflowMenuButtons.forEach((button) =>
-          button.setAttribute("tabindex", "-1")
-        );
+        overflowMenuButtons.forEach((button) => {
+          button.setAttribute("tabindex", "-1");
+          button.blur();
+        });
         kittehMessagesDemoAlert.dataset.activeAlert = "false";
       }
 
@@ -11043,8 +11050,8 @@ onSmoothScrollStop,
       if (messageIsBlank) {
         messageInput.dataset.validMessage = "false";
         submitButton.dataset.validMessage = "false";
-        submitButton.blur();
         submitButton.setAttribute("tabindex", "-1");
+        submitButton.blur();
         return "invalid";
       } else if (!messageIsBlank) {
         messageInput.dataset.validMessage = "true";
