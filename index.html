@@ -1181,6 +1181,9 @@
         border-radius: calc(750px / 34 * 2);
         margin: calc(750px / 34 * 2) auto;
         overflow: hidden;
+        transform: translateZ(
+          0
+        ); /* Safari: translateZ(0) prevents background overflow */
         transition: var(--demo-container-transitions);
         width: 100%;
       }
@@ -7453,7 +7456,7 @@ onSmoothScrollStop,
       async (entries) => {
         const incoming = entries.find((entry) => entry.isIntersecting);
 
-        if (incoming && incoming.target.nodeName == "VIDEO") {
+        if (incoming && incoming.target.matches("video")) {
           const videoGalleryObserver = videoGalleryObservers.find(
             (videoGalleryObserver) =>
               videoGalleryObserver.getRoot() ==
@@ -7594,10 +7597,9 @@ onSmoothScrollStop,
           [videoIndex].style.setProperty("width", "calc(750px / 17 / 6)");
         video.currentTime = 0.1;
 
-        const nextVideo =
-          video.nextElementSibling?.nodeName == "VIDEO"
-            ? video.nextElementSibling
-            : null;
+        const nextVideo = video.nextElementSibling?.matches("video")
+          ? video.nextElementSibling
+          : null;
 
         if (nextVideo && !videoGalleryIsActive) {
           const nextVideoPosition = nextVideo.offsetLeft;
@@ -7886,22 +7888,14 @@ onSmoothScrollStop,
         return this.#isCurrentlyScrolling;
       }
 
-      *idGenerator() {
-        let id = 0;
-        while (true) {
-          yield id++;
-        }
-      }
-
-      generator = this.idGenerator();
-
-      #idOfMostRecentScroll;
       #scrollDistanceX;
       #scrollDistanceY;
       #scrollRafId;
       #scrollStartingPointX;
       #scrollStartingPointY;
       #startTime;
+      #elapsedTime;
+      #resolve;
 
       async smoothScrollTo(
         {
@@ -7911,40 +7905,46 @@ onSmoothScrollStop,
           easing = this.#defaultScrollEasing,
         } = {},
         newSmoothScroll = true,
-        scrollId,
-        currentTime,
-        resolve
+        currentTime
       ) {
-        function getEventData() {
+        function getEventData(extraData) {
           const eventData = {
+            abortedBy: null,
             x: this.#scrollContainer.scrollLeft,
             y: this.#scrollContainer.scrollTop,
             duration: duration,
-            elapsedTime: currentTime - this.#startTime,
+            elapsedTime: this.#elapsedTime,
             scrollContainer: this.#scrollContainer,
             smoothScroller: this,
           };
-
+          Object.assign(eventData, extraData);
           return eventData;
         }
 
         if (newSmoothScroll) {
-          if (!Number.isFinite(x) && !Number.isFinite(y))
-            return this.abortPriorScrolls();
-
-          const scrollId = this.generator.next().value;
-          this.#idOfMostRecentScroll = scrollId;
-
-          if (this.#isCurrentlyScrolling) {
-            await new Promise((resolve) => {
-              const checkInterval = setInterval(() => {
-                if (!this.#isCurrentlyScrolling) {
-                  clearInterval(checkInterval);
-                  resolve();
-                }
-              });
+          if (!Number.isFinite(x) || !Number.isFinite(y)) {
+            const extraData = {
+              abortedBy: "New smooth scroll",
+            };
+            const resolveData = getEventData.call(this, extraData);
+            this.abortPriorScrolls(resolveData);
+            return new Promise((resolve) => {
+              this.#resolve = resolve;
+              const extraData = {
+                abortedBy: "TypeError: X and Y must be finite numbers",
+                duration: null,
+                elapsedTime: null,
+              };
+              const resolveData = getEventData.call(this, extraData);
+              return this.abortPriorScrolls(resolveData);
             });
           }
+
+          const extraData = {
+            abortedBy: "New smooth scroll",
+          };
+          const resolveData = getEventData.call(this, extraData);
+          this.abortPriorScrolls(resolveData);
 
           if (isIOsSafari) {
             this.#scrollContainer.style.setProperty("overflow", "hidden");
@@ -7993,36 +7993,28 @@ onSmoothScrollStop,
             Math.abs(this.#scrollDistanceX) < 1 &&
             Math.abs(this.#scrollDistanceY) < 1
           ) {
-            this.abortPriorScrolls();
             return new Promise((resolve) => {
-              resolve({
-                aborted: true,
-                abortReason: "X and Y scroll distances < 1",
-                elapsedTime: 0,
-                x: this.#scrollContainer.scrollLeft,
-                y: this.#scrollContainer.scrollTop,
-                scrollContainer: this.#scrollContainer,
-              });
+              this.#resolve = resolve;
+              const extraData = {
+                abortedBy: "X and Y scroll distance < 1",
+              };
+              const resolveData = getEventData.call(this, extraData);
+              return this.abortPriorScrolls(resolveData);
             });
           } else if (
             Math.abs(this.#scrollDistanceX) >= 1 ||
             Math.abs(this.#scrollDistanceY) >= 1
           ) {
             if (duration <= 0) {
-              this.abortPriorScrolls();
               this.#scrollContainer.scrollTo(limitCorrectedX, limitCorrectedY);
               return new Promise((resolve) => {
-                resolve({
-                  aborted: false,
-                  abortReason: null,
-                  elapsedTime: 0,
-                  x: this.#scrollContainer.scrollLeft,
-                  y: this.#scrollContainer.scrollTop,
-                  scrollContainer: this.#scrollContainer,
-                });
+                this.#resolve = resolve;
+                const resolveData = getEventData.call(this);
+                return this.abortPriorScrolls(resolveData);
               });
             } else if (duration > 0) {
               return new Promise((resolve) => {
+                this.#resolve = resolve;
                 this.#scrollRafId = requestAnimationFrame((currentTime) => {
                   this.smoothScrollTo(
                     {
@@ -8032,9 +8024,7 @@ onSmoothScrollStop,
                       easing,
                     },
                     false,
-                    scrollId,
-                    currentTime,
-                    resolve
+                    currentTime
                   );
                 });
               });
@@ -8048,32 +8038,15 @@ onSmoothScrollStop,
             this.#onSmoothScrollStart.call(this, getEventData.call(this));
         }
 
-        const elapsedTime = currentTime - this.#startTime;
-        const elapsedTimeRatio = Math.min(elapsedTime / duration, 1);
-
-        if (scrollId != this.#idOfMostRecentScroll) {
-          this.abortPriorScrolls();
-          return resolve({
-            aborted: true,
-            abortReason: "Interrupted by new smooth scroll",
-            elapsedTime: elapsedTime,
-            x: this.#scrollContainer.scrollLeft,
-            y: this.#scrollContainer.scrollTop,
-            scrollContainer: this.#scrollContainer,
-          });
-        }
+        this.#elapsedTime = currentTime - this.#startTime;
+        const elapsedTimeRatio = Math.min(this.#elapsedTime / duration, 1);
 
         if (this.#pointerIsDown) {
-          this.abortPriorScrolls();
-          return resolve({
-            aborted: true,
-            abortReason:
-              "Interrupted by pointer down event on scroll container",
-            elapsedTime: elapsedTime,
-            x: this.#scrollContainer.scrollLeft,
-            y: this.#scrollContainer.scrollTop,
-            scrollContainer: this.#scrollContainer,
-          });
+          const extraData = {
+            abortedBy: "Pointer down on scroll container",
+          };
+          const resolveData = getEventData.call(this, extraData);
+          return this.abortPriorScrolls(resolveData);
         }
 
         const scrollRatio = this.#cubicBezierSolver.solve(
@@ -8107,30 +8080,20 @@ onSmoothScrollStop,
                 easing,
               },
               false,
-              scrollId,
-              currentTime,
-              resolve
+              currentTime
             );
           });
         } else if (elapsedTimeRatio >= 1) {
-          this.abortPriorScrolls();
-          return resolve({
-            aborted: false,
-            abortReason: null,
-            elapsedTime: elapsedTime,
-            x: this.#scrollContainer.scrollLeft,
-            y: this.#scrollContainer.scrollTop,
-            scrollContainer: this.#scrollContainer,
-          });
+          const resolveData = getEventData.call(this);
+          this.abortPriorScrolls(resolveData);
         }
       }
 
-      abortPriorScrolls() {
+      abortPriorScrolls(resolveData) {
+        if (this.#resolve) this.#resolve(resolveData);
+
         if (this.#onSmoothScrollStop)
-          this.#onSmoothScrollStop.call(this, {
-            smoothScroller: this,
-            scrollContainer: this.#scrollContainer,
-          });
+          this.#onSmoothScrollStop.call(this, resolveData);
 
         if (isIOsSafari) {
           this.#scrollContainer.style.removeProperty("overflow"); // Stops Safari's momentum scrolling to prevent scroll interference
@@ -8142,6 +8105,8 @@ onSmoothScrollStop,
         this.#scrollDistanceX = null;
         this.#scrollDistanceY = null;
         this.#startTime = null;
+        this.#elapsedTime = null;
+        this.#resolve = null;
         this.#isCurrentlyScrolling = false;
       }
     }
@@ -8152,7 +8117,9 @@ onSmoothScrollStop,
         onSmoothScrollStart: () => {
           if (mayUseMomentumScroller) mainMomentumScroller.abortPriorScrolls();
         },
-        onSmoothScrollStop: () => {
+        onSmoothScrollStop: (event) => {
+          if (event.abortedBy == "New smooth scroll") return;
+
           articleSelectorSmoothScroller.smoothScrollTo({
             y: mainArticleObserver.currentArticleSelectorItemOffsetTop,
           });
@@ -8524,8 +8491,6 @@ onSmoothScrollStop,
             pointerDownMovementTracker: new AbortController(),
 
             inputDownHandler(event) {
-              if (inputEventDelegator.awaitingKeyUpSmoothScroller) return;
-
               const target = event.target;
 
               const observer = [
@@ -8581,8 +8546,6 @@ onSmoothScrollStop,
             },
 
             async inputUpHandler(event, target, targetsMatch) {
-              if (inputEventDelegator.awaitingKeyUpSmoothScroller) return;
-
               this.pointerDownMovementTracker.abort();
               this.pointerDownMovementTracker = new AbortController();
 
@@ -8676,56 +8639,36 @@ onSmoothScrollStop,
 
               target.classList.toggle("pressed");
 
-              if (event.type == "keyup")
-                inputEventDelegator.awaitingKeyUpSmoothScroller = true;
-
               if (isArticleSelector || isProjectSelector) {
                 const mainSmoothScrollerPromise = targetsMatch
                   ? mainSmoothScroller.smoothScrollTo({
                       y: matchingMainScrollTop,
                     })
                   : null;
-
                 const endingAnimations = await Promise.all([
                   smoothScrollerPromise,
                   mainSmoothScrollerPromise,
                 ]);
-
                 mainArticleObserver.requestToPause = false;
-
-                if (event.type == "keyup")
-                  inputEventDelegator.awaitingKeyUpSmoothScroller = false;
               } else if (isKittehSelectorOrThemeSelector) {
                 await smoothScrollerPromise;
-
                 kittehAppointerAndThemer.appointKitteh({
                   kitteh: kittehSelectorObserver.incoming.dataset.kitteh,
                   theme: kittehThemeSelectorObserver.incoming.dataset.theme,
                 });
-                if (event.type == "keyup")
-                  inputEventDelegator.awaitingKeyUpSmoothScroller = false;
               } else if (isScrollerTypeSelector) {
                 await smoothScrollerPromise;
-
                 document.querySelector(
                   "#momentum-scroller-demo-container"
                 ).dataset.scrollerType =
                   scrollerTypeSelectorObserver.incoming.dataset.scrollerType;
-                if (event.type == "keyup")
-                  inputEventDelegator.awaitingKeyUpSmoothScroller = false;
               } else if (isDecelerationSelector) {
                 await smoothScrollerPromise;
-
                 demoMomentumScroller.changeDeceleration(
                   decelerationSelectorObserver.incoming.dataset.deceleration
                 );
-                if (event.type == "keyup")
-                  inputEventDelegator.awaitingKeyUpSmoothScroller = false;
               } else if (isEasingSelector) {
                 await smoothScrollerPromise;
-
-                if (event.type == "keyup")
-                  inputEventDelegator.awaitingKeyUpSmoothScroller = false;
               }
             },
           },
@@ -8739,8 +8682,6 @@ onSmoothScrollStop,
             pointerMoveOutsideOfClickThreshold: null,
 
             inputDownHandler(event) {
-              if (inputEventDelegator.awaitingKeyUpSmoothScroller) return;
-
               const target = event.target;
 
               const videoGalleryObserver = videoGalleryObservers.find(
@@ -8832,8 +8773,6 @@ onSmoothScrollStop,
             },
 
             async inputUpHandler(event, target, targetsMatch) {
-              if (inputEventDelegator.awaitingKeyUpSmoothScroller) return;
-
               if (mayUseMomentumScroller) mainMomentumScroller.unpause();
 
               this.pointerMoveListenerController.abort();
@@ -8878,13 +8817,9 @@ onSmoothScrollStop,
 
               target.style.removeProperty("transform");
 
-              inputEventDelegator.awaitingKeyUpSmoothScroller = true;
-
               await videoGalleryObserver.smoothScroller.smoothScrollTo({
                 x: videoOffsetLeft,
               });
-
-              inputEventDelegator.awaitingKeyUpSmoothScroller = false;
 
               videoGalleryIsActive = false;
             },
@@ -9196,7 +9131,7 @@ onSmoothScrollStop,
 
                   demoContainer.querySelector(
                     "[data-label='aborted']"
-                  ).textContent = result.aborted;
+                  ).textContent = result.abortedBy ? "True" : "False";
                   demoContainer.querySelector(
                     "[data-label='elapsed-time']"
                   ).textContent = `${elapsedTime} ms`;
@@ -9721,7 +9656,7 @@ onSmoothScrollStop,
 
         if (
           event.target.closest("header") ||
-          event.target.nodeName == "TEXTAREA" ||
+          event.target.matches("textarea") ||
           event.target.closest(".selector")
         )
           return;
@@ -9813,16 +9748,8 @@ onSmoothScrollStop,
           this.#pointerIsDown = false;
           this.pointerDownCompensationY = 0;
 
-          const endTime = event.timeStamp;
-
-          const meetsMomentumScrollCriteria =
-            this.#pointerMoveLog.length > 0 &&
-            endTime - this.#pointerMoveLog[this.#pointerMoveLog.length - 1][2] <
-              100;
-
           if (this.#onMomentumScrollPointerUp)
             this.#onMomentumScrollPointerUp.call(this, {
-              meetsMomentumScrollCriteria: meetsMomentumScrollCriteria,
               momentumScroller: this,
               scrollContainer: this.#scrollContainer,
             });
@@ -9838,6 +9765,13 @@ onSmoothScrollStop,
             );
 
           if (this.#paused) return;
+
+          const endTime = event.timeStamp;
+
+          const meetsMomentumScrollCriteria =
+            this.#pointerMoveLog.length > 0 &&
+            endTime - this.#pointerMoveLog[this.#pointerMoveLog.length - 1][2] <
+              100;
 
           let endPositionX;
           let velocityX = 0;
@@ -9903,26 +9837,30 @@ onSmoothScrollStop,
       #scrollStartingPointY;
       #scrollTimestampPrevious;
       #startTime;
+      #elapsedTime;
+      #resolve;
 
       momentumScroll(
         { velocityX = 0, velocityY = 0 },
         newMomentumScroll = true,
         deceleration,
-        currentTime,
-        resolve
+        currentTime
       ) {
-        function getEventData() {
+        function getEventData(extraData) {
           const eventData = {
+            abortedBy: null,
             xInitial: this.#scrollStartingPointX,
+            xFinal: this.#scrollContainer.scrollLeft,
             yInitial: this.#scrollStartingPointY,
+            yFinal: this.#scrollContainer.scrollTop,
             duration: this.#scrollDuration,
-            elapsedTime: currentTime - this.#startTime,
+            elapsedTime: this.#elapsedTime,
             velocityMultiplierX: this.#scrollVelocityMultiplierX,
             velocityMultiplierY: this.#scrollVelocityMultiplierY,
             scrollContainer: this.#scrollContainer,
             momentumScroller: this,
           };
-
+          Object.assign(eventData, extraData);
           return eventData;
         }
 
@@ -9975,8 +9913,46 @@ onSmoothScrollStop,
 
         if (newMomentumScroll) {
           if (!velocityX && !velocityY) {
-            return this.abortPriorScrolls();
+            const extraData = {
+              abortedBy: "New smooth scroll",
+            };
+            const resolveData = getEventData.call(this, extraData);
+            this.abortPriorScrolls(resolveData);
+            return new Promise((resolve) => {
+              this.#resolve = resolve;
+              const extraData = {
+                abortedBy: "No velocity in X and Y direction",
+                duration: null,
+                elapsedTime: null,
+              };
+              const resolveData = getEventData.call(this, extraData);
+              return this.abortPriorScrolls(resolveData);
+            });
           }
+
+          if (!Number.isFinite(velocityX) || !Number.isFinite(velocityY)) {
+            const extraData = {
+              abortedBy: "New smooth scroll",
+            };
+            const resolveData = getEventData.call(this, extraData);
+            this.abortPriorScrolls(resolveData);
+            return new Promise((resolve) => {
+              this.#resolve = resolve;
+              const extraData = {
+                abortedBy: "TypeError: X and Y must be finite numbers",
+                duration: null,
+                elapsedTime: null,
+              };
+              const resolveData = getEventData.call(this, extraData);
+              return this.abortPriorScrolls(resolveData);
+            });
+          }
+
+          const extraData = {
+            abortedBy: "New momentum scroll",
+          };
+          const resolveData = getEventData.call(this, extraData);
+          this.abortPriorScrolls(resolveData);
 
           const velocityHypotenuse = Math.hypot(velocityX, velocityY);
 
@@ -9999,12 +9975,31 @@ onSmoothScrollStop,
           const yDistanceBelowMinimum =
             scrollDistanceY < minimumScrollableDistance;
 
-          if (this.#scrollerType == "horizontal-only") {
-            if (xDistanceBelowMinimum) return;
-          } else if (this.#scrollerType == "vertical-only") {
-            if (yDistanceBelowMinimum) return;
-          } else if (this.#scrollerType == "horizontal-and-vertical") {
-            if (xDistanceBelowMinimum && yDistanceBelowMinimum) return;
+          if (
+            (this.#scrollerType == "horizontal-only" &&
+              xDistanceBelowMinimum) ||
+            (this.#scrollerType == "vertical-only" && yDistanceBelowMinimum) ||
+            (this.#scrollerType == "horizontal-and-vertical" &&
+              xDistanceBelowMinimum &&
+              yDistanceBelowMinimum)
+          ) {
+            return new Promise((resolve) => {
+              const extraData = {
+                abortedBy: "New smooth scroll",
+              };
+              const resolveData = getEventData.call(this, extraData);
+              this.abortPriorScrolls(resolveData);
+              return new Promise((resolve) => {
+                this.#resolve = resolve;
+                const extraData = {
+                  abortedBy: "Scroll distance < minimum scrollable distance",
+                  duration: null,
+                  elapsedTime: null,
+                };
+                const resolveData = getEventData.call(this, extraData);
+                return this.abortPriorScrolls(resolveData);
+              });
+            });
           }
 
           const scrollTimestamp = Date.now();
@@ -10069,6 +10064,7 @@ onSmoothScrollStop,
           this.#multiplierAdjustedVelocityY = multiplierAdjustedVelocityY;
 
           return new Promise((resolve) => {
+            this.#resolve = resolve;
             this.#scrollRafId = requestAnimationFrame((currentTime) => {
               this.momentumScroll(
                 {
@@ -10077,8 +10073,7 @@ onSmoothScrollStop,
                 },
                 false,
                 this.#deceleration,
-                currentTime,
-                resolve
+                currentTime
               );
             });
           });
@@ -10090,34 +10085,26 @@ onSmoothScrollStop,
             this.#onMomentumScrollStart.call(this, getEventData.call(this));
         }
 
-        const elapsedTime = currentTime - this.#startTime;
+        this.#elapsedTime = currentTime - this.#startTime;
         const elapsedTimeRatio = Math.min(
-          elapsedTime / this.#scrollDuration,
+          this.#elapsedTime / this.#scrollDuration,
           1
         );
 
         if (this.#pointerIsDown) {
-          this.abortPriorScrolls();
-          return resolve({
-            aborted: true,
-            abortReason: "Pointer is down on scroll container",
-            elapsedTime: elapsedTime,
-            x: this.#scrollContainer.scrollLeft,
-            y: this.#scrollContainer.scrollTop,
-            scrollContainer: this.#scrollContainer,
-          });
+          const extraData = {
+            abortedBy: "Pointer down on scroll container",
+          };
+          const resolveData = getEventData.call(this, extraData);
+          return this.abortPriorScrolls(resolveData);
         }
 
         if (!this.#active) {
-          this.abortPriorScrolls();
-          return resolve({
-            aborted: true,
-            abortReason: "Scroller was deactivated",
-            elapsedTime: elapsedTime,
-            x: this.#scrollContainer.scrollLeft,
-            y: this.#scrollContainer.scrollTop,
-            scrollContainer: this.#scrollContainer,
-          });
+          const extraData = {
+            abortedBy: "Momentum scroller deactivation",
+          };
+          const resolveData = getEventData.call(this, extraData);
+          return this.abortPriorScrolls(resolveData);
         }
 
         const velocityHypotenuse = Math.hypot(velocityX, velocityY);
@@ -10125,24 +10112,24 @@ onSmoothScrollStop,
         if (this.#xAxisIsScrollable) {
           const nextScrollX =
             this.#scrollStartingPointX +
-            (-velocityX * elapsedTime +
+            (-velocityX * this.#elapsedTime +
               Math.sign(velocityX) *
                 0.5 *
                 deceleration *
                 (Math.abs(velocityX) / velocityHypotenuse) *
-                Math.pow(elapsedTime, 2));
+                Math.pow(this.#elapsedTime, 2));
           this.#scrollContainer.scrollLeft = nextScrollX;
         }
 
         if (this.#yAxisIsScrollable) {
           const nextScrollY =
             this.#scrollStartingPointY +
-            (-velocityY * elapsedTime +
+            (-velocityY * this.#elapsedTime +
               Math.sign(velocityY) *
                 0.5 *
                 deceleration *
                 (Math.abs(velocityY) / velocityHypotenuse) *
-                Math.pow(elapsedTime, 2));
+                Math.pow(this.#elapsedTime, 2));
           this.#scrollContainer.scrollTop = nextScrollY;
         }
 
@@ -10160,8 +10147,7 @@ onSmoothScrollStop,
               { velocityX: velocityX, velocityY: velocityY },
               false,
               deceleration,
-              currentTime,
-              resolve
+              currentTime
             );
           });
         } else if (
@@ -10170,13 +10156,8 @@ onSmoothScrollStop,
           reachedEdgeOfOneDimensionalScroller ||
           reachedVertexOfTwoDimensionalScroller
         ) {
-          if (this.#onMomentumScrollStop) {
-            const eventData = getEventData.call(this);
-            eventData.xFinal = this.#scrollContainer.scrollLeft;
-            eventData.yFinal = this.#scrollContainer.scrollTop;
-            this.#onMomentumScrollStop.call(this, eventData);
-          }
-          this.abortPriorScrolls();
+          const resolveData = getEventData.call(this);
+
           this.#isCurrentlyScrolling = false;
           this.#scrollVelocityMultiplierX = 1;
           this.#scrollVelocityMultiplierY = 1;
@@ -10185,13 +10166,8 @@ onSmoothScrollStop,
           this.#scrollDirectionPreviousX = null;
           this.#scrollDirectionPreviousY = null;
           this.#scrollTimestampPrevious = null;
-          return resolve({
-            aborted: false,
-            elapsedTime: elapsedTime,
-            x: this.#scrollContainer.scrollLeft,
-            y: this.#scrollContainer.scrollTop,
-            scrollContainer: this.#scrollContainer,
-          });
+
+          return this.abortPriorScrolls(resolveData);
         }
       }
 
@@ -10205,13 +10181,21 @@ onSmoothScrollStop,
 
       #abortionTimestamp;
 
-      abortPriorScrolls() {
+      abortPriorScrolls(resolveData) {
+        if (this.#resolve) this.#resolve(resolveData);
+
+        if (this.#onMomentumScrollStop) {
+          this.#onMomentumScrollStop.call(this, resolveData);
+        }
+
         this.#abortionTimestamp = Date.now();
         cancelAnimationFrame(this.#scrollRafId);
         this.#startTime = null;
         this.#scrollStartingPointX = null;
         this.#scrollStartingPointY = null;
         this.#scrollDuration = null;
+        this.#elapsedTime = null;
+        this.#resolve = null;
       }
     }
 
@@ -10258,19 +10242,12 @@ onSmoothScrollStop,
                 .querySelectorAll("[data-label]");
               dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
             },
-
-            onMomentumScrollPointerUp: (event) => {
-              if (
-                event.momentumScroller.isActive &&
-                !event.meetsMomentumScrollCriteria
-              ) {
-                enableOrDisableDemoMomentumScrollerSelectors("enable");
-              }
-            },
             onMomentumScrollStart: () =>
               enableOrDisableDemoMomentumScrollerSelectors("disable"),
             onMomentumScrollStop: (event) => {
-              if (
+              if (event.momentumScroller.isActive && !event.elapsedTime) {
+                enableOrDisableDemoMomentumScrollerSelectors("enable");
+              } else if (
                 event.momentumScroller.isActive &&
                 !event.momentumScroller.pointerIsDown
               ) {
@@ -11159,7 +11136,15 @@ onSmoothScrollStop,
 
       function playInvalidFlashAnimation() {
         flashAnimation(input, [
-          ["backgroundColor", "hsl(0, 0%, 30%)", "hsl(0, 16%, 32%)"],
+          [
+            "backgroundColor",
+            appearanceSwitcher.currentAppearance == "dark"
+              ? "hsl(0, 0%, 30%)"
+              : "hsl(0, 0%, 90%)",
+            appearanceSwitcher.currentAppearance == "dark"
+              ? "hsl(0, 15%, 30%)"
+              : "hsl(0, 45%, 90%)",
+          ],
           ["transform", "scale(1)", "scale(1.2)"],
         ]);
       }
@@ -11308,7 +11293,7 @@ onSmoothScrollStop,
       const key = event.key;
       const target = event.target;
 
-      if (key == " " && target.nodeName != "TEXTAREA") {
+      if (key == " " && !target.matches("textarea")) {
         event.preventDefault();
       }
     });
