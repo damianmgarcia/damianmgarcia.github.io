@@ -73,8 +73,15 @@
       type="font/woff2"
       crossorigin
     />
-    <link id="favicon" rel="icon" href="charm-logo-with-background.svg" />
-    <link rel="apple-touch-icon" href="charm-logo-square-background-180.png" />
+    <link
+      id="favicon"
+      rel="icon"
+      href="/images/charm-logo-with-background.svg"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="/images/charm-logo-square-background-180.png"
+    />
     <title>Damian M. Garcia - Talent You Can Verify.</title>
     <style>
       @font-face {
@@ -196,6 +203,11 @@
         transition: var(--code-transitions);
         white-space: pre-line;
         width: max-content;
+      }
+
+      img {
+        height: auto;
+        max-width: 100%;
       }
 
       .light-italic {
@@ -387,8 +399,7 @@
       }
 
       #smooth-scroller-demo-content {
-        background: url("/images/the-scream-contrasty-low-res.jpg") border-box
-          space repeat;
+        background: url("/images/the-scream-small.jpg") border-box space repeat;
         border: calc(750px / 34 * 0.5) hsl(0, 100%, 50%) solid;
         border-radius: calc(750px / 34 * 1);
         height: 10000px;
@@ -429,7 +440,7 @@
 
       #momentum-scroller-demo-container[data-scroller-type="horizontal-and-vertical"]
         #momentum-scroller-demo-content {
-        background: url("/images/the-yowl-low-res.jpg") border-box space;
+        background: url("/images/the-yowl-small.jpg") border-box space;
         border: calc(750px / 34 * 0.5) hsl(0, 100%, 50%) solid;
         height: 10000px;
         width: 10000px;
@@ -4627,14 +4638,24 @@
                 data-id-to-scroll-to="#project-portfolio"
                 id="project-selector-portfolio"
               >
-                <img src="/charm-logo-with-background.svg" />
+                <img
+                  alt="Portfolio website logo featuring Charm, a black cat with yellow eyes, and the letters 'dmg' above his head"
+                  height="40"
+                  src="/images/charm-logo-with-background.svg"
+                  width="40"
+                />
               </div>
               <div
                 class="selector-item"
                 data-id-to-scroll-to="#project-charms-jobs"
                 id="project-selector-charms-jobs"
               >
-                <img src="/images/charms-jobs-icon.png" />
+                <img
+                  alt="Charm's Jobs website logo featuring Charm, a black cat with yellow eyes and a confident smile"
+                  height="40"
+                  src="/images/charms-jobs-logo.svg"
+                  width="40"
+                />
               </div>
             </span>
           </div>
