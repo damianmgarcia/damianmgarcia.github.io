@@ -8646,7 +8646,7 @@ onSmoothScrollStop,
                         .getBoundingClientRect().top -
                         main.getBoundingClientRect().top +
                         main.scrollTop +
-                        1
+                        5 // To account for small differences in UA calculations
                     )
                   : 0;
               }
