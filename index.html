@@ -7886,9 +7886,8 @@ onSmoothScrollStop,
               abortedBy: "Pointer down on scroll container",
             });
           if (this.#onSmoothScrollPointerDown)
-            this.#onSmoothScrollPointerDown.call(
-              this,
-              this.getEventData.call(this, {
+            this.#onSmoothScrollPointerDown(
+              this.getEventData({
                 eventType: "onSmoothScrollPointerDown",
               })
             );
@@ -7897,9 +7896,8 @@ onSmoothScrollStop,
         this.#scrollContainer.addEventListener("pointerup", (event) => {
           SmoothScroller.pointerIsDown = false;
           if (this.#onSmoothScrollPointerUp)
-            this.#onSmoothScrollPointerUp.call(
-              this,
-              this.getEventData.call(this, {
+            this.#onSmoothScrollPointerUp(
+              this.getEventData({
                 eventType: "onSmoothScrollPointerUp",
               })
             );
@@ -7908,9 +7906,8 @@ onSmoothScrollStop,
         this.#scrollContainer.addEventListener("pointercancel", (event) => {
           SmoothScroller.pointerIsDown = false;
           if (this.#onSmoothScrollPointerUp)
-            this.#onSmoothScrollPointerUp.call(
-              this,
-              this.getEventData.call(this, {
+            this.#onSmoothScrollPointerUp(
+              this.getEventData({
                 eventType: "onSmoothScrollPointerUp",
               })
             );
@@ -8049,9 +8046,8 @@ onSmoothScrollStop,
         if (!this.#startTime) {
           this.#startTime = currentTime;
           if (this.#onSmoothScrollStart)
-            this.#onSmoothScrollStart.call(
-              this,
-              this.getEventData.call(this, { eventType: "onSmoothScrollStart" })
+            this.#onSmoothScrollStart(
+              this.getEventData({ eventType: "onSmoothScrollStart" })
             );
         }
 
@@ -8076,9 +8072,8 @@ onSmoothScrollStop,
         }
 
         if (this.#onSmoothScroll)
-          this.#onSmoothScroll.call(
-            this,
-            this.getEventData.call(this, { eventType: "onSmoothScroll" })
+          this.#onSmoothScroll(
+            this.getEventData({ eventType: "onSmoothScroll" })
           );
 
         if (elapsedTimeRatio < 1) {
@@ -8104,10 +8099,8 @@ onSmoothScrollStop,
         if (this.#resolve) this.#resolve(this.getEventData(extraData));
 
         if (this.#onSmoothScrollStop)
-          this.#onSmoothScrollStop.call(
-            this,
-            this.getEventData.call(
-              this,
+          this.#onSmoothScrollStop(
+            this.getEventData(
               Object.assign(extraData, { eventType: "onSmoothScrollStop" })
             )
           );
@@ -9595,17 +9588,15 @@ onSmoothScrollStop,
           throw Error("Container is not scrollable");
 
         if (this.#onMomentumScrollActivation)
-          this.#onMomentumScrollActivation.call(
-            this,
-            this.getEventData.call(this, {
+          this.#onMomentumScrollActivation(
+            this.getEventData({
               eventType: "onMomentumScrollActivation",
             })
           );
 
         if (this.#initialActivation && this.#onMomentumScrollInitialActivation)
-          this.#onMomentumScrollInitialActivation.call(
-            this,
-            this.getEventData.call(this, {
+          this.#onMomentumScrollInitialActivation(
+            this.getEventData({
               eventType: "onMomentumScrollInitialActivation",
             })
           );
@@ -9637,9 +9628,8 @@ onSmoothScrollStop,
 
       deactivate() {
         if (this.#onMomentumScrollDeactivation)
-          this.#onMomentumScrollDeactivation.call(
-            this,
-            this.getEventData.call(this, {
+          this.#onMomentumScrollDeactivation(
+            this.getEventData({
               eventType: "onMomentumScrollDeactivation",
             })
           );
@@ -9709,9 +9699,8 @@ onSmoothScrollStop,
           });
 
         if (this.#onMomentumScrollPointerDown)
-          this.#onMomentumScrollPointerDown.call(
-            this,
-            this.getEventData.call(this, {
+          this.#onMomentumScrollPointerDown(
+            this.getEventData({
               eventType: "onMomentumScrollPointerDown",
             })
           );
@@ -9791,9 +9780,8 @@ onSmoothScrollStop,
           this.pointerDownCompensationY = 0;
 
           if (this.#onMomentumScrollPointerUp)
-            this.#onMomentumScrollPointerUp.call(
-              this,
-              this.getEventData.call(this, {
+            this.#onMomentumScrollPointerUp(
+              this.getEventData({
                 eventType: "onMomentumScrollPointerUp",
               })
             );
@@ -10080,9 +10068,8 @@ onSmoothScrollStop,
         if (!this.#startTime) {
           this.#startTime = currentTime;
           if (this.#onMomentumScrollStart)
-            this.#onMomentumScrollStart.call(
-              this,
-              this.getEventData.call(this, {
+            this.#onMomentumScrollStart(
+              this.getEventData({
                 eventType: "onMomentumScrollStart",
               })
             );
@@ -10127,9 +10114,8 @@ onSmoothScrollStop,
         }
 
         if (this.#onMomentumScroll)
-          this.#onMomentumScroll.call(
-            this,
-            this.getEventData.call(this, { eventType: "onMomentumScroll" })
+          this.#onMomentumScroll(
+            this.getEventData({ eventType: "onMomentumScroll" })
           );
 
         if (
@@ -10181,10 +10167,8 @@ onSmoothScrollStop,
         if (this.#resolve) this.#resolve(this.getEventData(extraData));
 
         if (this.#onMomentumScrollStop) {
-          this.#onMomentumScrollStop.call(
-            this,
-            this.getEventData.call(
-              this,
+          this.#onMomentumScrollStop(
+            this.getEventData(
               Object.assign(extraData, { eventType: "onMomentumScrollStop" })
             )
           );
