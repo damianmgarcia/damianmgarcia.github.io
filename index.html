@@ -4833,8 +4833,20 @@
                 sites. Therefore, for this site, <div> tags are used instead 
                 of <p> tags. -->
               <div class="paragraph">
-                This site is my portfolio. It and Charm's Jobs are my first web
-                projects.
+                This site is my portfolio. It and
+                <div
+                  class="link-container"
+                  data-id-to-scroll-to="#project-charms-jobs"
+                  draggable="false"
+                  id="scroll-to-charms-jobs"
+                >
+                  <span class="link-content"
+                    >Charm's Jobs
+                    <div class="ripple-container">
+                      <div class="ripple"></div></div
+                  ></span>
+                </div>
+                are my first web projects.
               </div>
               <div class="paragraph">
                 Originally, my plan was to create a facsimile of
@@ -6307,6 +6319,22 @@ onSmoothScrollStop,
               </div>
             </div>
             <div class="list">
+              <div class="paragraph">
+                This is Charm's Jobs. It and
+                <div
+                  class="link-container"
+                  data-id-to-scroll-to="#project-portfolio"
+                  draggable="false"
+                  id="scroll-to-portfolio"
+                >
+                  <span class="link-content"
+                    >my portfolio
+                    <div class="ripple-container">
+                      <div class="ripple"></div></div
+                  ></span>
+                </div>
+                are my first web projects.
+              </div>
               <div class="paragraph">
                 The Charm's Jobs app is a progressive web app. It will be the
                 home for the upcoming book series “Charm's Jobs.”
@@ -8950,15 +8978,27 @@ onSmoothScrollStop,
                 await inputEventDelegator.animationLibrary.deripple(target);
 
               if (
-                mayUseDelayedAnchors &&
-                target.href &&
                 targetsMatch &&
                 derippled == "finished" &&
                 !inputEventDelegator.isAlreadyHandlingInput
               ) {
-                if (target.href == location.href) return location.reload();
-
-                open(target.href, target.id, "noreferrer");
+                if (target.href && mayUseDelayedAnchors) {
+                  if (target.href == location.href) return location.reload();
+                  open(target.href, target.id, "noreferrer");
+                } else if (target.dataset.idToScrollTo) {
+                  const main = document.querySelector("main");
+                  const yPositionOfIdToScrollTo = Math.abs(
+                    document
+                      .querySelector(target.dataset.idToScrollTo)
+                      .getBoundingClientRect().top -
+                      main.getBoundingClientRect().top +
+                      main.scrollTop +
+                      5
+                  );
+                  mainSmoothScroller.smoothScrollTo({
+                    y: yPositionOfIdToScrollTo,
+                  });
+                }
               }
             },
           },
