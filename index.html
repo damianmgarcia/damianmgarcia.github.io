@@ -598,18 +598,6 @@
         width: calc(750px / 17 * 2);
       }
 
-      #logo:focus-visible,
-      .selector:focus-visible,
-      .button:focus-visible,
-      .link-container:focus-visible,
-      .video-gallery:focus-visible {
-        outline: var(--focus-visible-outline);
-      }
-
-      .button * {
-        pointer-events: none;
-      }
-
       .button-icon {
         grid-column: 1 / 2;
         grid-row: 1 / 2;
@@ -738,7 +726,6 @@
       }
 
       .selector * {
-        pointer-events: none;
         touch-action: none;
         -webkit-user-select: none;
         user-select: none;
@@ -1261,10 +1248,6 @@
         z-index: 1;
       }
 
-      .link-container * {
-        pointer-events: none;
-      }
-
       .link-container .ripple-container {
         border-radius: 0;
         left: 0;
@@ -1292,6 +1275,14 @@
       #logo *,
       .number-input * {
         pointer-events: none;
+      }
+
+      #logo:focus-visible,
+      .selector:focus-visible,
+      .button:focus-visible,
+      .link-container:focus-visible,
+      .video-gallery:focus-visible {
+        outline: var(--focus-visible-outline);
       }
 
       footer {
