@@ -242,6 +242,7 @@
       .video-gallery {
         border-radius: calc(750px / 34 * 1);
         column-gap: calc(750px / 34 * 1);
+        cursor: var(--selector-cursor);
         display: flex;
         flex-direction: row;
         overflow: hidden;
@@ -324,7 +325,7 @@
       }
 
       label {
-        cursor: var(--main-cursor);
+        cursor: var(--cursor-main);
       }
 
       #message-input {
@@ -634,7 +635,7 @@
       #message-submit-button[data-valid-message="false"] {
         background: transparent;
         color: var(--disabled-button-text-color);
-        cursor: var(--main-cursor), default;
+        cursor: var(--cursor-main), default;
       }
 
       .text-button .ripple {
@@ -4830,6 +4831,7 @@
                   data-id-to-scroll-to="#project-charms-jobs"
                   draggable="false"
                   id="scroll-to-charms-jobs"
+                  tabindex="0"
                 >
                   <span class="link-content"
                     >Charm's Jobs
@@ -6333,6 +6335,7 @@ onSmoothScrollStop,
                   data-id-to-scroll-to="#project-portfolio"
                   draggable="false"
                   id="scroll-to-portfolio"
+                  tabindex="0"
                 >
                   <span class="link-content"
                     >my portfolio
@@ -8286,7 +8289,6 @@ onSmoothScrollStop,
 
       #inputDownEvent;
       #handlers;
-      #keyUpAbortController = new AbortController();
       #inputUpAbortController = new AbortController();
 
       delegate(event) {
@@ -8410,38 +8412,32 @@ onSmoothScrollStop,
       }
 
       animationLibrary = {
-        ripple(pointerX, pointerY, elementToRippleOver, duration = 800) {
-          const camelCaseTargetId = convertHyphenCaseToCamelCase(
-            elementToRippleOver.id
-          );
+        ripple(target, { x, y, duration = 800 } = {}) {
+          if (!(target instanceof Element))
+            throw new TypeError("target must be an instance of Element");
+
+          const camelCaseTargetId = convertHyphenCaseToCamelCase(target.id);
 
           this[`rippleAnimationFor${camelCaseTargetId}`]?.cancel();
           this[`derippleAnimationFor${camelCaseTargetId}`]?.cancel();
 
-          const elementToRippleOverRects =
-            elementToRippleOver.getBoundingClientRect();
+          const targetRects = target.getBoundingClientRect();
 
-          const rippleContainer =
-            elementToRippleOver.querySelector(".ripple-container");
+          const rippleContainer = target.querySelector(".ripple-container");
+
+          if (!x || !y) {
+            x = targetRects.left + 0.5 * targetRects.width;
+            y = targetRects.top + 0.5 * targetRects.height;
+          }
 
           const left =
-            pointerX -
-            scrollX -
-            elementToRippleOverRects.left -
-            rippleContainer.offsetLeft;
+            x - scrollX - targetRects.left - rippleContainer.offsetLeft;
 
-          const top =
-            pointerY -
-            scrollY -
-            elementToRippleOverRects.top -
-            rippleContainer.offsetTop;
+          const top = y - scrollY - targetRects.top - rippleContainer.offsetTop;
 
-          const hypotenuse = Math.hypot(
-            elementToRippleOverRects.width,
-            elementToRippleOverRects.height
-          );
+          const hypotenuse = Math.hypot(targetRects.width, targetRects.height);
 
-          const rippleElement = elementToRippleOver.querySelector(".ripple");
+          const rippleElement = target.querySelector(".ripple");
 
           this[`rippleAnimationFor${camelCaseTargetId}`] =
             rippleElement.animate(
@@ -8569,8 +8565,7 @@ onSmoothScrollStop,
         {
           cssSelectors: ".selector",
           handlers: {
-            pointerDownMovementTracker: new AbortController(),
-
+            pointerMoveAbortController: new AbortController(),
             inputDownHandler(event) {
               const target = event.target;
 
@@ -8603,6 +8598,13 @@ onSmoothScrollStop,
 
               if (event.type == "keydown") return;
 
+              document
+                .querySelector(":root")
+                .style.setProperty(
+                  "--selector-cursor",
+                  `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
+                );
+
               target.setPointerCapture(event.pointerId);
 
               let movementY = 0;
@@ -8611,10 +8613,6 @@ onSmoothScrollStop,
               target.addEventListener(
                 "pointermove",
                 (event) => {
-                  const inputIsAnAcceptableInput =
-                    inputEventDelegator.inputIsAnAcceptableInput(event);
-                  if (!inputIsAnAcceptableInput) return;
-
                   movementY = event.screenY - previousScreenY;
 
                   target.scrollTop -=
@@ -8622,13 +8620,13 @@ onSmoothScrollStop,
 
                   previousScreenY = event.screenY;
                 },
-                { signal: this.pointerDownMovementTracker.signal }
+                { signal: this.pointerMoveAbortController.signal }
               );
             },
 
             async inputUpHandler(event, target, targetsMatch) {
-              this.pointerDownMovementTracker.abort();
-              this.pointerDownMovementTracker = new AbortController();
+              this.pointerMoveAbortController.abort();
+              this.pointerMoveAbortController = new AbortController();
 
               document
                 .querySelector(":root")
@@ -8757,11 +8755,9 @@ onSmoothScrollStop,
         {
           cssSelectors: ".video-gallery",
           handlers: {
-            controller: new AbortController(),
-            scrollController: new AbortController(),
-            pointerMoveListenerController: new AbortController(),
-            pointerMoveOutsideOfClickThreshold: null,
-
+            pointerMoveAbortController: new AbortController(),
+            pointerMoveReleasePointerCaptureCriteriaAbortController:
+              new AbortController(),
             inputDownHandler(event) {
               const target = event.target;
 
@@ -8803,21 +8799,14 @@ onSmoothScrollStop,
                 document.addEventListener(
                   "pointermove",
                   (event) => {
-                    const inputIsAnAcceptableInput =
-                      inputEventDelegator.inputIsAnAcceptableInput(event);
-                    if (!inputIsAnAcceptableInput) return;
-
-                    mainMomentumScroller.pointerDownCompensationY = -(
-                      pointerDownY - event.y
-                    );
                     const maintainPointerControlCriteriaMet =
                       Math.abs(pointerDownX - event.x) > 10;
                     const relinquishPointerControlToMomentumScroller =
                       Math.abs(pointerDownY - event.y) > 10;
 
                     if (maintainPointerControlCriteriaMet) {
-                      this.pointerMoveListenerController.abort();
-                      this.pointerMoveListenerController =
+                      this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
+                      this.pointerMoveReleasePointerCaptureCriteriaAbortController =
                         new AbortController();
                     } else if (relinquishPointerControlToMomentumScroller) {
                       const pointerCancelEvent = new PointerEvent(
@@ -8825,12 +8814,17 @@ onSmoothScrollStop,
                       );
                       target.dispatchEvent(pointerCancelEvent);
                       inputEventDelegator.forceInputUpHandler(event);
-                      this.pointerMoveListenerController.abort();
-                      this.pointerMoveListenerController =
+                      this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
+                      this.pointerMoveReleasePointerCaptureCriteriaAbortController =
                         new AbortController();
                     }
                   },
-                  { signal: this.pointerMoveListenerController.signal }
+                  {
+                    signal:
+                      this
+                        .pointerMoveReleasePointerCaptureCriteriaAbortController
+                        .signal,
+                  }
                 );
               }
 
@@ -8840,10 +8834,6 @@ onSmoothScrollStop,
               target.addEventListener(
                 "pointermove",
                 (event) => {
-                  const inputIsAnAcceptableInput =
-                    inputEventDelegator.inputIsAnAcceptableInput(event);
-                  if (!inputIsAnAcceptableInput) return;
-
                   movementX = event.screenX - previousScreenX;
 
                   target.scrollLeft -=
@@ -8851,18 +8841,19 @@ onSmoothScrollStop,
 
                   previousScreenX = event.screenX;
                 },
-                { signal: this.controller.signal }
+                { signal: this.pointerMoveAbortController.signal }
               );
             },
 
             async inputUpHandler(event, target, targetsMatch) {
               if (mayUseMomentumScroller) mainMomentumScroller.unpause();
 
-              this.pointerMoveListenerController.abort();
-              this.pointerMoveListenerController = new AbortController();
+              this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
+              this.pointerMoveReleasePointerCaptureCriteriaAbortController =
+                new AbortController();
 
-              this.controller.abort();
-              this.controller = new AbortController();
+              this.pointerMoveAbortController.abort();
+              this.pointerMoveAbortController = new AbortController();
 
               document
                 .querySelector(":root")
@@ -8911,7 +8902,8 @@ onSmoothScrollStop,
         {
           cssSelectors: ".link-container",
           handlers: {
-            pointerMoveListenerController: new AbortController(),
+            pointerMoveReleasePointerCaptureCriteriaAbortController:
+              new AbortController(),
             inputDownHandler(event) {
               const target = event.target;
 
@@ -8926,25 +8918,17 @@ onSmoothScrollStop,
               );
 
               if (event.type == "pointerdown") {
-                inputEventDelegator.animationLibrary.ripple(
-                  event.pageX,
-                  event.pageY,
-                  target
-                );
+                inputEventDelegator.animationLibrary.ripple(target, {
+                  x: event.pageX,
+                  y: event.pageY,
+                });
               } else if (event.type == "keydown") {
                 if (!mayUseDelayedAnchors && target.closest("a"))
                   return (inputEventDelegator.#isAlreadyHandlingInput = false);
 
                 const pointerDownTargetRects = target.getBoundingClientRect();
 
-                inputEventDelegator.animationLibrary.ripple(
-                  pointerDownTargetRects.left +
-                    0.5 * pointerDownTargetRects.width,
-                  pointerDownTargetRects.top +
-                    0.5 * pointerDownTargetRects.height,
-                  target,
-                  800
-                );
+                inputEventDelegator.animationLibrary.ripple(target);
               }
 
               if (
@@ -8958,14 +8942,6 @@ onSmoothScrollStop,
                 document.addEventListener(
                   "pointermove",
                   (event) => {
-                    const inputIsAnAcceptableInput =
-                      inputEventDelegator.inputIsAnAcceptableInput(event);
-                    if (!inputIsAnAcceptableInput) return;
-
-                    mainMomentumScroller.pointerDownCompensationY = -(
-                      pointerDownY - event.y
-                    );
-
                     const relinquishPointerControlToMomentumScroller =
                       Math.abs(pointerDownX - event.x) > 10 ||
                       Math.abs(pointerDownY - event.y) > 10;
@@ -8975,12 +8951,17 @@ onSmoothScrollStop,
                       if (mayUseMomentumScroller)
                         mainMomentumScroller.unpause();
 
-                      this.pointerMoveListenerController.abort();
-                      this.pointerMoveListenerController =
+                      this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
+                      this.pointerMoveReleasePointerCaptureCriteriaAbortController =
                         new AbortController();
                     }
                   },
-                  { signal: this.pointerMoveListenerController.signal }
+                  {
+                    signal:
+                      this
+                        .pointerMoveReleasePointerCaptureCriteriaAbortController
+                        .signal,
+                  }
                 );
               }
             },
@@ -8988,8 +8969,9 @@ onSmoothScrollStop,
             async inputUpHandler(event, target, targetsMatch) {
               if (mayUseMomentumScroller) mainMomentumScroller.unpause();
 
-              this.pointerMoveListenerController.abort();
-              this.pointerMoveListenerController = new AbortController();
+              this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
+              this.pointerMoveReleasePointerCaptureCriteriaAbortController =
+                new AbortController();
 
               inputEventDelegator.animationLibrary.deflashUnderline(
                 target.querySelector(".link-content"),
@@ -9028,7 +9010,8 @@ onSmoothScrollStop,
         {
           cssSelectors: ".button",
           handlers: {
-            pointerMoveListenerController: new AbortController(),
+            pointerMoveReleasePointerCaptureCriteriaAbortController:
+              new AbortController(),
             async inputDownHandler(event) {
               const target = event.target;
 
@@ -9052,10 +9035,6 @@ onSmoothScrollStop,
                         inputEventDelegator.inputIsAnAcceptableInput(event);
                       if (!inputIsAnAcceptableInput) return;
 
-                      mainMomentumScroller.pointerDownCompensationY = -(
-                        pointerDownY - event.y
-                      );
-
                       const relinquishPointerControlToMomentumScroller =
                         Math.abs(pointerDownX - event.x) > 10 ||
                         Math.abs(pointerDownY - event.y) > 10;
@@ -9065,12 +9044,17 @@ onSmoothScrollStop,
                         if (mayUseMomentumScroller)
                           mainMomentumScroller.unpause();
 
-                        this.pointerMoveListenerController.abort();
-                        this.pointerMoveListenerController =
+                        this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
+                        this.pointerMoveReleasePointerCaptureCriteriaAbortController =
                           new AbortController();
                       }
                     },
-                    { signal: this.pointerMoveListenerController.signal }
+                    {
+                      signal:
+                        this
+                          .pointerMoveReleasePointerCaptureCriteriaAbortController
+                          .signal,
+                    }
                   );
                 }
               }
@@ -9100,25 +9084,17 @@ onSmoothScrollStop,
                   !target.dataset.toggleButtonState)
               ) {
                 if (event.type == "pointerdown") {
-                  inputEventDelegator.animationLibrary.ripple(
-                    event.pageX,
-                    event.pageY,
-                    target
-                  );
+                  inputEventDelegator.animationLibrary.ripple(target, {
+                    x: event.pageX,
+                    y: event.pageY,
+                  });
                 } else if (event.type == "keydown") {
                   if (!mayUseDelayedAnchors && target.closest("a"))
                     return (inputEventDelegator.#isAlreadyHandlingInput = false);
 
                   const pointerDownTargetRects = target.getBoundingClientRect();
 
-                  inputEventDelegator.animationLibrary.ripple(
-                    pointerDownTargetRects.left +
-                      0.5 * pointerDownTargetRects.width,
-                    pointerDownTargetRects.top +
-                      0.5 * pointerDownTargetRects.height,
-                    target,
-                    800
-                  );
+                  inputEventDelegator.animationLibrary.ripple(target);
                 }
               } else if (
                 target.dataset.rippleAnimate == "true" &&
@@ -9138,8 +9114,9 @@ onSmoothScrollStop,
               if (target.closest("main")) {
                 if (mayUseMomentumScroller) mainMomentumScroller.unpause();
 
-                this.pointerMoveListenerController.abort();
-                this.pointerMoveListenerController = new AbortController();
+                this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
+                this.pointerMoveReleasePointerCaptureCriteriaAbortController =
+                  new AbortController();
               }
 
               if (
@@ -9348,14 +9325,7 @@ onSmoothScrollStop,
               ) {
                 const pointerDownTargetRects = target.getBoundingClientRect();
 
-                inputEventDelegator.animationLibrary.ripple(
-                  pointerDownTargetRects.left +
-                    0.5 * pointerDownTargetRects.width,
-                  pointerDownTargetRects.top +
-                    0.5 * pointerDownTargetRects.height,
-                  target,
-                  800
-                );
+                inputEventDelegator.animationLibrary.ripple(target);
               } else if (
                 target.dataset.rippleAnimate == "true" &&
                 !target.dataset.toggleButtonState
@@ -9485,6 +9455,7 @@ onSmoothScrollStop,
 
       #scrollContainer;
       #stopScrollOnPointerDown;
+      #cssSelectorsToPreventDefaultOn;
       #onMomentumScrollInitialActivation;
       #onMomentumScrollActivation;
       #onMomentumScrollDeactivation;
@@ -9498,6 +9469,7 @@ onSmoothScrollStop,
         scrollContainer,
         {
           stopScrollOnPointerDown = true,
+          cssSelectorsToPreventDefaultOn = [],
           onMomentumScrollInitialActivation,
           onMomentumScrollActivation,
           onMomentumScrollDeactivation,
@@ -9509,12 +9481,27 @@ onSmoothScrollStop,
         } = {}
       ) {
         if (!(scrollContainer instanceof Element))
-          throw new TypeError("scrollContainer must be an element");
+          throw new TypeError("scrollContainer must be an instance of Element");
 
         if (typeof stopScrollOnPointerDown != "boolean")
           throw new TypeError(
             "stopScrollOnPointerDown must be of type boolean"
           );
+
+        if (Array.isArray(cssSelectorsToPreventDefaultOn)) {
+          if (
+            cssSelectorsToPreventDefaultOn.some(
+              (cssSelector) => typeof cssSelector != "string"
+            )
+          )
+            throw new TypeError(
+              "cssSelectorsToPreventDefaultOn must all be of type string"
+            );
+        } else if (!Array.isArray(cssSelectorsToPreventDefaultOn)) {
+          throw new TypeError(
+            "cssSelectorsToPreventDefaultOn must be of type array"
+          );
+        }
 
         if (
           (onMomentumScrollInitialActivation &&
@@ -9536,6 +9523,7 @@ onSmoothScrollStop,
 
         this.#scrollContainer = scrollContainer;
         this.#stopScrollOnPointerDown = stopScrollOnPointerDown;
+        this.#cssSelectorsToPreventDefaultOn = cssSelectorsToPreventDefaultOn;
         this.#onMomentumScrollInitialActivation =
           onMomentumScrollInitialActivation;
         this.#onMomentumScrollActivation = onMomentumScrollActivation;
@@ -9546,41 +9534,11 @@ onSmoothScrollStop,
         this.#onMomentumScroll = onMomentumScroll;
         this.#onMomentumScrollStop = onMomentumScrollStop;
 
-        const momentumScrollerPreference = localStorage.getItem(
-          "momentumScrollerPreference"
-        );
-        if (!momentumScrollerPreference || momentumScrollerPreference == "on") {
-          if (!document.querySelector("#touch-app-button")) {
-            createTouchAppButton("on");
-
-            const touchAppButtonRects = document
-              .querySelector("#touch-app-button")
-              .getBoundingClientRect();
-
-            inputEventDelegator.animationLibrary.ripple(
-              touchAppButtonRects.left + 0.5 * touchAppButtonRects.width,
-              touchAppButtonRects.top + 0.5 * touchAppButtonRects.height,
-              document.querySelector("#touch-app-button"),
-              0
-            );
-          }
-
-          this.activate();
-        } else if (momentumScrollerPreference == "off") {
-          if (!document.querySelector("#touch-app-button"))
-            createTouchAppButton("off");
-          this.deactivate();
-        }
-
         MomentumScroller.allMomentumScrollers.push(this);
       }
 
       #active = false;
-      #momentumScrollerAbortController = new AbortController();
-
-      get deceleration() {
-        return this.#deceleration;
-      }
+      #pointerDownAbortController = new AbortController();
 
       getDecelerationOrdinalValueFromOrdinalName(ordinalName) {
         const decelerationDictionary = [
@@ -9624,10 +9582,6 @@ onSmoothScrollStop,
       #yAxisIsScrollable;
       #scrollerType;
 
-      get scrollerType() {
-        return this.#scrollerType;
-      }
-
       activate() {
         if (this.#deceleration == undefined) this.changeDeceleration("medium");
 
@@ -9663,25 +9617,10 @@ onSmoothScrollStop,
             })
           );
 
-        localStorage.setItem("momentumScrollerPreference", "on");
-        document.querySelector("#touch-app-button").dataset.toggleButtonState =
-          "on";
-
-        document
-          .querySelector(":root")
-          .style.setProperty("--user-select", "none");
-
-        document
-          .querySelector(":root")
-          .style.setProperty(
-            "--cursor-main",
-            `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-          );
-
         this.#scrollContainer.addEventListener(
           "pointerdown",
           (event) => this.pointerDownHandler(event),
-          { signal: this.#momentumScrollerAbortController.signal }
+          { signal: this.#pointerDownAbortController.signal }
         );
 
         this.#initialActivation = false;
@@ -9696,18 +9635,8 @@ onSmoothScrollStop,
             })
           );
 
-        localStorage.setItem("momentumScrollerPreference", "off");
-        document.querySelector("#touch-app-button").dataset.toggleButtonState =
-          "off";
-        document
-          .querySelector(":root")
-          .style.setProperty("--user-select", "auto");
-        document
-          .querySelector(":root")
-          .style.setProperty("--cursor-main", "auto");
-
-        this.#momentumScrollerAbortController.abort();
-        this.#momentumScrollerAbortController = new AbortController();
+        this.#pointerDownAbortController.abort();
+        this.#pointerDownAbortController = new AbortController();
         this.#pointerMoveAbortController.abort();
         this.#pointerMoveAbortController = new AbortController();
 
@@ -9736,17 +9665,17 @@ onSmoothScrollStop,
         return this.#pointerIsDown;
       }
 
-      pointerDownCompensationY = 0;
-
       pointerDownHandler(event) {
         if (MomentumScroller.pointerIsDown) return;
 
-        if (
-          event.target.closest("header") ||
-          event.target.matches("textarea") ||
-          event.target.closest(".selector")
-        )
-          return;
+        if (this.#cssSelectorsToPreventDefaultOn) {
+          if (
+            this.#cssSelectorsToPreventDefaultOn.some((cssSelector) =>
+              event.target.closest(cssSelector)
+            )
+          )
+            return;
+        }
 
         const inputIsAnAcceptableInput =
           inputEventDelegator.inputIsAnAcceptableInput(event);
@@ -9767,13 +9696,6 @@ onSmoothScrollStop,
             })
           );
 
-        document
-          .querySelector(":root")
-          .style.setProperty(
-            "--cursor-main",
-            `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-          );
-
         let movementX = 0;
         let previousScreenX = event.screenX; // Safari returns undefined for event.movementX
         let movementY = 0;
@@ -9782,38 +9704,24 @@ onSmoothScrollStop,
         this.#scrollContainer.addEventListener(
           "pointermove",
           (event) => {
-            if (this.#paused) {
-              return (MomentumScroller.pointerIsDown = false);
-            }
-
-            const inputIsAnAcceptableInput =
-              inputEventDelegator.inputIsAnAcceptableInput(event);
-            if (!inputIsAnAcceptableInput)
-              return (MomentumScroller.pointerIsDown = false);
-
-            this.#scrollContainer.addEventListener(
-              "click",
-              (event) => {
-                event.preventDefault();
-              },
-              { once: true }
-            );
-
-            this.#scrollContainer.setPointerCapture(event.pointerId);
+            if (!this.#paused)
+              this.#scrollContainer.setPointerCapture(event.pointerId);
 
             if (this.#xAxisIsScrollable) {
               movementX = event.screenX - previousScreenX;
-              this.#scrollContainer.scrollLeft -= movementX;
               previousScreenX = event.screenX;
             }
 
             if (this.#yAxisIsScrollable) {
-              const compensatedScreenY =
-                event.screenY - this.pointerDownCompensationY;
-              movementY = compensatedScreenY - previousScreenY;
-              this.#scrollContainer.scrollTop -= movementY;
-              previousScreenY = compensatedScreenY;
+              movementY = event.screenY - previousScreenY;
+              previousScreenY = event.screenY;
             }
+
+            if (this.#paused) return;
+            if (this.#xAxisIsScrollable)
+              this.#scrollContainer.scrollLeft -= movementX;
+            if (this.#yAxisIsScrollable)
+              this.#scrollContainer.scrollTop -= movementY;
 
             this.#pointerMoveLog.push([
               event.screenX,
@@ -9839,7 +9747,6 @@ onSmoothScrollStop,
         function pointerUpHandler(event) {
           MomentumScroller.pointerIsDown = false;
           this.#pointerIsDown = false;
-          this.pointerDownCompensationY = 0;
 
           if (this.#onMomentumScrollPointerUp)
             this.#onMomentumScrollPointerUp(
@@ -9850,13 +9757,6 @@ onSmoothScrollStop,
 
           this.#pointerMoveAbortController.abort();
           this.#pointerMoveAbortController = new AbortController();
-
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--cursor-main",
-              `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-            );
 
           if (this.#paused) return;
 
@@ -10286,7 +10186,52 @@ onSmoothScrollStop,
     );
 
     const mainMomentumScroller = mayUseMomentumScroller
-      ? new MomentumScroller(document.querySelector("main"))
+      ? new MomentumScroller(document.querySelector("main"), {
+          cssSelectorsToPreventDefaultOn: ["header", "textarea", ".selector"],
+          onMomentumScrollActivation: () => {
+            localStorage.setItem("momentumScrollerPreference", "on");
+            document.querySelector(
+              "#touch-app-button"
+            ).dataset.toggleButtonState = "on";
+            document
+              .querySelector(":root")
+              .style.setProperty("--user-select", "none");
+            document
+              .querySelector(":root")
+              .style.setProperty(
+                "--cursor-main",
+                `url(${getCursorDataUri("grab")}) 16 9.6, grab`
+              );
+          },
+          onMomentumScrollDeactivation: () => {
+            localStorage.setItem("momentumScrollerPreference", "off");
+            document.querySelector(
+              "#touch-app-button"
+            ).dataset.toggleButtonState = "off";
+            document
+              .querySelector(":root")
+              .style.setProperty("--user-select", "auto");
+            document
+              .querySelector(":root")
+              .style.setProperty("--cursor-main", "auto");
+          },
+          onMomentumScrollPointerDown: () => {
+            document
+              .querySelector(":root")
+              .style.setProperty(
+                "--cursor-main",
+                `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
+              );
+          },
+          onMomentumScrollPointerUp: () => {
+            document
+              .querySelector(":root")
+              .style.setProperty(
+                "--cursor-main",
+                `url(${getCursorDataUri("grab")}) 16 9.6, grab`
+              );
+          },
+        })
       : null;
 
     const demoMomentumScroller = mayUseMomentumScroller
@@ -10314,16 +10259,34 @@ onSmoothScrollStop,
               enableOrDisableDemoMomentumScrollerSelectors("disable");
             },
             onMomentumScrollPointerDown: (event) => {
+              document
+                .querySelector(":root")
+                .style.setProperty(
+                  "--cursor-main",
+                  `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
+                );
               enableOrDisableDemoMomentumScrollerSelectors("disable");
               const dataLabels = event.scrollContainer
                 .closest(".demo-container")
                 .querySelectorAll("[data-label]");
               dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
             },
+            onMomentumScrollPointerUp: () => {
+              document
+                .querySelector(":root")
+                .style.setProperty(
+                  "--cursor-main",
+                  `url(${getCursorDataUri("grab")}) 16 9.6, grab`
+                );
+            },
             onMomentumScrollStart: () =>
               enableOrDisableDemoMomentumScrollerSelectors("disable"),
             onMomentumScrollStop: (event) => {
-              if (event.abortedBy == "No velocity in X and Y direction")
+              if (
+                event.abortedBy == "No velocity in X and Y direction" ||
+                event.abortedBy ==
+                  "Scroll distance < minimum scrollable distance"
+              )
                 return enableOrDisableDemoMomentumScrollerSelectors("enable");
 
               if (
@@ -10366,9 +10329,50 @@ onSmoothScrollStop,
 
     const smoothScrollerDemoMomentumScroller = mayUseMomentumScroller
       ? new MomentumScroller(
-          document.querySelector("#smooth-scroller-demo-container")
+          document.querySelector("#smooth-scroller-demo-container"),
+          {
+            onMomentumScrollPointerDown: () => {
+              document
+                .querySelector(":root")
+                .style.setProperty(
+                  "--cursor-main",
+                  `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
+                );
+            },
+            onMomentumScrollPointerUp: () => {
+              document
+                .querySelector(":root")
+                .style.setProperty(
+                  "--cursor-main",
+                  `url(${getCursorDataUri("grab")}) 16 9.6, grab`
+                );
+            },
+          }
         )
       : null;
+
+    const momentumScrollerPreference = localStorage.getItem(
+      "momentumScrollerPreference"
+    );
+
+    if (
+      mayUseMomentumScroller &&
+      (!momentumScrollerPreference || momentumScrollerPreference == "on")
+    ) {
+      createTouchAppButton("on");
+      inputEventDelegator.animationLibrary.ripple(
+        document.querySelector("#touch-app-button"),
+        { duration: 0 }
+      );
+      MomentumScroller.allMomentumScrollers.forEach((momentumScroller) =>
+        momentumScroller.activate()
+      );
+    } else if (mayUseMomentumScroller && momentumScrollerPreference == "off") {
+      createTouchAppButton("off");
+      MomentumScroller.allMomentumScrollers.forEach((momentumScroller) =>
+        momentumScroller.deactivate()
+      );
+    }
 
     const smoothScrollerDemoSmoothScroller = new SmoothScroller(
       document.querySelector("#smooth-scroller-demo-container"),
@@ -10622,6 +10626,9 @@ onSmoothScrollStop,
         this.#messageText = messageText;
         this.#messageContainer.addEventListener("pointerdown", (event) => {
           if (event.target == this.#messageSoundButton) return;
+          const inputIsAnAcceptableInput =
+            inputEventDelegator.inputIsAnAcceptableInput(event);
+          if (!inputIsAnAcceptableInput) return;
           this.#messageContainer.setPointerCapture(event.pointerId);
           this.#pointerIsDown = true;
           this.#messageContainer
@@ -11171,17 +11178,6 @@ onSmoothScrollStop,
     charmCursorDemo.play({ loop: false });
     outsideMainViewport.observe(charmCursorDemo.container);
     insideMainViewport.observe(charmCursorDemo.container);
-
-    function quadraticEquationSolver(a, b, c) {
-      const discriminant = Math.pow(b, 2) - 4 * a * c;
-
-      const root1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-      const root2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-      return {
-        root1: root1,
-        root2: root2,
-      };
-    }
 
     document.querySelectorAll(".number-input").forEach((input) => {
       let oldValue = +input.value;
