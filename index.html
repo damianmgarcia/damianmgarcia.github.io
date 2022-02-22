@@ -9925,13 +9925,11 @@ onSmoothScrollStop,
               xDistanceBelowMinimum &&
               yDistanceBelowMinimum)
           ) {
+            this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
             return new Promise((resolve) => {
-              this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
-              return new Promise((resolve) => {
-                this.#resolve = resolve;
-                return this.abortPriorScrolls({
-                  abortedBy: "Scroll distance < minimum scrollable distance",
-                });
+              this.#resolve = resolve;
+              return this.abortPriorScrolls({
+                abortedBy: "Scroll distance < minimum scrollable distance",
               });
             });
           }
