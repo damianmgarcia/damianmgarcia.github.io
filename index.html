@@ -8319,11 +8319,11 @@ onSmoothScrollStop,
           handlers.inputDownHandler(event);
         } else if (inputState == "activated") {
           this.#isAlreadyHandlingInput = false;
-          this.#handlers.inputUpHandler(
-            event,
-            this.#inputDownEvent.target,
-            true
-          );
+          this.#handlers.inputUpHandler({
+            event: event,
+            target: this.#inputDownEvent.target,
+            targetsMatch: true,
+          });
           this.reset();
         } else if (inputState == "canceled") {
           const pointerCancelEvent = new PointerEvent("pointercancel", {
@@ -8331,11 +8331,11 @@ onSmoothScrollStop,
           });
           this.#inputDownEvent.target.dispatchEvent(pointerCancelEvent);
 
-          this.#handlers.inputUpHandler(
-            event,
-            this.#inputDownEvent.target,
-            false
-          );
+          this.#handlers.inputUpHandler({
+            event: event,
+            target: this.#inputDownEvent.target,
+            targetsMatch: false,
+          });
           this.reset();
           this.#isAlreadyHandlingInput = false;
         }
@@ -8384,11 +8384,11 @@ onSmoothScrollStop,
 
       forceInputUpHandler(event) {
         if (!this.#handlers) return;
-        this.#handlers.inputUpHandler(
-          event,
-          this.#inputDownEvent.target,
-          false
-        );
+        this.#handlers.inputUpHandler({
+          event: event,
+          target: this.#inputDownEvent.target,
+          targetsMatch: false,
+        });
         this.reset();
       }
 
@@ -8625,7 +8625,7 @@ onSmoothScrollStop,
               );
             },
 
-            async inputUpHandler(event, target, targetsMatch) {
+            async inputUpHandler({ event, target, targetsMatch }) {
               this.pointerMoveAbortController.abort();
               this.pointerMoveAbortController = new AbortController();
 
@@ -8845,7 +8845,7 @@ onSmoothScrollStop,
               );
             },
 
-            async inputUpHandler(event, target, targetsMatch) {
+            async inputUpHandler({ event, target, targetsMatch }) {
               if (mayUseMomentumScroller) mainMomentumScroller.unpause();
 
               this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
