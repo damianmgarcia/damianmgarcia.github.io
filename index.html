@@ -2103,7 +2103,7 @@
           } else if (this.month == 11) {
             const daysOfTheMonth = this.getDaysOfTheMonth();
             const thursdaysOfTheMonth = daysOfTheMonth.filter(
-              ({ dayNumber, dayName }) => dayName == "Thursday"
+              ({ dayName }) => dayName == "Thursday"
             );
             const dayNumberOfFourthThursday = thursdaysOfTheMonth[3].dayNumber;
             if (this.day == dayNumberOfFourthThursday) return "thanksgiving";
@@ -2844,8 +2844,6 @@
       <div id="loading-screen-skeleton"></div>
     </div>
     <script>
-      "use strict";
-
       const loadingScreenSkeleton = document.querySelector(
         "#loading-screen-skeleton"
       );
@@ -7634,7 +7632,7 @@ onSmoothScrollStop,
           [videoIndex].style.setProperty("width", `calc(${percentProgress}%)`);
       });
 
-      video.addEventListener("play", (event) => {
+      video.addEventListener("play", () => {
         const videoIndex = videos.findIndex(
           (videoInList) => videoInList == video
         );
@@ -7655,7 +7653,7 @@ onSmoothScrollStop,
         });
       });
 
-      video.addEventListener("pause", (event) => {
+      video.addEventListener("pause", () => {
         video.currentTime = 0.1;
         const videoIndex = videos.findIndex(
           (videoInList) => videoInList == video
@@ -7666,7 +7664,7 @@ onSmoothScrollStop,
           [videoIndex].style.setProperty("width", "calc(750px / 17 / 6)");
       });
 
-      video.addEventListener("ended", async (event) => {
+      video.addEventListener("ended", async () => {
         insideMainViewport.unobserve(video);
 
         const videoIndex = videos.findIndex(
@@ -7696,10 +7694,10 @@ onSmoothScrollStop,
           } catch (error) {
             console.log(error);
           }
-          const scrollPromise =
-            videoGalleryObserver.smoothScroller.smoothScrollTo({
-              x: nextVideoPosition,
-            });
+
+          videoGalleryObserver.smoothScroller.smoothScrollTo({
+            x: nextVideoPosition,
+          });
         }
       });
     });
@@ -7947,7 +7945,7 @@ onSmoothScrollStop,
             );
         });
 
-        this.#scrollContainer.addEventListener("pointerup", (event) => {
+        this.#scrollContainer.addEventListener("pointerup", () => {
           SmoothScroller.pointerIsDown = false;
           if (this.#onSmoothScrollPointerUp)
             this.#onSmoothScrollPointerUp(
@@ -7957,7 +7955,7 @@ onSmoothScrollStop,
             );
         });
 
-        this.#scrollContainer.addEventListener("pointercancel", (event) => {
+        this.#scrollContainer.addEventListener("pointercancel", () => {
           SmoothScroller.pointerIsDown = false;
           if (this.#onSmoothScrollPointerUp)
             this.#onSmoothScrollPointerUp(
@@ -8725,7 +8723,7 @@ onSmoothScrollStop,
                       y: matchingMainScrollTop,
                     })
                   : null;
-                const endingAnimations = await Promise.all([
+                await Promise.all([
                   smoothScrollerPromise,
                   mainSmoothScrollerPromise,
                 ]);
@@ -8927,8 +8925,6 @@ onSmoothScrollStop,
                 if (!mayUseDelayedAnchors && target.closest("a"))
                   return (inputEventDelegator.#isAlreadyHandlingInput = false);
 
-                const pointerDownTargetRects = target.getBoundingClientRect();
-
                 inputEventDelegator.animationLibrary.ripple(target);
               }
 
@@ -8967,7 +8963,7 @@ onSmoothScrollStop,
               }
             },
 
-            async inputUpHandler(event, target, targetsMatch) {
+            async inputUpHandler({ target, targetsMatch }) {
               if (mayUseMomentumScroller) mainMomentumScroller.unpause();
 
               this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
@@ -9093,8 +9089,6 @@ onSmoothScrollStop,
                   if (!mayUseDelayedAnchors && target.closest("a"))
                     return (inputEventDelegator.#isAlreadyHandlingInput = false);
 
-                  const pointerDownTargetRects = target.getBoundingClientRect();
-
                   inputEventDelegator.animationLibrary.ripple(target);
                 }
               } else if (
@@ -9105,7 +9099,7 @@ onSmoothScrollStop,
               }
             },
 
-            async inputUpHandler(event, target, targetsMatch) {
+            async inputUpHandler({ target, targetsMatch }) {
               if (
                 target.matches("#message-submit-button") &&
                 target.dataset.validMessage == "false"
@@ -9246,19 +9240,12 @@ onSmoothScrollStop,
               ) {
                 const demoContainer = target.closest(".demo-container");
 
-                const smoothScrollerContainerRects = document
-                  .querySelector("#smooth-scroller-demo-container")
-                  .getBoundingClientRect();
-                const smoothScrollerContentRects = document
-                  .querySelector("#smooth-scroller-demo-content")
-                  .getBoundingClientRect();
-
                 const maxScrollWidth = Math.floor(
-                  smoothScrollerContentRects.width -
+                  smoothScrollerDemoContentRects.width -
                     smoothScrollerDemoContainerRects.width
                 );
                 const maxScrollHeight = Math.floor(
-                  smoothScrollerContentRects.height -
+                  smoothScrollerDemoContentRects.height -
                     smoothScrollerDemoContainerRects.height
                 );
 
@@ -9324,8 +9311,6 @@ onSmoothScrollStop,
                 target.dataset.rippleAnimate == "true" &&
                 target.dataset.toggleButtonState == "on"
               ) {
-                const pointerDownTargetRects = target.getBoundingClientRect();
-
                 inputEventDelegator.animationLibrary.ripple(target);
               } else if (
                 target.dataset.rippleAnimate == "true" &&
@@ -9365,7 +9350,7 @@ onSmoothScrollStop,
             },
 
             previousMessageIsDone: true,
-            async inputUpHandler(event, target, targetsMatch) {
+            async inputUpHandler({ targetsMatch }) {
               kittehBlinkAnimation.pointerIsDown = false;
 
               kittehAppointerAndThemer.appointedKittehElement
@@ -9393,7 +9378,7 @@ onSmoothScrollStop,
                 event.target.releasePointerCapture(event.pointerId);
             },
 
-            async inputUpHandler(event, target, targetsMatch) {
+            async inputUpHandler({ target, targetsMatch }) {
               target.style.removeProperty("filter");
 
               if (!targetsMatch) return;
@@ -9422,7 +9407,6 @@ onSmoothScrollStop,
                 console.log(error);
               }
 
-              const scrollPromise =
                 videoGalleryObserver.smoothScroller.smoothScrollTo({
                   x: correspondingVideo.offsetLeft,
                 });
@@ -9538,8 +9522,13 @@ onSmoothScrollStop,
         MomentumScroller.allMomentumScrollers.push(this);
       }
 
-      #active = false;
-      #pointerDownAbortController = new AbortController();
+      #deceleration;
+
+      changeDeceleration(ordinalName) {
+        this.#deceleration =
+          this.getDecelerationOrdinalValueFromOrdinalName(ordinalName) ??
+          this.#deceleration;
+      }
 
       getDecelerationOrdinalValueFromOrdinalName(ordinalName) {
         const decelerationDictionary = [
@@ -9571,14 +9560,14 @@ onSmoothScrollStop,
         if (decelerationMatch) return decelerationMatch.ordinalValue;
       }
 
-      changeDeceleration(ordinalName) {
-        this.#deceleration =
-          this.getDecelerationOrdinalValueFromOrdinalName(ordinalName) ??
-          this.#deceleration;
+      #active = false;
+
+      get isActive() {
+        return this.#active;
       }
 
       #initialActivation = true;
-      #deceleration;
+      #pointerDownAbortController = new AbortController();
       #xAxisIsScrollable;
       #yAxisIsScrollable;
       #scrollerType;
@@ -9638,14 +9627,10 @@ onSmoothScrollStop,
 
         this.#pointerDownAbortController.abort();
         this.#pointerDownAbortController = new AbortController();
-        this.#pointerMoveAbortController.abort();
-        this.#pointerMoveAbortController = new AbortController();
+        this.#pointerMoveUpCancelAbortController.abort();
+        this.#pointerMoveUpCancelAbortController = new AbortController();
 
         this.#active = false;
-      }
-
-      get isActive() {
-        return this.#active;
       }
 
       #paused = false;
@@ -9658,7 +9643,7 @@ onSmoothScrollStop,
         this.#paused = false;
       }
 
-      #pointerMoveAbortController = new AbortController();
+      #pointerMoveUpCancelAbortController = new AbortController();
       #pointerMoveLog = [];
       #pointerIsDown;
 
@@ -9730,86 +9715,92 @@ onSmoothScrollStop,
               event.timeStamp,
             ]);
           },
-          { signal: this.#pointerMoveAbortController.signal }
+          { signal: this.#pointerMoveUpCancelAbortController.signal }
         );
 
         this.#scrollContainer.addEventListener(
           "pointerup",
-          pointerUpHandler.bind(this),
-          { once: true, signal: this.#pointerMoveAbortController.signal }
+          (event) => this.pointerUpHandler(event),
+          {
+            once: true,
+            signal: this.#pointerMoveUpCancelAbortController.signal,
+          }
         );
 
         this.#scrollContainer.addEventListener(
           "pointercancel",
-          pointerUpHandler.bind(this),
-          { once: true, signal: this.#pointerMoveAbortController.signal }
+          (event) => this.pointerUpHandler(event),
+          {
+            once: true,
+            signal: this.#pointerMoveUpCancelAbortController.signal,
+          }
         );
+      }
 
-        function pointerUpHandler(event) {
-          MomentumScroller.pointerIsDown = false;
-          this.#pointerIsDown = false;
+      pointerUpHandler(event) {
+        MomentumScroller.pointerIsDown = false;
+        this.#pointerIsDown = false;
 
-          if (this.#onMomentumScrollPointerUp)
-            this.#onMomentumScrollPointerUp(
-              this.getEventData({
-                eventType: "onMomentumScrollPointerUp",
-              })
-            );
+        if (this.#onMomentumScrollPointerUp)
+          this.#onMomentumScrollPointerUp(
+            this.getEventData({
+              eventType: "onMomentumScrollPointerUp",
+            })
+          );
 
-          this.#pointerMoveAbortController.abort();
-          this.#pointerMoveAbortController = new AbortController();
+        this.#pointerMoveUpCancelAbortController.abort();
+        this.#pointerMoveUpCancelAbortController = new AbortController();
 
-          if (this.#paused) return;
+        if (this.#paused) return;
 
-          const endTime = event.timeStamp;
+        const endTime = event.timeStamp;
 
-          const meetsMomentumScrollCriteria =
-            this.#pointerMoveLog.length > 0 &&
-            endTime - this.#pointerMoveLog[this.#pointerMoveLog.length - 1][2] <
-              100;
+        const meetsMomentumScrollCriteria =
+          this.#pointerMoveLog.length > 0 &&
+          endTime - this.#pointerMoveLog[this.#pointerMoveLog.length - 1][2] <
+            100;
 
-          let endPositionX;
-          let velocityX = 0;
-          if (this.#xAxisIsScrollable) {
-            endPositionX = event.screenX;
-            velocityX = getVelocity(this.#pointerMoveLog, 0, endPositionX);
-          }
-
-          let endPositionY;
-          let velocityY = 0;
-          if (this.#yAxisIsScrollable) {
-            endPositionY = event.screenY;
-            velocityY = getVelocity(this.#pointerMoveLog, 1, endPositionY);
-          }
-
-          function getVelocity(movementLog, axisIndex, endPosition) {
-            if (!meetsMomentumScrollCriteria) return 0;
-
-            for (let i = 1; i < 5; i++) {
-              if (movementLog.length < i) return 0;
-
-              const startPosition =
-                movementLog[movementLog.length - i][axisIndex];
-              const startTime = movementLog[movementLog.length - i][2];
-
-              const positionChange = endPosition - startPosition;
-              const timeChange = endTime - startTime;
-
-              if (positionChange && timeChange) {
-                return positionChange / timeChange;
-              }
-            }
-
-            return 0;
-          }
-
-          this.momentumScroll({
-            velocityX: velocityX,
-            velocityY: velocityY,
-          });
-
-          this.#pointerMoveLog = [];
+        let endPositionX;
+        let velocityX = 0;
+        if (this.#xAxisIsScrollable) {
+          endPositionX = event.screenX;
+          velocityX = getVelocity(this.#pointerMoveLog, 0, endPositionX);
         }
+
+        let endPositionY;
+        let velocityY = 0;
+        if (this.#yAxisIsScrollable) {
+          endPositionY = event.screenY;
+          velocityY = getVelocity(this.#pointerMoveLog, 1, endPositionY);
+        }
+
+        function getVelocity(movementLog, axisIndex, endPosition) {
+          if (!meetsMomentumScrollCriteria) return 0;
+
+          for (let i = 1; i < 5; i++) {
+            if (movementLog.length < i) return 0;
+
+            const startPosition =
+              movementLog[movementLog.length - i][axisIndex];
+            const startTime = movementLog[movementLog.length - i][2];
+
+            const positionChange = endPosition - startPosition;
+            const timeChange = endTime - startTime;
+
+            if (positionChange && timeChange) {
+              return positionChange / timeChange;
+            }
+          }
+
+          return 0;
+        }
+
+        this.momentumScroll({
+          velocityX: velocityX,
+          velocityY: velocityY,
+        });
+
+        this.#pointerMoveLog = [];
       }
 
       #isCurrentlyScrolling = false;
@@ -9825,8 +9816,6 @@ onSmoothScrollStop,
       #scrollDurationPrevious;
       #scrollVelocityMultiplierX = 1;
       #scrollVelocityMultiplierY = 1;
-      #multiplierAdjustedVelocityX = 1;
-      #multiplierAdjustedVelocityY = 1;
       #scrollRafId;
       #scrollStartingPointX;
       #scrollStartingPointY;
@@ -9921,10 +9910,6 @@ onSmoothScrollStop,
             this.#scrollDistance * (Math.abs(velocityX) / velocityHypotenuse);
           const scrollDistanceY =
             this.#scrollDistance * (Math.abs(velocityY) / velocityHypotenuse);
-          const scrollDistanceHypotenuse = Math.hypot(
-            scrollDistanceX,
-            scrollDistanceY
-          );
 
           const minimumScrollableDistance = 1 / devicePixelRatio;
           const xDistanceBelowMinimum =
@@ -10008,9 +9993,6 @@ onSmoothScrollStop,
             velocityX * this.#scrollVelocityMultiplierX;
           const multiplierAdjustedVelocityY =
             velocityY * this.#scrollVelocityMultiplierY;
-
-          this.#multiplierAdjustedVelocityX = multiplierAdjustedVelocityX;
-          this.#multiplierAdjustedVelocityY = multiplierAdjustedVelocityY;
 
           return new Promise((resolve) => {
             this.#resolve = resolve;
@@ -10106,8 +10088,6 @@ onSmoothScrollStop,
           this.#isCurrentlyScrolling = false;
           this.#scrollVelocityMultiplierX = 1;
           this.#scrollVelocityMultiplierY = 1;
-          this.#multiplierAdjustedVelocityX = 1;
-          this.#multiplierAdjustedVelocityY = 1;
           this.#scrollDirectionPreviousX = null;
           this.#scrollDirectionPreviousY = null;
           this.#scrollTimestampPrevious = null;
@@ -10378,7 +10358,7 @@ onSmoothScrollStop,
     const smoothScrollerDemoSmoothScroller = new SmoothScroller(
       document.querySelector("#smooth-scroller-demo-container"),
       {
-        onSmoothScrollStart: (event) => {
+        onSmoothScrollStart: () => {
           if (mayUseMomentumScroller)
             smoothScrollerDemoMomentumScroller.abortPriorScrolls({
               abortedBy: "New smooth scroll",
@@ -10744,9 +10724,6 @@ onSmoothScrollStop,
       }
 
       startProcessingMessageQueueIfNecessary() {
-        const untypedCount = this.#messageLog.filter(
-          (message) => message.status == "untyped"
-        ).length;
         const typingCount = this.#messageLog.filter(
           (message) =>
             message.status == "typing" || message.status == "typing (paused)"
@@ -10829,7 +10806,7 @@ onSmoothScrollStop,
       }
 
       #requestToPauseTyping = false;
-      #requestToCancelMessage = false;
+
       get soundButtonIsActive() {
         return this.#messageSoundButton.dataset.toggleButtonState == "on";
       }
@@ -11183,24 +11160,17 @@ onSmoothScrollStop,
     document.querySelectorAll(".number-input").forEach((input) => {
       let oldValue = +input.value;
 
-      const smoothScrollerContainerRects = document
-        .querySelector("#smooth-scroller-demo-container")
-        .getBoundingClientRect();
-      const smoothScrollerContentRects = document
-        .querySelector("#smooth-scroller-demo-content")
-        .getBoundingClientRect();
-
       const min = 0;
       const max =
         input.dataset.axis == "x"
           ? Math.floor(
-              smoothScrollerContentRects.width -
-                smoothScrollerContainerRects.width
+              smoothScrollerDemoContentRects.width -
+                smoothScrollerDemoContainerRects.width
             )
           : input.dataset.axis == "y"
           ? Math.floor(
-              smoothScrollerContentRects.height -
-                smoothScrollerContainerRects.height
+              smoothScrollerDemoContentRects.height -
+                smoothScrollerDemoContainerRects.height
             )
           : 10000;
 
@@ -11248,11 +11218,11 @@ onSmoothScrollStop,
         };
       }
 
-      input.addEventListener("focusin", (event) => {
+      input.addEventListener("focusin", () => {
         input.select();
       });
 
-      input.addEventListener("focusout", (event) => {
+      input.addEventListener("focusout", () => {
         const validationResult = getValidValue(input.value);
         if (!validationResult.valid) playInvalidFlashAnimation();
         input.value = validationResult.validatedValue;
