@@ -1671,6 +1671,19 @@
       }
 
       class AppearanceSwitcher {
+        constructor() {
+          matchMedia("(prefers-color-scheme: dark)").addEventListener(
+            "change",
+            () => {
+              if (matchMedia("(prefers-color-scheme: dark)").matches) {
+                this.applyAppearance("dark");
+              } else if (!matchMedia("(prefers-color-scheme: dark)").matches) {
+                this.applyAppearance("light");
+              }
+            }
+          );
+        }
+
         #currentAppearance;
 
         get currentAppearance() {
@@ -1802,28 +1815,6 @@
           }
         }
 
-        initialize() {
-          matchMedia("(prefers-color-scheme: dark)").addEventListener(
-            "change",
-            (event) => {
-              this.switchAppearance();
-            }
-          );
-
-          const appearance = localStorage.getItem("appearancePreference");
-          if (appearance) {
-            return this.applyAppearance(appearance);
-          } else if (!appearance) {
-            const initialAppearance = matchMedia(
-              "(prefers-color-scheme: dark)".matches
-            )
-              ? "dark"
-              : "light";
-
-            this.applyAppearance(initialAppearance);
-          }
-        }
-
         switchAppearance() {
           if (this.#currentAppearance == "dark") {
             this.applyAppearance("light");
@@ -1833,7 +1824,17 @@
         }
       }
       const appearanceSwitcher = new AppearanceSwitcher();
-      appearanceSwitcher.initialize();
+
+      const appearancePreference = localStorage.getItem("appearancePreference");
+      if (appearancePreference) {
+        appearanceSwitcher.applyAppearance(appearancePreference);
+      } else if (!appearancePreference) {
+        const initialAppearance = matchMedia("(prefers-color-scheme: dark)")
+          .matches
+          ? "dark"
+          : "light";
+        appearanceSwitcher.applyAppearance(initialAppearance);
+      }
 
       const cssTransitionPropertiesToSet = [
         {
