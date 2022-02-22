@@ -7403,73 +7403,6 @@ onSmoothScrollStop,
       }
     }
 
-    let videoGalleryIsActive = false;
-    const videosInMainViewport = [];
-    class VideoGalleryObserver {
-      #root;
-      #lastObservedVideo;
-
-      constructor(root) {
-        this.#root = root;
-        this.#lastObservedVideo = this.#root.querySelector("video");
-      }
-
-      getLastObservedVideo() {
-        return this.#lastObservedVideo;
-      }
-
-      getRoot() {
-        return this.#root;
-      }
-
-      #observer;
-      smoothScroller;
-
-      initialize() {
-        this.smoothScroller = new SmoothScroller(this.#root);
-
-        this.#observer = new IntersectionObserver(
-          async (entries) => {
-            const incomingVideo = entries.find((video) => video.isIntersecting);
-
-            if (incomingVideo) {
-              const incomingVideoIsInViewport = videosInMainViewport.find(
-                (video) => video == incomingVideo.target
-              );
-              this.#lastObservedVideo = incomingVideo.target;
-
-              const downloadVideoButton = incomingVideo.target
-                .closest(".media-container")
-                .querySelector(".download-video-button");
-              downloadVideoButton.setAttribute(
-                "href",
-                incomingVideo.target
-                  .getAttribute("src")
-                  .replace(/#t=[\d.]+/, "")
-              );
-
-              if (videoGalleryIsActive) {
-                try {
-                  await incomingVideo.target.play();
-                } catch (error) {
-                  console.log(error);
-                }
-              }
-            }
-          },
-          {
-            root: this.#root,
-            rootMargin: "0px -50% 0px -50%",
-            threshold: 0,
-          }
-        );
-
-        this.#root.querySelectorAll("video").forEach((video) => {
-          this.#observer.observe(video);
-        });
-      }
-    }
-
     const mainArticleObserver = new IntersectionObserver(
       (entries) => {
         const incoming = entries.find(
@@ -7536,15 +7469,16 @@ onSmoothScrollStop,
         const incoming = entries.find((entry) => entry.isIntersecting);
 
         if (incoming && incoming.target.matches("video")) {
-          const videoGalleryObserver = videoGalleryObservers.find(
-            (videoGalleryObserver) =>
-              videoGalleryObserver.getRoot() ==
-              incoming.target.closest(".video-gallery")
-          );
+          const videoGalleryObserver =
+            VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
+              (videoGalleryObserver) =>
+                videoGalleryObserver.root ==
+                incoming.target.closest(".video-gallery")
+            );
 
           if (
             incoming.target.paused &&
-            !videoGalleryIsActive &&
+            !VideoGalleryObserverAndScroller.aVideoGalleryIsActive &&
             !videoGalleryObserver.smoothScroller.isCurrentlyScrolling
           ) {
             try {
@@ -7646,7 +7580,7 @@ onSmoothScrollStop,
         videos.forEach((otherVideo) => {
           if (otherVideo != video) {
             otherVideo.pause();
-            if (!videoGalleryIsActive) {
+            if (!VideoGalleryObserverAndScroller.aVideoGalleryIsActive) {
               insideMainViewport.observe(otherVideo);
             }
           }
@@ -7680,14 +7614,17 @@ onSmoothScrollStop,
           ? video.nextElementSibling
           : null;
 
-        if (nextVideo && !videoGalleryIsActive) {
+        if (
+          nextVideo &&
+          !VideoGalleryObserverAndScroller.aVideoGalleryIsActive
+        ) {
           const nextVideoPosition = nextVideo.offsetLeft;
 
-          const videoGalleryObserver = videoGalleryObservers.find(
-            (videoGalleryObserver) =>
-              videoGalleryObserver.getRoot() ==
-              nextVideo.closest(".video-gallery")
-          );
+          const videoGalleryObserver =
+            VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
+              (videoGalleryObserver) =>
+                videoGalleryObserver.root == nextVideo.closest(".video-gallery")
+            );
 
           try {
             await nextVideo.play();
@@ -8260,12 +8197,77 @@ onSmoothScrollStop,
       duration: 0,
     });
 
-    const videoGalleryObservers = [];
-    document.querySelectorAll(".video-gallery").forEach((videoGallery) => {
-      const newVideoGalleryObserver = new VideoGalleryObserver(videoGallery);
-      newVideoGalleryObserver.initialize();
-      videoGalleryObservers.push(newVideoGalleryObserver);
-    });
+    class VideoGalleryObserverAndScroller {
+      static allVideoGalleryObserversAndScrollers = [];
+      static aVideoGalleryIsActive = false;
+
+      #root;
+      #lastObservedVideo;
+      #observer;
+      #smoothScroller;
+
+      constructor(root) {
+        this.#root = root;
+        this.#lastObservedVideo = this.#root.querySelector("video");
+        this.#observer = new IntersectionObserver(
+          async (entries) => {
+            const incomingVideo = entries.find((video) => video.isIntersecting);
+
+            if (incomingVideo) {
+              this.#lastObservedVideo = incomingVideo.target;
+
+              const downloadVideoButton = incomingVideo.target
+                .closest(".media-container")
+                .querySelector(".download-video-button");
+              downloadVideoButton.setAttribute(
+                "href",
+                incomingVideo.target
+                  .getAttribute("src")
+                  .replace(/#t=[\d.]+/, "")
+              );
+
+              if (VideoGalleryObserverAndScroller.aVideoGalleryIsActive) {
+                try {
+                  await incomingVideo.target.play();
+                } catch (error) {
+                  console.log(error);
+                }
+              }
+            }
+          },
+          {
+            root: this.#root,
+            rootMargin: "0px -50% 0px -50%",
+            threshold: 0,
+          }
+        );
+        this.#smoothScroller = new SmoothScroller(this.#root);
+        this.#root
+          .querySelectorAll("video")
+          .forEach((video) => this.#observer.observe(video));
+        VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.push(
+          this
+        );
+      }
+
+      get lastObservedVideo() {
+        return this.#lastObservedVideo;
+      }
+
+      get root() {
+        return this.#root;
+      }
+
+      get smoothScroller() {
+        return this.#smoothScroller;
+      }
+    }
+
+    document
+      .querySelectorAll(".video-gallery")
+      .forEach(
+        (videoGallery) => new VideoGalleryObserverAndScroller(videoGallery)
+      );
 
     class InputEventDelegator {
       constructor() {
@@ -8760,13 +8762,12 @@ onSmoothScrollStop,
             inputDownHandler(event) {
               const target = event.target;
 
-              const videoGalleryObserver = videoGalleryObservers.find(
-                (videoGalleryObserver) =>
-                  videoGalleryObserver.getRoot() == target
-              );
+              const videoGalleryObserver =
+                VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
+                  (videoGalleryObserver) => videoGalleryObserver.root == target
+                );
 
-              this.lastObservedVideo =
-                videoGalleryObserver.getLastObservedVideo();
+              this.lastObservedVideo = videoGalleryObserver.lastObservedVideo;
 
               document
                 .querySelector(":root")
@@ -8777,11 +8778,11 @@ onSmoothScrollStop,
 
               target.style.setProperty("transform", "scale(1.1)");
 
-              videoGalleryIsActive = false;
+              VideoGalleryObserverAndScroller.aVideoGalleryIsActive = false;
 
               if (event.type == "keydown") return;
 
-              videoGalleryIsActive = true;
+              VideoGalleryObserverAndScroller.aVideoGalleryIsActive = true;
 
               event.target.setPointerCapture(event.pointerId);
 
@@ -8861,19 +8862,18 @@ onSmoothScrollStop,
                   `url(${getCursorDataUri("grab")}) 16 9.6, grab`
                 );
 
-              const videoGalleryObserver = videoGalleryObservers.find(
-                (videoGalleryObserver) =>
-                  videoGalleryObserver.getRoot() == target
-              );
+              const videoGalleryObserver =
+                VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
+                  (videoGalleryObserver) => videoGalleryObserver.root == target
+                );
 
               const lastObservedVideo =
                 (event.type == "pointerup" || event.type == "pointermove") &&
                 targetsMatch
-                  ? videoGalleryObserver.getLastObservedVideo()
-                  : videoGalleryObserver.getLastObservedVideo()
-                      .nextElementSibling && targetsMatch
-                  ? videoGalleryObserver.getLastObservedVideo()
-                      .nextElementSibling
+                  ? videoGalleryObserver.lastObservedVideo
+                  : videoGalleryObserver.lastObservedVideo.nextElementSibling &&
+                    targetsMatch
+                  ? videoGalleryObserver.lastObservedVideo.nextElementSibling
                   : target.querySelector("video") && targetsMatch
                   ? target.querySelector("video")
                   : this.lastObservedVideo;
@@ -8894,7 +8894,7 @@ onSmoothScrollStop,
                 x: videoOffsetLeft,
               });
 
-              videoGalleryIsActive = false;
+              VideoGalleryObserverAndScroller.aVideoGalleryIsActive = false;
             },
           },
         },
@@ -9395,11 +9395,12 @@ onSmoothScrollStop,
               const correspondingVideo =
                 closestMediaElement.querySelectorAll("video")[progressBarIndex];
 
-              const videoGalleryObserver = videoGalleryObservers.find(
-                (videoGalleryObserver) =>
-                  videoGalleryObserver.getRoot() ==
-                  correspondingVideo.closest(".video-gallery")
-              );
+              const videoGalleryObserver =
+                VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
+                  (videoGalleryObserver) =>
+                    videoGalleryObserver.root ==
+                    correspondingVideo.closest(".video-gallery")
+                );
 
               try {
                 await correspondingVideo.play();
@@ -9407,9 +9408,9 @@ onSmoothScrollStop,
                 console.log(error);
               }
 
-                videoGalleryObserver.smoothScroller.smoothScrollTo({
-                  x: correspondingVideo.offsetLeft,
-                });
+              videoGalleryObserver.smoothScroller.smoothScrollTo({
+                x: correspondingVideo.offsetLeft,
+              });
             },
           },
         },
