@@ -10541,9 +10541,9 @@ onSmoothScrollStop,
           const roundedElapsedYears = Math.round(elapsedYears);
           if (roundedElapsedYears > 1) {
             return (element.textContent = `${roundedElapsedYears} Years`);
-          } else if (roundedElapsedYears == 1) {
+          } else if (roundedElapsedYears == 1 && elapsedYears >= 1) {
             return (element.textContent = `${roundedElapsedYears} Year`);
-          } else if (roundedElapsedYears == 0) {
+          } else if (roundedElapsedYears == 0 || elapsedYears < 1) {
             const roundedElapsedMonths = Math.round(elapsedYears * 12);
             if (roundedElapsedMonths > 1) {
               return (element.textContent = `${roundedElapsedMonths} Months`);
