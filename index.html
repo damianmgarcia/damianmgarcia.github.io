@@ -850,6 +850,7 @@
       }
 
       #logo {
+        border-radius: 50%;
         cursor: pointer;
         grid-column: 1 / 2;
         grid-row: 1 / 2;
@@ -866,12 +867,10 @@
         cursor: default;
         display: grid;
         grid-auto-flow: column;
-
         left: calc(
           ((750px - (750px / 17 * 15)) / 2) + (750px / 17 * 3 / 2 * 4 / 3 / 2) +
             ((100% - 750px) / 2)
         );
-
         opacity: 0;
         place-items: center;
         pointer-events: none;
@@ -889,7 +888,6 @@
                 (750px / 17 * 3 / 2 * 4 / 3 / 2)
             ) * 2
         );
-
         z-index: 3;
       }
 
