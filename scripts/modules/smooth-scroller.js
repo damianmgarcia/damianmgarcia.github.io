@@ -145,7 +145,7 @@ export class SmoothScroller {
 
       if (browserHeuristics.isIOsSafari) {
         this.#scrollContainer.style.setProperty("overflow", "hidden");
-      }
+      } // Stops Safari's momentum scrolling to prevent scroll competition
 
       this.#isCurrentlyScrolling = true;
 
@@ -288,7 +288,7 @@ export class SmoothScroller {
       );
 
     if (browserHeuristics.isIOsSafari) {
-      this.#scrollContainer.style.removeProperty("overflow"); // Stops Safari's momentum scrolling to prevent scroll interference
+      this.#scrollContainer.style.removeProperty("overflow");
     }
 
     cancelAnimationFrame(this.#scrollRafId);
