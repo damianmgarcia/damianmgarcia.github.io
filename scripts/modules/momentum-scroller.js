@@ -5,8 +5,10 @@ export class MomentumScroller {
   static pointerIsDown;
 
   #scrollContainer;
+  #grabCursor;
+  #grabbingCursor;
   #stopScrollOnPointerDown;
-  #cssSelectorsToPreventDefaultOn;
+  #preventDefaultSelectors;
   #onMomentumScrollInitialActivation;
   #onMomentumScrollActivation;
   #onMomentumScrollDeactivation;
@@ -19,8 +21,10 @@ export class MomentumScroller {
   constructor(
     scrollContainer,
     {
+      grabCursor = "grab",
+      grabbingCursor = "grabbing",
       stopScrollOnPointerDown = true,
-      cssSelectorsToPreventDefaultOn = [],
+      preventDefaultSelectors = [],
       onMomentumScrollInitialActivation,
       onMomentumScrollActivation,
       onMomentumScrollDeactivation,
@@ -34,22 +38,30 @@ export class MomentumScroller {
     if (!(scrollContainer instanceof Element))
       throw new TypeError("scrollContainer must be an instance of Element");
 
+    if (typeof grabCursor != "string")
+      throw new TypeError(
+        "grabCursor must be of type string and should be a value appropriate for the CSS Cursor property (https://developer.mozilla.org/en-US/docs/Web/CSS/cursor)"
+      );
+
+    if (typeof grabbingCursor != "string")
+      throw new TypeError(
+        "grabbingCursor must be of type string and should be a value appropriate for the CSS Cursor property (https://developer.mozilla.org/en-US/docs/Web/CSS/cursor)"
+      );
+
     if (typeof stopScrollOnPointerDown != "boolean")
       throw new TypeError("stopScrollOnPointerDown must be of type boolean");
 
-    if (Array.isArray(cssSelectorsToPreventDefaultOn)) {
+    if (Array.isArray(preventDefaultSelectors)) {
       if (
-        cssSelectorsToPreventDefaultOn.some(
+        preventDefaultSelectors.some(
           (cssSelector) => typeof cssSelector != "string"
         )
       )
         throw new TypeError(
-          "cssSelectorsToPreventDefaultOn must all be of type string"
+          "preventDefaultSelectors must all be of type string"
         );
-    } else if (!Array.isArray(cssSelectorsToPreventDefaultOn)) {
-      throw new TypeError(
-        "cssSelectorsToPreventDefaultOn must be of type array"
-      );
+    } else if (!Array.isArray(preventDefaultSelectors)) {
+      throw new TypeError("preventDefaultSelectors must be of type array");
     }
 
     if (
@@ -70,8 +82,10 @@ export class MomentumScroller {
       throw new TypeError("Callbacks must be of type function");
 
     this.#scrollContainer = scrollContainer;
+    this.#grabCursor = grabCursor;
+    this.#grabbingCursor = grabbingCursor;
     this.#stopScrollOnPointerDown = stopScrollOnPointerDown;
-    this.#cssSelectorsToPreventDefaultOn = cssSelectorsToPreventDefaultOn;
+    this.#preventDefaultSelectors = preventDefaultSelectors;
     this.#onMomentumScrollInitialActivation = onMomentumScrollInitialActivation;
     this.#onMomentumScrollActivation = onMomentumScrollActivation;
     this.#onMomentumScrollDeactivation = onMomentumScrollDeactivation;
@@ -137,6 +151,8 @@ export class MomentumScroller {
   activate() {
     if (this.#deceleration == undefined) this.changeDeceleration("medium");
 
+    this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
+
     this.#xAxisIsScrollable =
       this.#scrollContainer.scrollWidth > this.#scrollContainer.clientWidth;
     this.#yAxisIsScrollable =
@@ -186,6 +202,8 @@ export class MomentumScroller {
         })
       );
 
+    this.#scrollContainer.style.removeProperty("cursor");
+
     this.#pointerDownAbortController.abort();
     this.#pointerDownAbortController = new AbortController();
     this.#pointerMoveUpCancelAbortController.abort();
@@ -215,20 +233,22 @@ export class MomentumScroller {
   pointerDownHandler(event) {
     if (MomentumScroller.pointerIsDown) return;
 
-    if (this.#cssSelectorsToPreventDefaultOn) {
+    if (this.#preventDefaultSelectors) {
       if (
-        this.#cssSelectorsToPreventDefaultOn.some((cssSelector) =>
+        this.#preventDefaultSelectors.some((cssSelector) =>
           event.target.closest(cssSelector)
         )
       )
         return;
     }
 
-    const inputIsAnAcceptableInput = isPrimaryInput(event);
-    if (!inputIsAnAcceptableInput) return;
+    const inputButtonIsPrimary = isPrimaryInput(event);
+    if (!inputButtonIsPrimary) return;
 
     MomentumScroller.pointerIsDown = true;
     this.#pointerIsDown = true;
+
+    this.#scrollContainer.style.setProperty("cursor", this.#grabbingCursor);
 
     if (this.#stopScrollOnPointerDown)
       this.abortPriorScrolls({
@@ -300,6 +320,8 @@ export class MomentumScroller {
   pointerUpHandler(event) {
     MomentumScroller.pointerIsDown = false;
     this.#pointerIsDown = false;
+
+    this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
 
     if (this.#onMomentumScrollPointerUp)
       this.#onMomentumScrollPointerUp(
