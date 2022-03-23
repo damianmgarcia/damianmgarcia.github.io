@@ -10,118 +10,9 @@ import {
 import { MomentumScroller } from "./modules/momentum-scroller.js";
 import { SmoothScroller } from "./modules/smooth-scroller.js";
 
-async function openingAnimationSequence() {
-  const backgroundAnimation = document
-    .querySelector("#article-selector")
-    .animate(
-      [
-        { background: "transparent" },
-        { background: "var(--button-background-color-active)" },
-      ],
-      { delay: 1200, duration: 400, fill: "forwards" }
-    );
-
-  document
-    .querySelectorAll("#article-selector .selector-item")
-    .forEach((element) => {
-      setTimeout(() => {
-        articleSelectorObserver.observe(element);
-      }, 1100);
-    });
-
-  document
-    .querySelectorAll("#project-selector .selector-item")
-    .forEach((element) => {
-      setTimeout(() => {
-        projectSelectorObserver.observe(element);
-      }, 1100);
-    });
-
-  await backgroundAnimation.finished;
-
-  document
-    .querySelector("#article-selector")
-    .style.setProperty("background", "var(--button-background-color-active)");
-
-  setTimeout(() => {
-    backgroundAnimation.cancel();
-  });
-
-  const allAnimationsFinished = Promise.all(
-    Array.from(
-      document.querySelectorAll("#article-selector .selector-item")
-    ).map(async (item) => {
-      const itemAnimation = item.animate(
-        [
-          {
-            transform: "translateY(0)",
-          },
-          {
-            transform: "translateY(-180px)",
-            easing: "cubic-bezier(0.68, -0.55, 0.87, 1.5)",
-            offset: 0.33,
-          },
-          {
-            transform: "translateY(0)",
-            easing: "cubic-bezier(0.68, -0.55, 0.87, 1.05)",
-          },
-        ],
-        {
-          delay: 500,
-          duration: 2000,
-          easing: "cubic-bezier(0.25, -0.5, 0.02, 1.0)",
-          fill: "forwards",
-          iterations: 1,
-        }
-      );
-
-      return itemAnimation.finished;
-    })
-  );
-
-  setTimeout(() => {
-    document.querySelector("#article-selector-projects").textContent =
-      "Projects";
-    document
-      .querySelectorAll("#slogan-end, #slogan-spacer")
-      .forEach((element) => {
-        element.style.setProperty("width", "0");
-      });
-  }, 1500);
-
-  await allAnimationsFinished;
-
-  document
-    .querySelectorAll("#slogan-end, #slogan-spacer")
-    .forEach((element) => {
-      element.remove();
-    });
-
-  document.querySelectorAll("article, .project-section").forEach((element) => {
-    mainArticleObserver.observe(element);
-  });
-
-  document
-    .querySelector("#article-selector")
-    .style.setProperty("pointer-events", "auto");
-}
-
 addEventListener(
   "load",
   async () => {
-    lightDarkAppearanceSwitcher.updateOnApplyAppearanceHandler((event) => {
-      event.parentElement.style.setProperty(
-        "--selector-cursor",
-        `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-      );
-
-      if (mainMomentumScroller.isActive) {
-        event.parentElement.style.setProperty(
-          "--cursor-main",
-          `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-        );
-      }
-    });
     startOpeningAnimationSequenceAndKittehIntroduction();
 
     document
@@ -153,12 +44,221 @@ addEventListener(
   { once: true }
 );
 
-const kittehAppointerAndThemer = {
+const browserHeuristics = getBrowserHeuristics();
+const deviceHeuristics = getDeviceHeuristics();
+
+const calendar = new Calendar();
+
+const snowGlobeAnimation = {
+  playing: false,
+  requestToStop: false,
+
+  play() {
+    if (this.playing) return;
+
+    this.playing = true;
+    this.requestToStop = false;
+
+    document.querySelectorAll(".foreground-snow *").forEach((element) => {
+      generateSnowAnimation();
+
+      async function generateSnowAnimation() {
+        const xPosition = getRandomNumber({ min: -150, max: 325 });
+        element.style.setProperty("cx", `${xPosition}`);
+
+        const radius = getRandomNumber({ min: 15, max: 30 });
+        element.style.setProperty("r", `${radius}`);
+
+        const opacity = 0.00333333 * radius + 0.9;
+        element.style.setProperty("opacity", `${opacity}`);
+
+        const delay = getRandomNumber({ min: 0, max: 20000 });
+        const duration = -1000 * radius + 35000; // 5000, 20000
+
+        const easing = "ease";
+        const keyframes = [{ cy: "-70" }, { cy: "500" }];
+        const timing = {
+          delay: delay,
+          duration: duration,
+          easing: easing,
+        };
+
+        try {
+          await element.animate(keyframes, timing).finished;
+
+          if (snowGlobeAnimation.requestToStop) {
+            return;
+          } else if (!snowGlobeAnimation.requestToStop) {
+            generateSnowAnimation();
+          }
+        } catch (error) {
+          null;
+        }
+      }
+    });
+
+    document.querySelectorAll(".background-snow *").forEach((element) => {
+      generateSnowAnimation();
+
+      async function generateSnowAnimation() {
+        const xPosition = getRandomNumber({ min: -250, max: 425 });
+        element.style.setProperty("cx", `${xPosition}`);
+
+        const radius = getRandomNumber({ min: 7.5, max: 15 });
+        element.style.setProperty("r", `${radius}`);
+
+        const opacity = 0.00666667 * radius + 0.85;
+        element.style.setProperty("opacity", `${opacity}`);
+
+        const delay = getRandomNumber({ min: 0, max: 45000 });
+        const duration = ((40000 - 20000) / (7.5 - 15)) * radius + 60000; // 20000, 45000
+
+        const easing = "ease";
+        const keyframes = [{ cy: "-70" }, { cy: "500" }];
+        const timing = {
+          delay: delay,
+          duration: duration,
+          easing: easing,
+        };
+
+        try {
+          await element.animate(keyframes, timing).finished;
+
+          if (snowGlobeAnimation.requestToStop) {
+            return;
+          } else if (!snowGlobeAnimation.requestToStop) {
+            generateSnowAnimation();
+          }
+        } catch (error) {
+          null;
+        }
+      }
+    });
+  },
+
+  async stop() {
+    this.requestToStop = true;
+
+    await new Promise((resolve) => {
+      const allSnow = Array.from(
+        document.querySelectorAll(".background-snow *, .foreground-snow *")
+      );
+      allSnow.forEach((element) =>
+        element.getAnimations().forEach((animation) => animation.cancel())
+      );
+      const checkInterval = setInterval(() => {
+        const allSnowAnimations = allSnow.map((element) =>
+          element.getAnimations()
+        );
+        const allSnowHasStopped = allSnowAnimations.every(
+          (element) => !element.length
+        );
+        if (allSnowHasStopped) {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      });
+    });
+    this.playing = false;
+  },
+};
+
+class PumpkinLights {
+  #leftPumpkin;
+  #leftPumpkinOriginalFillColor;
+  #rightPumpkin;
+  #rightPumpkinOriginalFillColor;
+
+  constructor({ leftPumpkin, rightPumpkin }) {
+    this.#leftPumpkin = leftPumpkin;
+    this.#leftPumpkinOriginalFillColor =
+      leftPumpkin[0].style.getPropertyValue("fill");
+    this.#rightPumpkin = rightPumpkin;
+    this.#rightPumpkinOriginalFillColor =
+      rightPumpkin[0].style.getPropertyValue("fill");
+  }
+
+  #requestToStop = false;
+  #playing = false;
+
+  play() {
+    if (this.#playing) return;
+
+    this.#playing = true;
+    this.#requestToStop = false;
+
+    this.changeLightColor({
+      elements: this.#leftPumpkin,
+      delayRange: [34, 300],
+      hueRange: [29, 49],
+      lightnessRange: [50, 90],
+    });
+
+    this.changeLightColor({
+      elements: this.#rightPumpkin,
+      delayRange: [100, 300],
+      hueRange: [38, 58],
+      lightnessRange: [60, 90],
+    });
+  }
+
+  async changeLightColor({
+    elements,
+    delayRange: [delayMin, delayMax],
+    hueRange: [hueMin, hueMax],
+    lightnessRange: [lightnessMin, lightnessMax],
+  }) {
+    if (this.#requestToStop) return;
+
+    const delay = getRandomNumber({ min: delayMin, max: delayMax });
+    const hue = getRandomNumber({ min: hueMin, max: hueMax });
+    const lightness = getRandomNumber({
+      min: lightnessMin,
+      max: lightnessMax,
+    });
+
+    elements.forEach((element) => {
+      element.style.setProperty("fill", `hsl(${hue}, 100%, ${lightness}%)`);
+    });
+
+    setTimeout(() => {
+      this.changeLightColor({
+        elements,
+        delayRange: [delayMin, delayMax],
+        hueRange: [hueMin, hueMax],
+        lightnessRange: [lightnessMin, lightnessMax],
+      });
+    }, delay);
+  }
+
+  async stop() {
+    this.#requestToStop = true;
+    await Promise.all(
+      [...this.#leftPumpkin, ...this.#rightPumpkin].map((element) => {
+        const originalColor = Array.from(this.#leftPumpkin).includes(element)
+          ? this.#leftPumpkinOriginalFillColor
+          : this.#rightPumpkinOriginalFillColor;
+        return new Promise((resolve) => {
+          element.style.setProperty("fill", originalColor);
+          resolve();
+        });
+      })
+    );
+    return (this.#playing = false);
+  }
+}
+const logoPumpkinLights = new PumpkinLights({
+  leftPumpkin: document.querySelectorAll(".inside-left-pumpkin"),
+  rightPumpkin: document.querySelectorAll(".inside-right-pumpkin"),
+});
+
+window.kittehAppointerAndThemer = {
   appointedKitteh: null,
   appointedKittehElement: null,
   appointedKittehTheme: null,
   availableKittehs: ["charm", "shelby"],
   availableThemes: ["december", "halloween", "none", "november", "october"],
+  onChangeKitteh: null,
 
   getRandomKitteh() {
     return this.availableKittehs[
@@ -264,22 +364,18 @@ const kittehAppointerAndThemer = {
     document
       .querySelector(":root")
       .style.setProperty(
-        "--selector-cursor",
+        "--kitteh-grab-cursor",
         `url(${getCursorDataUri("grab")}) 16 9.6, grab`
       );
 
-    try {
-      if (mainMomentumScroller.isActive) {
-        document
-          .querySelector(":root")
-          .style.setProperty(
-            "--cursor-main",
-            `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-          );
-      }
-    } catch (error) {
-      null;
-    }
+    document
+      .querySelector(":root")
+      .style.setProperty(
+        "--kitteh-grabbing-cursor",
+        `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
+      );
+
+    if (this.onChangeKitteh) this.onChangeKitteh();
   },
 
   switchHalloweenFangs() {
@@ -379,6 +475,223 @@ const kittehAppointerAndThemer = {
     }
   },
 };
+
+kittehAppointerAndThemer.setInitialKitteh();
+kittehAppointerAndThemer.appointKitteh();
+
+const mainMomentumScroller = !deviceHeuristics.isTouchScreen
+  ? new MomentumScroller(document.querySelector("main"), {
+      grabCursor: "var(--kitteh-grab-cursor)",
+      grabbingCursor: "var(--kitteh-grabbing-cursor)",
+      preventDefaultSelectors: ["header", "textarea", ".selector"],
+      onMomentumScrollActivation: () => {
+        localStorage.setItem("momentumScrollerPreference", "on");
+        document.querySelector("#touch-app-button").dataset.toggleButtonState =
+          "on";
+        document
+          .querySelector(":root")
+          .style.setProperty("--user-select", "none");
+      },
+      onMomentumScrollDeactivation: () => {
+        localStorage.setItem("momentumScrollerPreference", "off");
+        document.querySelector("#touch-app-button").dataset.toggleButtonState =
+          "off";
+        document
+          .querySelector(":root")
+          .style.setProperty("--user-select", "auto");
+      },
+    })
+  : null;
+
+lightDarkAppearanceSwitcher.updateOnApplyAppearanceHandler(() => {
+  document
+    .querySelector(":root")
+    .style.setProperty(
+      "--kitteh-grab-cursor",
+      `url(${getCursorDataUri("grab")}) 16 9.6, grab`
+    );
+
+  document
+    .querySelector(":root")
+    .style.setProperty(
+      "--kitteh-grabbing-cursor",
+      `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
+    );
+});
+
+const demoMomentumScroller = !deviceHeuristics.isTouchScreen
+  ? new MomentumScroller(
+      document.querySelector("#momentum-scroller-demo-container"),
+      {
+        grabCursor: "var(--kitteh-grab-cursor)",
+        grabbingCursor: "var(--kitteh-grabbing-cursor)",
+        onMomentumScrollActivation: (event) => {
+          const demoContainer =
+            event.scrollContainer.closest(".demo-container");
+          demoContainer.dataset.disabledDemo = "false";
+          const demoContainerAlert = demoContainer.querySelector(
+            ".demo-container-alert"
+          );
+          demoContainerAlert.dataset.activeAlert = "false";
+          enableOrDisableDemoMomentumScrollerSelectors("enable");
+        },
+        onMomentumScrollDeactivation: (event) => {
+          const demoContainer =
+            event.scrollContainer.closest(".demo-container");
+          demoContainer.dataset.disabledDemo = "true";
+          const demoContainerAlert = demoContainer.querySelector(
+            ".demo-container-alert"
+          );
+          demoContainerAlert.dataset.activeAlert = "true";
+          enableOrDisableDemoMomentumScrollerSelectors("disable");
+        },
+        onMomentumScrollPointerDown: (event) => {
+          enableOrDisableDemoMomentumScrollerSelectors("disable");
+          const dataLabels = event.scrollContainer
+            .closest(".demo-container")
+            .querySelectorAll("[data-label]");
+          dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
+        },
+        onMomentumScrollStart: () =>
+          enableOrDisableDemoMomentumScrollerSelectors("disable"),
+        onMomentumScrollStop: (event) => {
+          if (
+            event.abortedBy == "No velocity in X and Y direction" ||
+            event.abortedBy == "Scroll distance < minimum scrollable distance"
+          )
+            return enableOrDisableDemoMomentumScrollerSelectors("enable");
+
+          if (
+            event.momentumScroller.isActive &&
+            !event.momentumScroller.pointerIsDown &&
+            !event.abortedBy
+          ) {
+            enableOrDisableDemoMomentumScrollerSelectors("enable");
+            const demoContainer =
+              event.scrollContainer.closest(".demo-container");
+
+            const distance = event.distance.toFixed(1);
+            const elapsedTime = Math.round(event.elapsedTime);
+
+            demoContainer.querySelector(
+              "[data-label='distance']"
+            ).textContent = `${distance} px`;
+            demoContainer.querySelector(
+              "[data-label='elapsed-time']"
+            ).textContent = `${elapsedTime} ms`;
+
+            demoContainer.querySelectorAll("[data-label]").forEach((element) =>
+              flashAnimation(
+                element,
+                [
+                  ["color", "var(--text-color)", "hsl(60, 100%, 50%)"],
+                  ["transform", "scale(1)", "scale(1.2)"],
+                ],
+                400,
+                "linear"
+              )
+            );
+          }
+        },
+      }
+    )
+  : null;
+
+async function openingAnimationSequence() {
+  const backgroundAnimation = document
+    .querySelector("#article-selector")
+    .animate(
+      [
+        { background: "transparent" },
+        { background: "var(--button-background-color-active)" },
+      ],
+      { delay: 1200, duration: 400, fill: "forwards" }
+    );
+
+  document
+    .querySelectorAll("#article-selector .selector-item")
+    .forEach((element) => {
+      setTimeout(() => {
+        articleSelectorObserver.observe(element);
+      }, 1100);
+    });
+
+  document
+    .querySelectorAll("#project-selector .selector-item")
+    .forEach((element) => {
+      setTimeout(() => {
+        projectSelectorObserver.observe(element);
+      }, 1100);
+    });
+
+  await backgroundAnimation.finished;
+
+  document
+    .querySelector("#article-selector")
+    .style.setProperty("background", "var(--button-background-color-active)");
+
+  setTimeout(() => {
+    backgroundAnimation.cancel();
+  });
+
+  const allAnimationsFinished = Promise.all(
+    Array.from(
+      document.querySelectorAll("#article-selector .selector-item")
+    ).map(async (item) => {
+      const itemAnimation = item.animate(
+        [
+          {
+            transform: "translateY(0)",
+          },
+          {
+            transform: "translateY(-180px)",
+            easing: "cubic-bezier(0.68, -0.55, 0.87, 1.5)",
+            offset: 0.33,
+          },
+          {
+            transform: "translateY(0)",
+            easing: "cubic-bezier(0.68, -0.55, 0.87, 1.05)",
+          },
+        ],
+        {
+          delay: 500,
+          duration: 2000,
+          easing: "cubic-bezier(0.25, -0.5, 0.02, 1.0)",
+          fill: "forwards",
+          iterations: 1,
+        }
+      );
+
+      return itemAnimation.finished;
+    })
+  );
+
+  setTimeout(() => {
+    document.querySelector("#article-selector-projects").textContent =
+      "Projects";
+    document
+      .querySelectorAll("#slogan-end, #slogan-spacer")
+      .forEach((element) => {
+        element.style.setProperty("width", "0");
+      });
+  }, 1500);
+
+  await allAnimationsFinished;
+
+  document
+    .querySelectorAll("#slogan-end, #slogan-spacer")
+    .forEach((element) => {
+      element.remove();
+    });
+
+  document.querySelectorAll("article, .project-section").forEach((element) => {
+    mainArticleObserver.observe(element);
+  });
+
+  document
+    .querySelector("#article-selector")
+    .style.setProperty("pointer-events", "auto");
+}
 
 function getCursorDataUri(cursorType, fillColor) {
   fillColor = fillColor || getFillColor();
@@ -1026,220 +1339,6 @@ const themedLogoAnimationDemo = {
   },
 };
 
-const browserHeuristics = getBrowserHeuristics();
-const deviceHeuristics = getDeviceHeuristics();
-
-const mayUseMomentumScroller = !deviceHeuristics.isTouchScreen;
-const mayUseDelayedAnchors = browserHeuristics.isChromium;
-
-const calendar = new Calendar();
-
-class PumpkinLights {
-  #leftPumpkin;
-  #leftPumpkinOriginalFillColor;
-  #rightPumpkin;
-  #rightPumpkinOriginalFillColor;
-
-  constructor({ leftPumpkin, rightPumpkin }) {
-    this.#leftPumpkin = leftPumpkin;
-    this.#leftPumpkinOriginalFillColor =
-      leftPumpkin[0].style.getPropertyValue("fill");
-    this.#rightPumpkin = rightPumpkin;
-    this.#rightPumpkinOriginalFillColor =
-      rightPumpkin[0].style.getPropertyValue("fill");
-  }
-
-  #requestToStop = false;
-  #playing = false;
-
-  play() {
-    if (this.#playing) return;
-
-    this.#playing = true;
-    this.#requestToStop = false;
-
-    this.changeLightColor({
-      elements: this.#leftPumpkin,
-      delayRange: [34, 300],
-      hueRange: [29, 49],
-      lightnessRange: [50, 90],
-    });
-
-    this.changeLightColor({
-      elements: this.#rightPumpkin,
-      delayRange: [100, 300],
-      hueRange: [38, 58],
-      lightnessRange: [60, 90],
-    });
-  }
-
-  async changeLightColor({
-    elements,
-    delayRange: [delayMin, delayMax],
-    hueRange: [hueMin, hueMax],
-    lightnessRange: [lightnessMin, lightnessMax],
-  }) {
-    if (this.#requestToStop) return;
-
-    const delay = getRandomNumber({ min: delayMin, max: delayMax });
-    const hue = getRandomNumber({ min: hueMin, max: hueMax });
-    const lightness = getRandomNumber({
-      min: lightnessMin,
-      max: lightnessMax,
-    });
-
-    elements.forEach((element) => {
-      element.style.setProperty("fill", `hsl(${hue}, 100%, ${lightness}%)`);
-    });
-
-    setTimeout(() => {
-      this.changeLightColor({
-        elements,
-        delayRange: [delayMin, delayMax],
-        hueRange: [hueMin, hueMax],
-        lightnessRange: [lightnessMin, lightnessMax],
-      });
-    }, delay);
-  }
-
-  async stop() {
-    this.#requestToStop = true;
-    await Promise.all(
-      [...this.#leftPumpkin, ...this.#rightPumpkin].map((element) => {
-        const originalColor = Array.from(this.#leftPumpkin).includes(element)
-          ? this.#leftPumpkinOriginalFillColor
-          : this.#rightPumpkinOriginalFillColor;
-        return new Promise((resolve) => {
-          element.style.setProperty("fill", originalColor);
-          resolve();
-        });
-      })
-    );
-    return (this.#playing = false);
-  }
-}
-const logoPumpkinLights = new PumpkinLights({
-  leftPumpkin: document.querySelectorAll(".inside-left-pumpkin"),
-  rightPumpkin: document.querySelectorAll(".inside-right-pumpkin"),
-});
-
-const snowGlobeAnimation = {
-  playing: false,
-  requestToStop: false,
-
-  play() {
-    if (this.playing) return;
-
-    this.playing = true;
-    this.requestToStop = false;
-
-    document.querySelectorAll(".foreground-snow *").forEach((element) => {
-      generateSnowAnimation();
-
-      async function generateSnowAnimation() {
-        const xPosition = getRandomNumber({ min: -150, max: 325 });
-        element.style.setProperty("cx", `${xPosition}`);
-
-        const radius = getRandomNumber({ min: 15, max: 30 });
-        element.style.setProperty("r", `${radius}`);
-
-        const opacity = 0.00333333 * radius + 0.9;
-        element.style.setProperty("opacity", `${opacity}`);
-
-        const delay = getRandomNumber({ min: 0, max: 20000 });
-        const duration = -1000 * radius + 35000; // 5000, 20000
-
-        const easing = "ease";
-        const keyframes = [{ cy: "-70" }, { cy: "500" }];
-        const timing = {
-          delay: delay,
-          duration: duration,
-          easing: easing,
-        };
-
-        try {
-          await element.animate(keyframes, timing).finished;
-
-          if (snowGlobeAnimation.requestToStop) {
-            return;
-          } else if (!snowGlobeAnimation.requestToStop) {
-            generateSnowAnimation();
-          }
-        } catch (error) {
-          null;
-        }
-      }
-    });
-
-    document.querySelectorAll(".background-snow *").forEach((element) => {
-      generateSnowAnimation();
-
-      async function generateSnowAnimation() {
-        const xPosition = getRandomNumber({ min: -250, max: 425 });
-        element.style.setProperty("cx", `${xPosition}`);
-
-        const radius = getRandomNumber({ min: 7.5, max: 15 });
-        element.style.setProperty("r", `${radius}`);
-
-        const opacity = 0.00666667 * radius + 0.85;
-        element.style.setProperty("opacity", `${opacity}`);
-
-        const delay = getRandomNumber({ min: 0, max: 45000 });
-        const duration = ((40000 - 20000) / (7.5 - 15)) * radius + 60000; // 20000, 45000
-
-        const easing = "ease";
-        const keyframes = [{ cy: "-70" }, { cy: "500" }];
-        const timing = {
-          delay: delay,
-          duration: duration,
-          easing: easing,
-        };
-
-        try {
-          await element.animate(keyframes, timing).finished;
-
-          if (snowGlobeAnimation.requestToStop) {
-            return;
-          } else if (!snowGlobeAnimation.requestToStop) {
-            generateSnowAnimation();
-          }
-        } catch (error) {
-          null;
-        }
-      }
-    });
-  },
-
-  async stop() {
-    this.requestToStop = true;
-
-    await new Promise((resolve) => {
-      const allSnow = Array.from(
-        document.querySelectorAll(".background-snow *, .foreground-snow *")
-      );
-      allSnow.forEach((element) =>
-        element.getAnimations().forEach((animation) => animation.cancel())
-      );
-      const checkInterval = setInterval(() => {
-        const allSnowAnimations = allSnow.map((element) =>
-          element.getAnimations()
-        );
-        const allSnowHasStopped = allSnowAnimations.every(
-          (element) => !element.length
-        );
-        if (allSnowHasStopped) {
-          clearInterval(checkInterval);
-          resolve();
-        }
-      });
-    });
-    this.playing = false;
-  },
-};
-
-kittehAppointerAndThemer.setInitialKitteh();
-kittehAppointerAndThemer.appointKitteh();
-
 if (browserHeuristics.isSafari)
   document.querySelector("#slogan-end").style.setProperty("width", "220px");
 
@@ -1558,7 +1657,7 @@ videos.forEach((video) => {
 
 const mainSmoothScroller = new SmoothScroller(document.querySelector("main"), {
   onSmoothScrollStart: () => {
-    if (mayUseMomentumScroller)
+    if (!deviceHeuristics.isTouchScreen)
       mainMomentumScroller.abortPriorScrolls({
         abortedBy: "New smooth scroll",
       });
@@ -1723,7 +1822,7 @@ class InputEventDelegator {
 
       if (!handlers) return this.reset();
 
-      if (!(!mayUseDelayedAnchors && inputDownTarget.closest("a")))
+      if (!(!browserHeuristics.isChromium && inputDownTarget.closest("a")))
         event.preventDefault();
 
       this.#inputDownEvent = event;
@@ -1997,12 +2096,7 @@ class InputEventDelegator {
 
           if (event.type == "keydown") return;
 
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--selector-cursor",
-              `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-            );
+          target.style.setProperty("cursor", "var(--kitteh-grabbing-cursor)");
 
           target.setPointerCapture(event.pointerId);
 
@@ -2027,12 +2121,7 @@ class InputEventDelegator {
           this.pointerMoveAbortController.abort();
           this.pointerMoveAbortController = new AbortController();
 
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--selector-cursor",
-              `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-            );
+          target.style.setProperty("cursor", "var(--kitteh-grab-cursor)");
 
           const isArticleSelector =
             target == document.querySelector("#article-selector");
@@ -2165,12 +2254,7 @@ class InputEventDelegator {
 
           this.lastObservedVideo = videoGalleryObserver.lastObservedVideo;
 
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--selector-cursor",
-              `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-            );
+          target.style.setProperty("cursor", "var(--kitteh-grabbing-cursor)");
 
           target.style.setProperty("transform", "scale(1.1)");
 
@@ -2182,13 +2266,16 @@ class InputEventDelegator {
 
           event.target.setPointerCapture(event.pointerId);
 
-          if (mayUseMomentumScroller) mainMomentumScroller.pause();
+          if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.pause();
 
           videoGalleryObserver.smoothScroller.abortPriorScrolls({
             abortedBy: "New smooth scroll",
           });
 
-          if (mayUseMomentumScroller && mainMomentumScroller.isActive) {
+          if (
+            !deviceHeuristics.isTouchScreen &&
+            mainMomentumScroller.isActive
+          ) {
             const pointerDownX = event.x;
             const pointerDownY = event.y;
 
@@ -2239,7 +2326,7 @@ class InputEventDelegator {
         },
 
         async inputUpHandler({ event, target, targetsMatch }) {
-          if (mayUseMomentumScroller) mainMomentumScroller.unpause();
+          if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.unpause();
 
           this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
           this.pointerMoveReleasePointerCaptureCriteriaAbortController =
@@ -2248,12 +2335,7 @@ class InputEventDelegator {
           this.pointerMoveAbortController.abort();
           this.pointerMoveAbortController = new AbortController();
 
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--selector-cursor",
-              `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-            );
+          target.style.setProperty("cursor", "var(--kitteh-grab-cursor)");
 
           const videoGalleryObserver =
             VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
@@ -2299,7 +2381,7 @@ class InputEventDelegator {
         inputDownHandler(event) {
           const target = event.target;
 
-          if (mayUseMomentumScroller) mainMomentumScroller.pause();
+          if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.pause();
 
           if (event.type == "pointerdown") {
             target.releasePointerCapture(event.pointerId);
@@ -2315,14 +2397,14 @@ class InputEventDelegator {
               y: event.pageY,
             });
           } else if (event.type == "keydown") {
-            if (!mayUseDelayedAnchors && target.closest("a"))
+            if (!browserHeuristics.isChromium && target.closest("a"))
               return (inputEventDelegator.#isAlreadyHandlingInput = false);
 
             inputEventDelegator.animationLibrary.ripple(target);
           }
 
           if (
-            mayUseMomentumScroller &&
+            !deviceHeuristics.isTouchScreen &&
             mainMomentumScroller.isActive &&
             event.type == "pointerdown"
           ) {
@@ -2338,7 +2420,8 @@ class InputEventDelegator {
 
                 if (relinquishPointerControlToMomentumScroller) {
                   inputEventDelegator.forceInputUpHandler(event);
-                  if (mayUseMomentumScroller) mainMomentumScroller.unpause();
+                  if (!deviceHeuristics.isTouchScreen)
+                    mainMomentumScroller.unpause();
 
                   this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
                   this.pointerMoveReleasePointerCaptureCriteriaAbortController =
@@ -2355,7 +2438,7 @@ class InputEventDelegator {
         },
 
         async inputUpHandler({ target, targetsMatch }) {
-          if (mayUseMomentumScroller) mainMomentumScroller.unpause();
+          if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.unpause();
 
           this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
           this.pointerMoveReleasePointerCaptureCriteriaAbortController =
@@ -2375,7 +2458,7 @@ class InputEventDelegator {
             derippled == "finished" &&
             !inputEventDelegator.isAlreadyHandlingInput
           ) {
-            if (target.href && mayUseDelayedAnchors) {
+            if (target.href && browserHeuristics.isChromium) {
               if (target.href == location.href) return location.reload();
               open(target.href, target.id, "noreferrer");
             } else if (target.dataset.idToScrollTo) {
@@ -2411,9 +2494,12 @@ class InputEventDelegator {
             return;
 
           if (target.closest("main") && event.type == "pointerdown") {
-            if (mayUseMomentumScroller) mainMomentumScroller.pause();
+            if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.pause();
 
-            if (mayUseMomentumScroller && mainMomentumScroller.isActive) {
+            if (
+              !deviceHeuristics.isTouchScreen &&
+              mainMomentumScroller.isActive
+            ) {
               const pointerDownX = event.x;
               const pointerDownY = event.y;
 
@@ -2429,7 +2515,8 @@ class InputEventDelegator {
 
                   if (relinquishPointerControlToMomentumScroller) {
                     inputEventDelegator.forceInputUpHandler(event);
-                    if (mayUseMomentumScroller) mainMomentumScroller.unpause();
+                    if (!deviceHeuristics.isTouchScreen)
+                      mainMomentumScroller.unpause();
 
                     this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
                     this.pointerMoveReleasePointerCaptureCriteriaAbortController =
@@ -2463,7 +2550,7 @@ class InputEventDelegator {
                 y: event.pageY,
               });
             } else if (event.type == "keydown") {
-              if (!mayUseDelayedAnchors && target.closest("a"))
+              if (!browserHeuristics.isChromium && target.closest("a"))
                 return (inputEventDelegator.#isAlreadyHandlingInput = false);
 
               inputEventDelegator.animationLibrary.ripple(target);
@@ -2484,7 +2571,7 @@ class InputEventDelegator {
             return;
 
           if (target.closest("main")) {
-            if (mayUseMomentumScroller) mainMomentumScroller.unpause();
+            if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.unpause();
 
             this.pointerMoveReleasePointerCaptureCriteriaAbortController.abort();
             this.pointerMoveReleasePointerCaptureCriteriaAbortController =
@@ -2525,7 +2612,7 @@ class InputEventDelegator {
                 .querySelectorAll("audio, video")
                 .forEach((element) => {
                   element.muted = false;
-                  element.volume = 0.25;
+                  element.volume = 0.1;
                 });
             }
 
@@ -2688,7 +2775,7 @@ class InputEventDelegator {
           }
 
           if (
-            mayUseDelayedAnchors &&
+            browserHeuristics.isChromium &&
             target.href &&
             targetsMatch &&
             derippled == "finished" &&
@@ -2781,7 +2868,7 @@ class InputEventDelegator {
 }
 const inputEventDelegator = new InputEventDelegator();
 
-if (mayUseDelayedAnchors)
+if (browserHeuristics.isChromium)
   document.addEventListener("click", (event) => {
     if (event.pointerId == -1 && event.pointerType == "") return;
     event.preventDefault();
@@ -2806,170 +2893,15 @@ const decelerationSelectorSmoothScroller = new SmoothScroller(
   document.querySelector("#deceleration-selector")
 );
 
-const mainMomentumScroller = mayUseMomentumScroller
-  ? new MomentumScroller(document.querySelector("main"), {
-      cssSelectorsToPreventDefaultOn: ["header", "textarea", ".selector"],
-      onMomentumScrollActivation: () => {
-        localStorage.setItem("momentumScrollerPreference", "on");
-        document.querySelector("#touch-app-button").dataset.toggleButtonState =
-          "on";
-        document
-          .querySelector(":root")
-          .style.setProperty("--user-select", "none");
-        document
-          .querySelector(":root")
-          .style.setProperty(
-            "--cursor-main",
-            `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-          );
-      },
-      onMomentumScrollDeactivation: () => {
-        localStorage.setItem("momentumScrollerPreference", "off");
-        document.querySelector("#touch-app-button").dataset.toggleButtonState =
-          "off";
-        document
-          .querySelector(":root")
-          .style.setProperty("--user-select", "auto");
-        document
-          .querySelector(":root")
-          .style.setProperty("--cursor-main", "auto");
-      },
-      onMomentumScrollPointerDown: () => {
-        document
-          .querySelector(":root")
-          .style.setProperty(
-            "--cursor-main",
-            `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-          );
-      },
-      onMomentumScrollPointerUp: () => {
-        document
-          .querySelector(":root")
-          .style.setProperty(
-            "--cursor-main",
-            `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-          );
-      },
-    })
-  : null;
-
-const demoMomentumScroller = mayUseMomentumScroller
-  ? new MomentumScroller(
-      document.querySelector("#momentum-scroller-demo-container"),
-      {
-        onMomentumScrollActivation: (event) => {
-          const demoContainer =
-            event.scrollContainer.closest(".demo-container");
-          demoContainer.dataset.disabledDemo = "false";
-          const demoContainerAlert = demoContainer.querySelector(
-            ".demo-container-alert"
-          );
-          demoContainerAlert.dataset.activeAlert = "false";
-          enableOrDisableDemoMomentumScrollerSelectors("enable");
-        },
-        onMomentumScrollDeactivation: (event) => {
-          const demoContainer =
-            event.scrollContainer.closest(".demo-container");
-          demoContainer.dataset.disabledDemo = "true";
-          const demoContainerAlert = demoContainer.querySelector(
-            ".demo-container-alert"
-          );
-          demoContainerAlert.dataset.activeAlert = "true";
-          enableOrDisableDemoMomentumScrollerSelectors("disable");
-        },
-        onMomentumScrollPointerDown: (event) => {
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--cursor-main",
-              `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-            );
-          enableOrDisableDemoMomentumScrollerSelectors("disable");
-          const dataLabels = event.scrollContainer
-            .closest(".demo-container")
-            .querySelectorAll("[data-label]");
-          dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
-        },
-        onMomentumScrollPointerUp: () => {
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--cursor-main",
-              `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-            );
-        },
-        onMomentumScrollStart: () =>
-          enableOrDisableDemoMomentumScrollerSelectors("disable"),
-        onMomentumScrollStop: (event) => {
-          if (
-            event.abortedBy == "No velocity in X and Y direction" ||
-            event.abortedBy == "Scroll distance < minimum scrollable distance"
-          )
-            return enableOrDisableDemoMomentumScrollerSelectors("enable");
-
-          if (
-            event.momentumScroller.isActive &&
-            !event.momentumScroller.pointerIsDown &&
-            !event.abortedBy
-          ) {
-            enableOrDisableDemoMomentumScrollerSelectors("enable");
-            const demoContainer =
-              event.scrollContainer.closest(".demo-container");
-
-            const distance = event.distance.toFixed(1);
-            const elapsedTime = Math.round(event.elapsedTime);
-
-            demoContainer.querySelector(
-              "[data-label='distance']"
-            ).textContent = `${distance} px`;
-            demoContainer.querySelector(
-              "[data-label='elapsed-time']"
-            ).textContent = `${elapsedTime} ms`;
-
-            demoContainer.querySelectorAll("[data-label]").forEach((element) =>
-              flashAnimation(
-                element,
-                [
-                  ["color", "var(--text-color)", "hsl(60, 100%, 50%)"],
-                  ["transform", "scale(1)", "scale(1.2)"],
-                ],
-                400,
-                "linear"
-              )
-            );
-          }
-        },
-      }
-    )
-  : null;
-
-const smoothScrollerDemoMomentumScroller = mayUseMomentumScroller
+const smoothScrollerDemoMomentumScroller = !deviceHeuristics.isTouchScreen
   ? new MomentumScroller(
       document.querySelector("#smooth-scroller-demo-container"),
       {
-        onMomentumScrollPointerDown: () => {
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--cursor-main",
-              `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-            );
-        },
-        onMomentumScrollPointerUp: () => {
-          document
-            .querySelector(":root")
-            .style.setProperty(
-              "--cursor-main",
-              `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-            );
-        },
+        grabCursor: "var(--kitteh-grab-cursor)",
+        grabbingCursor: "var(--kitteh-grabbing-cursor)",
       }
     )
   : null;
-
-const momentumScrollerPreference = localStorage.getItem(
-  "momentumScrollerPreference"
-);
 
 function createTouchAppButton(toggleButtonState) {
   const button = document.createElement("div");
@@ -3001,8 +2933,11 @@ function createTouchAppButton(toggleButtonState) {
     .insertAdjacentElement("afterend", button);
 }
 
+const momentumScrollerPreference = localStorage.getItem(
+  "momentumScrollerPreference"
+);
 if (
-  mayUseMomentumScroller &&
+  !deviceHeuristics.isTouchScreen &&
   (!momentumScrollerPreference || momentumScrollerPreference == "on")
 ) {
   createTouchAppButton("on");
@@ -3013,7 +2948,10 @@ if (
   MomentumScroller.allMomentumScrollers.forEach((momentumScroller) =>
     momentumScroller.activate()
   );
-} else if (mayUseMomentumScroller && momentumScrollerPreference == "off") {
+} else if (
+  !deviceHeuristics.isTouchScreen &&
+  momentumScrollerPreference == "off"
+) {
   createTouchAppButton("off");
   MomentumScroller.allMomentumScrollers.forEach((momentumScroller) =>
     momentumScroller.deactivate()
@@ -3024,7 +2962,7 @@ const smoothScrollerDemoSmoothScroller = new SmoothScroller(
   document.querySelector("#smooth-scroller-demo-container"),
   {
     onSmoothScrollStart: () => {
-      if (mayUseMomentumScroller)
+      if (!deviceHeuristics.isTouchScreen)
         smoothScrollerDemoMomentumScroller.abortPriorScrolls({
           abortedBy: "New smooth scroll",
         });
@@ -3437,7 +3375,7 @@ class TypeAndTalk {
         : document.createElement("audio"); // Muted autoplay works with video, not audio
     mediaElement.setAttribute("src", audioSource);
     mediaElement.volume =
-      this.#messageSoundButton.dataset.toggleButtonState == "on" ? 0.25 : 0;
+      this.#messageSoundButton.dataset.toggleButtonState == "on" ? 0.1 : 0;
     mediaElement.muted =
       this.#messageSoundButton.dataset.toggleButtonState == "on" ? false : true;
     if (this.#messageSoundButton.dataset.userInteraction == "false") {
