@@ -2,3 +2,4 @@ Thumbs.db
 **/logs
 *.log
 web.config
+test/
