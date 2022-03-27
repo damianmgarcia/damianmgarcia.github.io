@@ -1,15 +1,24 @@
-import { isPrimaryInput } from "./utilities.js";
+import { getDeviceHeuristics, isPrimaryInput } from "./utilities.js";
 
-export class MomentumScroller {
+const deviceHeuristics = getDeviceHeuristics();
+
+class MomentumScroller {
   static allMomentumScrollers = [];
   static pointerIsDown;
 
   #scrollContainer;
+  #deceleration;
+  #decelerationDictionary = {
+    zero: 0,
+    low: 0.0001875,
+    medium: 0.00075,
+    high: 0.006,
+    infinite: Infinity,
+  };
   #grabCursor;
   #grabbingCursor;
   #stopScrollOnPointerDown;
   #preventDefaultSelectors;
-  #onMomentumScrollInitialActivation;
   #onMomentumScrollActivation;
   #onMomentumScrollDeactivation;
   #onMomentumScrollPointerDown;
@@ -21,11 +30,11 @@ export class MomentumScroller {
   constructor(
     scrollContainer,
     {
+      deceleration = "medium",
       grabCursor = "grab",
       grabbingCursor = "grabbing",
       stopScrollOnPointerDown = true,
       preventDefaultSelectors = [],
-      onMomentumScrollInitialActivation,
       onMomentumScrollActivation,
       onMomentumScrollDeactivation,
       onMomentumScrollPointerDown,
@@ -35,8 +44,23 @@ export class MomentumScroller {
       onMomentumScrollStop,
     } = {}
   ) {
+    if (deviceHeuristics.isTouchScreen)
+      throw new Error(
+        "MomentumScroller instantiation blocked. Due to conflicts between native momentum scrolling systems and MomentumScroller.js, touch screen devices, such as this one, are not supported."
+      );
+
     if (!(scrollContainer instanceof Element))
       throw new TypeError("scrollContainer must be an instance of Element");
+
+    if (
+      typeof deceleration != "string" ||
+      !Object.keys(this.#decelerationDictionary).some(
+        (dictionaryDeceleration) => dictionaryDeceleration == deceleration
+      )
+    )
+      throw new TypeError(
+        "deceleration must be of type string and be a valid value (zero, low, medium, high, or infinite)"
+      );
 
     if (typeof grabCursor != "string")
       throw new TypeError(
@@ -65,8 +89,6 @@ export class MomentumScroller {
     }
 
     if (
-      (onMomentumScrollInitialActivation &&
-        typeof onMomentumScrollInitialActivation != "function") ||
       (onMomentumScrollActivation &&
         typeof onMomentumScrollActivation != "function") ||
       (onMomentumScrollDeactivation &&
@@ -82,11 +104,11 @@ export class MomentumScroller {
       throw new TypeError("Callbacks must be of type function");
 
     this.#scrollContainer = scrollContainer;
+    this.#deceleration = deceleration;
     this.#grabCursor = grabCursor;
     this.#grabbingCursor = grabbingCursor;
     this.#stopScrollOnPointerDown = stopScrollOnPointerDown;
     this.#preventDefaultSelectors = preventDefaultSelectors;
-    this.#onMomentumScrollInitialActivation = onMomentumScrollInitialActivation;
     this.#onMomentumScrollActivation = onMomentumScrollActivation;
     this.#onMomentumScrollDeactivation = onMomentumScrollDeactivation;
     this.#onMomentumScrollPointerDown = onMomentumScrollPointerDown;
@@ -95,45 +117,11 @@ export class MomentumScroller {
     this.#onMomentumScroll = onMomentumScroll;
     this.#onMomentumScrollStop = onMomentumScrollStop;
 
-    MomentumScroller.allMomentumScrollers.push(this);
-  }
-
-  #deceleration;
-
-  changeDeceleration(ordinalName) {
-    this.#deceleration =
-      this.getDecelerationOrdinalValueFromOrdinalName(ordinalName) ??
-      this.#deceleration;
-  }
-
-  getDecelerationOrdinalValueFromOrdinalName(ordinalName) {
-    const decelerationDictionary = [
-      {
-        ordinalName: "zero",
-        ordinalValue: 0,
-      },
-      {
-        ordinalName: "low",
-        ordinalValue: 0.0001875,
-      },
-      {
-        ordinalName: "medium",
-        ordinalValue: 0.00075,
-      },
-      {
-        ordinalName: "high",
-        ordinalValue: 0.006,
-      },
-      {
-        ordinalName: "infinite",
-        ordinalValue: Infinity,
-      },
-    ];
-
-    const decelerationMatch = decelerationDictionary.find(
-      (deceleration) => deceleration.ordinalName == ordinalName
+    this.#scrollContainer.addEventListener("pointerdown", (event) =>
+      this.pointerDownHandler(event)
     );
-    if (decelerationMatch) return decelerationMatch.ordinalValue;
+
+    MomentumScroller.allMomentumScrollers.push(this);
   }
 
   #active = false;
@@ -142,16 +130,90 @@ export class MomentumScroller {
     return this.#active;
   }
 
-  #initialActivation = true;
-  #pointerDownAbortController = new AbortController();
+  activate() {
+    if (this.#active) return;
+
+    if (this.#onMomentumScrollActivation)
+      this.#onMomentumScrollActivation(
+        this.getEventData({
+          eventType: "onMomentumScrollActivation",
+        })
+      );
+
+    this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
+
+    this.#active = true;
+  }
+
+  deactivate() {
+    if (!this.#active) return;
+
+    if (this.#onMomentumScrollDeactivation)
+      this.#onMomentumScrollDeactivation(
+        this.getEventData({
+          eventType: "onMomentumScrollDeactivation",
+        })
+      );
+
+    this.#scrollContainer.style.removeProperty("cursor");
+
+    this.#active = false;
+  }
+
+  #paused = false;
+
+  pause() {
+    this.#paused = true;
+  }
+
+  unpause() {
+    this.#paused = false;
+  }
+
+  changeDeceleration(deceleration) {
+    if (
+      typeof deceleration != "string" ||
+      !Object.keys(this.#decelerationDictionary).some(
+        (dictionaryDeceleration) => dictionaryDeceleration == deceleration
+      )
+    )
+      throw new TypeError(
+        "deceleration must be of type string and be a valid value (zero, low, medium, high, or infinite)"
+      );
+
+    this.#deceleration = deceleration;
+  }
+
   #xAxisIsScrollable;
   #yAxisIsScrollable;
   #scrollerType;
+  #pointerMoveUpCancelAbortController = new AbortController();
+  #pointerMoveLog = [];
+  #pointerIsDown;
 
-  activate() {
-    if (this.#deceleration == undefined) this.changeDeceleration("medium");
+  get pointerIsDown() {
+    return this.#pointerIsDown;
+  }
 
-    this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
+  pointerDownHandler(event) {
+    if (!this.#active) return;
+
+    if (MomentumScroller.pointerIsDown) return;
+
+    if (this.#preventDefaultSelectors) {
+      if (
+        this.#preventDefaultSelectors.some((cssSelector) =>
+          event.target.closest(cssSelector)
+        )
+      )
+        return;
+    }
+
+    const inputButtonIsPrimary = isPrimaryInput(event);
+    if (!inputButtonIsPrimary) return;
+
+    MomentumScroller.pointerIsDown = true;
+    this.#pointerIsDown = true;
 
     this.#xAxisIsScrollable =
       this.#scrollContainer.scrollWidth > this.#scrollContainer.clientWidth;
@@ -169,84 +231,6 @@ export class MomentumScroller {
 
     if (this.#scrollerType == "none")
       throw Error("Container is not scrollable");
-
-    if (this.#onMomentumScrollActivation)
-      this.#onMomentumScrollActivation(
-        this.getEventData({
-          eventType: "onMomentumScrollActivation",
-        })
-      );
-
-    if (this.#initialActivation && this.#onMomentumScrollInitialActivation)
-      this.#onMomentumScrollInitialActivation(
-        this.getEventData({
-          eventType: "onMomentumScrollInitialActivation",
-        })
-      );
-
-    this.#scrollContainer.addEventListener(
-      "pointerdown",
-      (event) => this.pointerDownHandler(event),
-      { signal: this.#pointerDownAbortController.signal }
-    );
-
-    this.#initialActivation = false;
-    this.#active = true;
-  }
-
-  deactivate() {
-    if (this.#onMomentumScrollDeactivation)
-      this.#onMomentumScrollDeactivation(
-        this.getEventData({
-          eventType: "onMomentumScrollDeactivation",
-        })
-      );
-
-    this.#scrollContainer.style.removeProperty("cursor");
-
-    this.#pointerDownAbortController.abort();
-    this.#pointerDownAbortController = new AbortController();
-    this.#pointerMoveUpCancelAbortController.abort();
-    this.#pointerMoveUpCancelAbortController = new AbortController();
-
-    this.#active = false;
-  }
-
-  #paused = false;
-
-  pause() {
-    this.#paused = true;
-  }
-
-  unpause() {
-    this.#paused = false;
-  }
-
-  #pointerMoveUpCancelAbortController = new AbortController();
-  #pointerMoveLog = [];
-  #pointerIsDown;
-
-  get pointerIsDown() {
-    return this.#pointerIsDown;
-  }
-
-  pointerDownHandler(event) {
-    if (MomentumScroller.pointerIsDown) return;
-
-    if (this.#preventDefaultSelectors) {
-      if (
-        this.#preventDefaultSelectors.some((cssSelector) =>
-          event.target.closest(cssSelector)
-        )
-      )
-        return;
-    }
-
-    const inputButtonIsPrimary = isPrimaryInput(event);
-    if (!inputButtonIsPrimary) return;
-
-    MomentumScroller.pointerIsDown = true;
-    this.#pointerIsDown = true;
 
     this.#scrollContainer.style.setProperty("cursor", this.#grabbingCursor);
 
@@ -478,7 +462,10 @@ export class MomentumScroller {
 
       const velocityHypotenuse = Math.hypot(velocityX, velocityY);
 
-      this.#scrollDuration = velocityHypotenuse / this.#deceleration;
+      const quantifiedDeceleration =
+        this.#decelerationDictionary[this.#deceleration];
+
+      this.#scrollDuration = velocityHypotenuse / quantifiedDeceleration;
       this.#scrollDistance = (velocityHypotenuse * this.#scrollDuration) / 2;
 
       const scrollDistanceX =
@@ -573,7 +560,7 @@ export class MomentumScroller {
               velocityY: multiplierAdjustedVelocityY,
             },
             false,
-            this.#deceleration,
+            quantifiedDeceleration,
             currentTime
           );
         });
@@ -723,3 +710,5 @@ export class MomentumScroller {
     return eventData;
   }
 }
+
+export { MomentumScroller };
