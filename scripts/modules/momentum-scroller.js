@@ -121,6 +121,12 @@ class MomentumScroller {
       this.pointerDownHandler(event)
     );
 
+    this.#scrollContainer.addEventListener("smoothscroll", () => {
+      this.abortPriorScrolls({
+        abortedBy: "SmoothScroller.js smooth scroll on same container",
+      });
+    });
+
     MomentumScroller.allMomentumScrollers.push(this);
   }
 
@@ -212,9 +218,6 @@ class MomentumScroller {
     const inputButtonIsPrimary = isPrimaryInput(event);
     if (!inputButtonIsPrimary) return;
 
-    MomentumScroller.pointerIsDown = true;
-    this.#pointerIsDown = true;
-
     this.#xAxisIsScrollable =
       this.#scrollContainer.scrollWidth > this.#scrollContainer.clientWidth;
     this.#yAxisIsScrollable =
@@ -229,10 +232,10 @@ class MomentumScroller {
         ? "vertical-only"
         : "none";
 
-    if (this.#scrollerType == "none")
-      throw Error("Container is not scrollable");
+    if (this.#scrollerType == "none") return;
 
-    this.#scrollContainer.style.setProperty("cursor", this.#grabbingCursor);
+    MomentumScroller.pointerIsDown = true;
+    this.#pointerIsDown = true;
 
     if (this.#stopScrollOnPointerDown)
       this.abortPriorScrolls({
@@ -245,6 +248,8 @@ class MomentumScroller {
           eventType: "onMomentumScrollPointerDown",
         })
       );
+
+    this.#scrollContainer.style.setProperty("cursor", this.#grabbingCursor);
 
     let movementX = 0;
     let previousScreenX = event.screenX; // Safari returns undefined for event.movementX

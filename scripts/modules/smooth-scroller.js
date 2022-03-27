@@ -143,9 +143,12 @@ class SmoothScroller {
 
       this.abortPriorScrolls({ abortedBy: "New smooth scroll" });
 
+      const smoothScrollEvent = new CustomEvent("smoothscroll");
+      this.#scrollContainer.dispatchEvent(smoothScrollEvent); // MomentumScroller.js listens to and stops scrolls on this event to prevent scroll interference
+
       if (browserHeuristics.isIOsSafari) {
         this.#scrollContainer.style.setProperty("overflow", "hidden");
-      } // Stops Safari's momentum scrolling to prevent scroll competition
+      } // Stops Safari's momentum scrolling to prevent scroll interference
 
       this.#isCurrentlyScrolling = true;
 

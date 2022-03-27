@@ -1656,12 +1656,6 @@ videos.forEach((video) => {
 });
 
 const mainSmoothScroller = new SmoothScroller(document.querySelector("main"), {
-  onSmoothScrollStart: () => {
-    if (!deviceHeuristics.isTouchScreen)
-      mainMomentumScroller.abortPriorScrolls({
-        abortedBy: "New smooth scroll",
-      });
-  },
   onSmoothScrollStop: (event) => {
     if (event.abortedBy == "New smooth scroll") return;
 
@@ -2961,12 +2955,6 @@ if (
 const smoothScrollerDemoSmoothScroller = new SmoothScroller(
   document.querySelector("#smooth-scroller-demo-container"),
   {
-    onSmoothScrollStart: () => {
-      if (!deviceHeuristics.isTouchScreen)
-        smoothScrollerDemoMomentumScroller.abortPriorScrolls({
-          abortedBy: "New smooth scroll",
-        });
-    },
     onSmoothScroll: (event) => {
       const progress = `${(event.elapsedTime / event.duration) * 100}%`;
       document
