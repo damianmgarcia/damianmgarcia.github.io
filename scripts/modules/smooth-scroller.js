@@ -2,7 +2,7 @@ import { getBrowserHeuristics } from "./utilities.js";
 
 const browserHeuristics = getBrowserHeuristics();
 
-export class SmoothScroller {
+class SmoothScroller {
   static allSmoothScrollers = [];
   static pointerIsDown;
 
@@ -485,3 +485,5 @@ class CubicBezierSolver {
     return this.sampleCurveY(this.solveCurveX(x, epsilon));
   }
 }
+
+export { SmoothScroller };
