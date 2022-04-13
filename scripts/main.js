@@ -6,6 +6,7 @@ import {
   getDeviceHeuristics,
   getRandomNumber,
   isPrimaryInput,
+  validateArgument,
 } from "./modules/utilities.js";
 import { MomentumScroller } from "./modules/momentum-scroller.js";
 import { SmoothScroller } from "./modules/smooth-scroller.js";
@@ -252,7 +253,7 @@ const logoPumpkinLights = new PumpkinLights({
   rightPumpkin: document.querySelectorAll(".inside-right-pumpkin"),
 });
 
-window.kittehAppointerAndThemer = {
+const kittehAppointerAndThemer = {
   appointedKitteh: null,
   appointedKittehElement: null,
   appointedKittehTheme: null,
@@ -479,28 +480,127 @@ window.kittehAppointerAndThemer = {
 kittehAppointerAndThemer.setInitialKitteh();
 kittehAppointerAndThemer.appointKitteh();
 
+document.addEventListener("momentumScrollActivate", (event) => {
+  const scrollContainer = event.detail.scrollContainer;
+  if (scrollContainer == document.querySelector("main")) {
+    localStorage.setItem("momentumScrollerPreference", "on");
+    document.querySelector("#touch-app-button").dataset.toggleButtonState =
+      "on";
+    document.querySelector(":root").style.setProperty("--user-select", "none");
+  } else if (
+    scrollContainer ==
+    document.querySelector("#momentum-scroller-demo-container")
+  ) {
+    const demoContainer = scrollContainer.closest(".demo-container");
+    demoContainer.dataset.disabledDemo = "false";
+    const demoContainerAlert = demoContainer.querySelector(
+      ".demo-container-alert"
+    );
+    demoContainerAlert.dataset.activeAlert = "false";
+    enableOrDisableDemoMomentumScrollerSelectors("enable");
+  }
+});
+
+document.addEventListener("momentumScrollDeactivate", (event) => {
+  const scrollContainer = event.detail.scrollContainer;
+  if (scrollContainer == document.querySelector("main")) {
+    localStorage.setItem("momentumScrollerPreference", "off");
+    document.querySelector("#touch-app-button").dataset.toggleButtonState =
+      "off";
+    document.querySelector(":root").style.setProperty("--user-select", "auto");
+  } else if (
+    scrollContainer ==
+    document.querySelector("#momentum-scroller-demo-container")
+  ) {
+    const demoContainer = scrollContainer.closest(".demo-container");
+    demoContainer.dataset.disabledDemo = "true";
+    const demoContainerAlert = demoContainer.querySelector(
+      ".demo-container-alert"
+    );
+    demoContainerAlert.dataset.activeAlert = "true";
+    enableOrDisableDemoMomentumScrollerSelectors("disable");
+  }
+});
+
+document.addEventListener("momentumScrollPointerDown", (event) => {
+  const scrollContainer = event.detail.scrollContainer;
+  if (
+    scrollContainer ==
+    document.querySelector("#momentum-scroller-demo-container")
+  ) {
+    enableOrDisableDemoMomentumScrollerSelectors("disable");
+    const dataLabels = scrollContainer
+      .closest(".demo-container")
+      .querySelectorAll("[data-label]");
+    dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
+  }
+});
+
+document.addEventListener("momentumScrollStart", (event) => {
+  const scrollContainer = event.detail.scrollContainer;
+  if (
+    scrollContainer ==
+    document.querySelector("#momentum-scroller-demo-container")
+  ) {
+    enableOrDisableDemoMomentumScrollerSelectors("disable");
+  }
+});
+document.addEventListener("momentumScrollStop", (event) => {
+  const scrollContainer = event.detail.scrollContainer;
+  if (
+    scrollContainer ==
+    document.querySelector("#momentum-scroller-demo-container")
+  ) {
+    if (
+      event.detail.abortedBy ==
+      "Scroll distance is below minimum scrollable distance"
+    )
+      return enableOrDisableDemoMomentumScrollerSelectors("enable");
+
+    if (
+      event.detail.momentumScroller.isActive &&
+      !event.detail.momentumScroller.pointerIsDown &&
+      !event.detail.abortedBy
+    ) {
+      enableOrDisableDemoMomentumScrollerSelectors("enable");
+      const demoContainer = scrollContainer.closest(".demo-container");
+
+      const distance = event.detail.distance.toFixed(1);
+      const elapsedTime = Math.round(event.detail.elapsedTime);
+
+      demoContainer.querySelector(
+        "[data-label='distance']"
+      ).textContent = `${distance} px`;
+      demoContainer.querySelector(
+        "[data-label='elapsed-time']"
+      ).textContent = `${elapsedTime} ms`;
+
+      demoContainer.querySelectorAll("[data-label]").forEach((element) =>
+        flashAnimation(
+          element,
+          [
+            ["color", "var(--text-color)", "hsl(60, 100%, 50%)"],
+            ["transform", "scale(1)", "scale(1.2)"],
+          ],
+          400,
+          "linear"
+        )
+      );
+    }
+  }
+});
+
 const mainMomentumScroller = !deviceHeuristics.isTouchScreen
-  ? new MomentumScroller(document.querySelector("main"), {
-      grabCursor: "var(--kitteh-grab-cursor)",
-      grabbingCursor: "var(--kitteh-grabbing-cursor)",
-      preventDefaultSelectors: ["header", "textarea", ".selector"],
-      onMomentumScrollActivation: () => {
-        localStorage.setItem("momentumScrollerPreference", "on");
-        document.querySelector("#touch-app-button").dataset.toggleButtonState =
-          "on";
-        document
-          .querySelector(":root")
-          .style.setProperty("--user-select", "none");
-      },
-      onMomentumScrollDeactivation: () => {
-        localStorage.setItem("momentumScrollerPreference", "off");
-        document.querySelector("#touch-app-button").dataset.toggleButtonState =
-          "off";
-        document
-          .querySelector(":root")
-          .style.setProperty("--user-select", "auto");
-      },
-    })
+  ? new MomentumScroller(document.querySelector("main"))
+      .setGrabCursor("var(--kitteh-grab-cursor)")
+      .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
+      .setPreventDefaultSelectors([
+        "header",
+        "textarea",
+        ".selector",
+        "#momentum-scroller-demo-container",
+        "#smooth-scroller-demo-container",
+      ])
   : null;
 
 lightDarkAppearanceSwitcher.updateOnApplyAppearanceHandler(() => {
@@ -521,80 +621,10 @@ lightDarkAppearanceSwitcher.updateOnApplyAppearanceHandler(() => {
 
 const demoMomentumScroller = !deviceHeuristics.isTouchScreen
   ? new MomentumScroller(
-      document.querySelector("#momentum-scroller-demo-container"),
-      {
-        grabCursor: "var(--kitteh-grab-cursor)",
-        grabbingCursor: "var(--kitteh-grabbing-cursor)",
-        onMomentumScrollActivation: (event) => {
-          const demoContainer =
-            event.scrollContainer.closest(".demo-container");
-          demoContainer.dataset.disabledDemo = "false";
-          const demoContainerAlert = demoContainer.querySelector(
-            ".demo-container-alert"
-          );
-          demoContainerAlert.dataset.activeAlert = "false";
-          enableOrDisableDemoMomentumScrollerSelectors("enable");
-        },
-        onMomentumScrollDeactivation: (event) => {
-          const demoContainer =
-            event.scrollContainer.closest(".demo-container");
-          demoContainer.dataset.disabledDemo = "true";
-          const demoContainerAlert = demoContainer.querySelector(
-            ".demo-container-alert"
-          );
-          demoContainerAlert.dataset.activeAlert = "true";
-          enableOrDisableDemoMomentumScrollerSelectors("disable");
-        },
-        onMomentumScrollPointerDown: (event) => {
-          enableOrDisableDemoMomentumScrollerSelectors("disable");
-          const dataLabels = event.scrollContainer
-            .closest(".demo-container")
-            .querySelectorAll("[data-label]");
-          dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
-        },
-        onMomentumScrollStart: () =>
-          enableOrDisableDemoMomentumScrollerSelectors("disable"),
-        onMomentumScrollStop: (event) => {
-          if (
-            event.abortedBy == "No velocity in X and Y direction" ||
-            event.abortedBy == "Scroll distance < minimum scrollable distance"
-          )
-            return enableOrDisableDemoMomentumScrollerSelectors("enable");
-
-          if (
-            event.momentumScroller.isActive &&
-            !event.momentumScroller.pointerIsDown &&
-            !event.abortedBy
-          ) {
-            enableOrDisableDemoMomentumScrollerSelectors("enable");
-            const demoContainer =
-              event.scrollContainer.closest(".demo-container");
-
-            const distance = event.distance.toFixed(1);
-            const elapsedTime = Math.round(event.elapsedTime);
-
-            demoContainer.querySelector(
-              "[data-label='distance']"
-            ).textContent = `${distance} px`;
-            demoContainer.querySelector(
-              "[data-label='elapsed-time']"
-            ).textContent = `${elapsedTime} ms`;
-
-            demoContainer.querySelectorAll("[data-label]").forEach((element) =>
-              flashAnimation(
-                element,
-                [
-                  ["color", "var(--text-color)", "hsl(60, 100%, 50%)"],
-                  ["transform", "scale(1)", "scale(1.2)"],
-                ],
-                400,
-                "linear"
-              )
-            );
-          }
-        },
-      }
+      document.querySelector("#momentum-scroller-demo-container")
     )
+      .setGrabCursor("var(--kitteh-grab-cursor)")
+      .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
   : null;
 
 async function openingAnimationSequence() {
@@ -1174,12 +1204,12 @@ const kittehMessageLibrary = {
         ].index;
     }
 
-    const indexIsValid =
-      Number.isInteger(index) &&
-      index >= 0 &&
-      index <= messagePackagesMinusInappropriateHolidays.length - 1;
-
-    if (!indexIsValid) return "Invalid index";
+    validateArgument("index", index, {
+      allowedTypes: ["number"],
+      allowedMin: 0,
+      allowedMax: messagePackagesMinusInappropriateHolidays.length - 1,
+      allowIntegerNumbersOnly: true,
+    });
 
     messagePackagesMinusInappropriateHolidays[index].submissions++;
 
@@ -1479,11 +1509,13 @@ const mainArticleObserver = new IntersectionObserver(
       if (mainArticleObserver.requestToPause) return;
 
       if (incoming.target.matches("article")) {
-        articleSelectorSmoothScroller.smoothScrollTo({
+        SmoothScroller.scroll({
+          scrollContainer: document.querySelector("#article-selector"),
           y: matchingSelectorItemOffsetTop,
         });
       } else if (incoming.target.matches(".project-section")) {
-        projectSelectorSmoothScroller.smoothScrollTo({
+        SmoothScroller.scroll({
+          scrollContainer: document.querySelector("#project-selector"),
           y: matchingSelectorItemOffsetTop,
         });
       }
@@ -1501,17 +1533,14 @@ const insideMainViewport = new IntersectionObserver(
     const incoming = entries.find((entry) => entry.isIntersecting);
 
     if (incoming && incoming.target.matches("video")) {
-      const videoGalleryObserver =
-        VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
-          (videoGalleryObserver) =>
-            videoGalleryObserver.root ==
-            incoming.target.closest(".video-gallery")
-        );
+      const smoothScrollerIsCurrentlyScrolling = SmoothScroller.scrollerMap.get(
+        incoming.target.closest(".video-gallery")
+      )?.isCurrentlyScrolling;
 
       if (
         incoming.target.paused &&
-        !VideoGalleryObserverAndScroller.aVideoGalleryIsActive &&
-        !videoGalleryObserver.smoothScroller.isCurrentlyScrolling
+        !VideoGalleryObservers.aVideoGalleryIsActive &&
+        !smoothScrollerIsCurrentlyScrolling
       ) {
         try {
           await incoming.target.play();
@@ -1603,7 +1632,7 @@ videos.forEach((video) => {
     videos.forEach((otherVideo) => {
       if (otherVideo != video) {
         otherVideo.pause();
-        if (!VideoGalleryObserverAndScroller.aVideoGalleryIsActive) {
+        if (!VideoGalleryObservers.aVideoGalleryIsActive) {
           insideMainViewport.observe(otherVideo);
         }
       }
@@ -1633,14 +1662,8 @@ videos.forEach((video) => {
       ? video.nextElementSibling
       : null;
 
-    if (nextVideo && !VideoGalleryObserverAndScroller.aVideoGalleryIsActive) {
+    if (nextVideo && !VideoGalleryObservers.aVideoGalleryIsActive) {
       const nextVideoPosition = nextVideo.offsetLeft;
-
-      const videoGalleryObserver =
-        VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
-          (videoGalleryObserver) =>
-            videoGalleryObserver.root == nextVideo.closest(".video-gallery")
-        );
 
       try {
         await nextVideo.play();
@@ -1648,77 +1671,60 @@ videos.forEach((video) => {
         console.log(error);
       }
 
-      videoGalleryObserver.smoothScroller.smoothScrollTo({
+      SmoothScroller.scroll({
+        scrollContainer: nextVideo.closest(".video-gallery"),
         x: nextVideoPosition,
       });
     }
   });
 });
 
-const mainSmoothScroller = new SmoothScroller(document.querySelector("main"), {
-  onSmoothScrollStop: (event) => {
-    if (event.abortedBy == "New smooth scroll") return;
+document.addEventListener("smoothScrollStop", (event) => {
+  if (event.detail.scrollContainer == document.querySelector("main")) {
+    if (event.detail.abortedBy == "New smooth scroll") return;
 
-    articleSelectorSmoothScroller.smoothScrollTo({
+    SmoothScroller.scroll({
+      scrollContainer: document.querySelector("#article-selector"),
       y: mainArticleObserver.currentArticleSelectorItemOffsetTop,
     });
-    projectSelectorSmoothScroller.smoothScrollTo({
+    SmoothScroller.scroll({
+      scrollContainer: document.querySelector("#project-selector"),
       y: mainArticleObserver.currentProjectSelectorItemOffsetTop,
     });
-  },
+  }
 });
 
-const articleSelectorSmoothScroller = new SmoothScroller(
-  document.querySelector("#article-selector")
-);
-
-const projectSelectorSmoothScroller = new SmoothScroller(
-  document.querySelector("#project-selector")
-);
-
-const easingSelectorSmoothScroller = new SmoothScroller(
-  document.querySelector("#easing-selector")
-);
-
-const easingSelectorOffsetTop = document.querySelector(
-  "#easing-selector .selector-item[data-easing='ease']"
-).offsetTop;
-easingSelectorSmoothScroller.smoothScrollTo({
-  y: easingSelectorOffsetTop,
+SmoothScroller.scroll({
+  scrollContainer: document.querySelector("#easing-selector"),
+  y: document.querySelector(
+    "#easing-selector .selector-item[data-easing='ease']"
+  ).offsetTop,
   duration: 0,
 });
 
-const kittehSelectorSmoothScroller = new SmoothScroller(
-  document.querySelector("#kitteh-selector")
-);
-
-const kittehSelectorKittehOffsetTop = document.querySelector(
-  `#kitteh-selector .selector-item[data-kitteh="${kittehAppointerAndThemer.appointedKitteh}"]`
-).offsetTop;
-kittehSelectorSmoothScroller.smoothScrollTo({
-  y: kittehSelectorKittehOffsetTop,
+SmoothScroller.scroll({
+  scrollContainer: document.querySelector("#kitteh-selector"),
+  y: document.querySelector(
+    `#kitteh-selector .selector-item[data-kitteh="${kittehAppointerAndThemer.appointedKitteh}"]`
+  ).offsetTop,
   duration: 0,
 });
 
-const kittehThemeSelectorSmoothScroller = new SmoothScroller(
-  document.querySelector("#kitteh-theme-selector")
-);
-const kittehThemeSelectorKittehThemeOffsetTop = document.querySelector(
-  `#kitteh-theme-selector .selector-item[data-theme="${kittehAppointerAndThemer.appointedKittehTheme}"]`
-).offsetTop;
-kittehThemeSelectorSmoothScroller.smoothScrollTo({
-  y: kittehThemeSelectorKittehThemeOffsetTop,
+SmoothScroller.scroll({
+  scrollContainer: document.querySelector("#kitteh-theme-selector"),
+  y: document.querySelector(
+    `#kitteh-theme-selector .selector-item[data-theme="${kittehAppointerAndThemer.appointedKittehTheme}"]`
+  ).offsetTop,
   duration: 0,
 });
 
-class VideoGalleryObserverAndScroller {
-  static allVideoGalleryObserversAndScrollers = [];
+class VideoGalleryObservers {
+  static videoGalleryObserverMap = new Map();
   static aVideoGalleryIsActive = false;
 
   #root;
   #lastObservedVideo;
   #observer;
-  #smoothScroller;
 
   constructor(root) {
     this.#root = root;
@@ -1738,7 +1744,7 @@ class VideoGalleryObserverAndScroller {
             incomingVideo.target.getAttribute("src").replace(/#t=[\d.]+/, "")
           );
 
-          if (VideoGalleryObserverAndScroller.aVideoGalleryIsActive) {
+          if (VideoGalleryObservers.aVideoGalleryIsActive) {
             try {
               await incomingVideo.target.play();
             } catch (error) {
@@ -1753,13 +1759,10 @@ class VideoGalleryObserverAndScroller {
         threshold: 0,
       }
     );
-    this.#smoothScroller = new SmoothScroller(this.#root);
     this.#root
       .querySelectorAll("video")
       .forEach((video) => this.#observer.observe(video));
-    VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.push(
-      this
-    );
+    VideoGalleryObservers.videoGalleryObserverMap.set(root, this);
   }
 
   get lastObservedVideo() {
@@ -1769,15 +1772,11 @@ class VideoGalleryObserverAndScroller {
   get root() {
     return this.#root;
   }
-
-  get smoothScroller() {
-    return this.#smoothScroller;
-  }
 }
 
 document
   .querySelectorAll(".video-gallery")
-  .forEach((videoGallery) => new VideoGalleryObserverAndScroller(videoGallery));
+  .forEach((videoGallery) => new VideoGalleryObservers(videoGallery));
 
 class InputEventDelegator {
   constructor() {
@@ -1908,8 +1907,9 @@ class InputEventDelegator {
 
   animationLibrary = {
     ripple(target, { x, y, duration = 800 } = {}) {
-      if (!(target instanceof Element))
-        throw new TypeError("target must be an instance of Element");
+      validateArgument("target", target, {
+        allowedPrototypes: [Element],
+      });
 
       const camelCaseTargetId = convertHyphenCaseToCamelCase(target.id);
 
@@ -2188,11 +2188,8 @@ class InputEventDelegator {
               ? target.querySelector("div").offsetTop
               : this.currentOffsetTop;
 
-          const smoothScroller = SmoothScroller.allSmoothScrollers.find(
-            (smoothScroller) => smoothScroller.scrollContainer == target
-          );
-
-          const smoothScrollerPromise = smoothScroller.smoothScrollTo({
+          const smoothScrollerPromise = SmoothScroller.scroll({
+            scrollContainer: target,
             y: incomingOffsetTop,
           });
 
@@ -2200,7 +2197,8 @@ class InputEventDelegator {
 
           if (isArticleSelector || isProjectSelector) {
             const mainSmoothScrollerPromise = targetsMatch
-              ? mainSmoothScroller.smoothScrollTo({
+              ? SmoothScroller.scroll({
+                  scrollContainer: document.querySelector("main"),
                   y: matchingMainScrollTop,
                 })
               : null;
@@ -2223,7 +2221,7 @@ class InputEventDelegator {
               scrollerTypeSelectorObserver.incoming.dataset.scrollerType;
           } else if (isDecelerationSelector) {
             await smoothScrollerPromise;
-            demoMomentumScroller.changeDeceleration(
+            demoMomentumScroller.setDeceleration(
               decelerationSelectorObserver.incoming.dataset.deceleration
             );
           } else if (isEasingSelector) {
@@ -2242,29 +2240,22 @@ class InputEventDelegator {
           const target = event.target;
 
           const videoGalleryObserver =
-            VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
-              (videoGalleryObserver) => videoGalleryObserver.root == target
-            );
+            VideoGalleryObservers.videoGalleryObserverMap.get(target);
 
           this.lastObservedVideo = videoGalleryObserver.lastObservedVideo;
 
           target.style.setProperty("cursor", "var(--kitteh-grabbing-cursor)");
-
           target.style.setProperty("transform", "scale(1.1)");
 
-          VideoGalleryObserverAndScroller.aVideoGalleryIsActive = false;
+          VideoGalleryObservers.aVideoGalleryIsActive = false;
 
           if (event.type == "keydown") return;
 
-          VideoGalleryObserverAndScroller.aVideoGalleryIsActive = true;
+          VideoGalleryObservers.aVideoGalleryIsActive = true;
 
           event.target.setPointerCapture(event.pointerId);
 
           if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.pause();
-
-          videoGalleryObserver.smoothScroller.abortPriorScrolls({
-            abortedBy: "New smooth scroll",
-          });
 
           if (
             !deviceHeuristics.isTouchScreen &&
@@ -2332,9 +2323,7 @@ class InputEventDelegator {
           target.style.setProperty("cursor", "var(--kitteh-grab-cursor)");
 
           const videoGalleryObserver =
-            VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
-              (videoGalleryObserver) => videoGalleryObserver.root == target
-            );
+            VideoGalleryObservers.videoGalleryObserverMap.get(target);
 
           const lastObservedVideo =
             (event.type == "pointerup" || event.type == "pointermove") &&
@@ -2359,11 +2348,12 @@ class InputEventDelegator {
 
           target.style.removeProperty("transform");
 
-          await videoGalleryObserver.smoothScroller.smoothScrollTo({
+          await SmoothScroller.scroll({
+            scrollContainer: target,
             x: videoOffsetLeft,
           });
 
-          VideoGalleryObserverAndScroller.aVideoGalleryIsActive = false;
+          VideoGalleryObservers.aVideoGalleryIsActive = false;
         },
       },
     },
@@ -2465,7 +2455,9 @@ class InputEventDelegator {
                   main.scrollTop +
                   5
               );
-              mainSmoothScroller.smoothScrollTo({
+
+              SmoothScroller.scroll({
+                scrollContainer: document.querySelector("main"),
                 y: yPositionOfIdToScrollTo,
               });
             }
@@ -2578,7 +2570,7 @@ class InputEventDelegator {
           } else if (targetsMatch && target.matches("#overflow-button")) {
             await switchOverflowMenu();
           } else if (targetsMatch && target.matches("#touch-app-button")) {
-            MomentumScroller.allMomentumScrollers.forEach((momentumScroller) =>
+            MomentumScroller.scrollerMap.forEach((momentumScroller) =>
               momentumScroller.toggleOnOff()
             );
           } else if (targetsMatch && target.matches("#message-submit-button")) {
@@ -2633,7 +2625,10 @@ class InputEventDelegator {
               ".number-input[data-axis='y']"
             ).value;
 
-            const promise = smoothScrollerDemoSmoothScroller.smoothScrollTo({
+            const promise = SmoothScroller.scroll({
+              scrollContainer: document.querySelector(
+                "#smooth-scroller-demo-container"
+              ),
               x: xValue,
               y: yValue,
               duration: duration,
@@ -2701,7 +2696,8 @@ class InputEventDelegator {
             const numberOfEasingSelectorItems =
               document.querySelectorAll("#easing-selector .selector-item")
                 .length - 1;
-            easingSelectorSmoothScroller.smoothScrollTo({
+            SmoothScroller.scroll({
+              scrollContainer: document.querySelector("#easing-selector"),
               y:
                 60 *
                 getRandomNumber({
@@ -2711,6 +2707,7 @@ class InputEventDelegator {
                 }),
               duration: 0,
             });
+
             demoContainer.querySelector("[data-axis='duration']").value =
               getRandomNumber({
                 min: 0,
@@ -2839,20 +2836,14 @@ class InputEventDelegator {
           const correspondingVideo =
             closestMediaElement.querySelectorAll("video")[progressBarIndex];
 
-          const videoGalleryObserver =
-            VideoGalleryObserverAndScroller.allVideoGalleryObserversAndScrollers.find(
-              (videoGalleryObserver) =>
-                videoGalleryObserver.root ==
-                correspondingVideo.closest(".video-gallery")
-            );
-
           try {
             await correspondingVideo.play();
           } catch (error) {
             console.log(error);
           }
 
-          videoGalleryObserver.smoothScroller.smoothScrollTo({
+          SmoothScroller.scroll({
+            scrollContainer: correspondingVideo.closest(".video-gallery"),
             x: correspondingVideo.offsetLeft,
           });
         },
@@ -2879,22 +2870,12 @@ document
     });
   });
 
-const scrollerTypeSelectorSmoothScroller = new SmoothScroller(
-  document.querySelector("#scroller-type-selector")
-);
-
-const decelerationSelectorSmoothScroller = new SmoothScroller(
-  document.querySelector("#deceleration-selector")
-);
-
-const smoothScrollerDemoMomentumScroller = !deviceHeuristics.isTouchScreen
+!deviceHeuristics.isTouchScreen
   ? new MomentumScroller(
-      document.querySelector("#smooth-scroller-demo-container"),
-      {
-        grabCursor: "var(--kitteh-grab-cursor)",
-        grabbingCursor: "var(--kitteh-grabbing-cursor)",
-      }
+      document.querySelector("#smooth-scroller-demo-container")
     )
+      .setGrabCursor("var(--kitteh-grab-cursor)")
+      .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
   : null;
 
 function createTouchAppButton(toggleButtonState) {
@@ -2939,7 +2920,7 @@ if (
     document.querySelector("#touch-app-button"),
     { duration: 0 }
   );
-  MomentumScroller.allMomentumScrollers.forEach((momentumScroller) =>
+  MomentumScroller.scrollerMap.forEach((momentumScroller) =>
     momentumScroller.activate()
   );
 } else if (
@@ -2947,22 +2928,24 @@ if (
   momentumScrollerPreference == "off"
 ) {
   createTouchAppButton("off");
-  MomentumScroller.allMomentumScrollers.forEach((momentumScroller) =>
+  MomentumScroller.scrollerMap.forEach((momentumScroller) =>
     momentumScroller.deactivate()
   );
 }
 
-const smoothScrollerDemoSmoothScroller = new SmoothScroller(
-  document.querySelector("#smooth-scroller-demo-container"),
-  {
-    onSmoothScroll: (event) => {
-      const progress = `${(event.elapsedTime / event.duration) * 100}%`;
-      document
-        .querySelector("#smooth-scroller-demo-progress-bar")
-        .style.setProperty("--progress", progress);
-    },
+document.addEventListener("smoothScroll", (event) => {
+  if (
+    event.detail.scrollContainer ==
+    document.querySelector("#smooth-scroller-demo-container")
+  ) {
+    const progress = `${
+      (event.detail.elapsedTime / event.detail.duration) * 100
+    }%`;
+    document
+      .querySelector("#smooth-scroller-demo-progress-bar")
+      .style.setProperty("--progress", progress);
   }
-);
+});
 
 const smoothScrollerDemoContainerRects = document
   .querySelector("#smooth-scroller-demo-container")
@@ -2972,7 +2955,8 @@ const smoothScrollerDemoContentRects = document
   .querySelector("#smooth-scroller-demo-content")
   .getBoundingClientRect();
 
-smoothScrollerDemoSmoothScroller.smoothScrollTo({
+SmoothScroller.scroll({
+  scrollContainer: document.querySelector("#smooth-scroller-demo-container"),
   x:
     smoothScrollerDemoContentRects.width / 2 -
     smoothScrollerDemoContainerRects.width / 2 -
@@ -3022,19 +3006,19 @@ function demoMomentumScrollerInitializer() {
     top: scrollContentRects.height / 2 - scrollContainerRects.height / 2,
   });
 
-  const scrollerTypeSelectorScrollerTypeOffsetTop = document.querySelector(
-    "#scroller-type-selector .selector-item[data-scroller-type='horizontal-and-vertical']"
-  ).offsetTop;
-  scrollerTypeSelectorSmoothScroller.smoothScrollTo({
-    y: scrollerTypeSelectorScrollerTypeOffsetTop,
+  SmoothScroller.scroll({
+    scrollContainer: document.querySelector("#scroller-type-selector"),
+    y: document.querySelector(
+      "#scroller-type-selector .selector-item[data-scroller-type='horizontal-and-vertical']"
+    ).offsetTop,
     duration: 0,
   });
 
-  const decelerationSelectorDecelerationOffsetTop = document.querySelector(
-    "#deceleration-selector .selector-item[data-deceleration='medium']"
-  ).offsetTop;
-  decelerationSelectorSmoothScroller.smoothScrollTo({
-    y: decelerationSelectorDecelerationOffsetTop,
+  SmoothScroller.scroll({
+    scrollContainer: document.querySelector("#deceleration-selector"),
+    y: document.querySelector(
+      "#deceleration-selector .selector-item[data-deceleration='medium']"
+    ).offsetTop,
     duration: 0,
   });
 }
@@ -3237,14 +3221,21 @@ class TypeAndTalk {
       delayBetweenChars = 80,
     } = {}
   ) {
-    if (
-      typeof message != "string" ||
-      typeof audioSource != "string" ||
-      typeof delayStart != "number" ||
-      typeof delayEnd != "number" ||
-      typeof delayBetweenChars != "number"
-    )
-      throw new TypeError();
+    validateArgument("message", message, {
+      allowedTypes: ["string"],
+    });
+    validateArgument("audioSource", audioSource, {
+      allowedTypes: ["string"],
+    });
+    validateArgument("delayStart", delayStart, {
+      allowedTypes: ["number"],
+    });
+    validateArgument("delayEnd", delayEnd, {
+      allowedTypes: ["number"],
+    });
+    validateArgument("delayBetweenChars", delayBetweenChars, {
+      allowedTypes: ["number"],
+    });
 
     const messageIsBlank =
       message
@@ -3914,33 +3905,39 @@ document.addEventListener("keydown", (event) => {
   } else if (!keyIsRepeating) {
     if (key == "ArrowDown") {
       event.preventDefault();
-      return mainSmoothScroller.smoothScrollTo({
+      return SmoothScroller.scroll({
+        scrollContainer: document.querySelector("main"),
         y: currentScrollTop + pageHeight * 0.1,
       });
     } else if (key == "ArrowUp") {
       event.preventDefault();
-      return mainSmoothScroller.smoothScrollTo({
+      return SmoothScroller.scroll({
+        scrollContainer: document.querySelector("main"),
         y: currentScrollTop - pageHeight * 0.1,
       });
     } else if (key == "PageDown") {
       event.preventDefault();
-      return mainSmoothScroller.smoothScrollTo({
+      return SmoothScroller.scroll({
+        scrollContainer: document.querySelector("main"),
         y: currentScrollTop + pageHeight,
       });
     } else if (key == "PageUp") {
       event.preventDefault();
-      return mainSmoothScroller.smoothScrollTo({
+      return SmoothScroller.scroll({
+        scrollContainer: document.querySelector("main"),
         y: currentScrollTop - pageHeight,
       });
     } else if (key == "Home") {
       event.preventDefault();
-      return mainSmoothScroller.smoothScrollTo({
+      return SmoothScroller.scroll({
+        scrollContainer: document.querySelector("main"),
         y: 0,
       });
     } else if (key == "End") {
       event.preventDefault();
       const bottomOfMain = main.scrollHeight - main.clientHeight;
-      return mainSmoothScroller.smoothScrollTo({
+      return SmoothScroller.scroll({
+        scrollContainer: document.querySelector("main"),
         y: bottomOfMain,
       });
     }

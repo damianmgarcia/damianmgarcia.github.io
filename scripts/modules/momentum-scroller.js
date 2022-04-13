@@ -1,133 +1,135 @@
-import { getDeviceHeuristics, isPrimaryInput } from "./utilities.js";
+import {
+  getDeviceHeuristics,
+  isPrimaryInput,
+  validateArgument,
+} from "./utilities.js";
 
 const deviceHeuristics = getDeviceHeuristics();
 
 class MomentumScroller {
-  static allMomentumScrollers = [];
-  static pointerIsDown;
+  static scrollerMap = new Map();
 
   #scrollContainer;
-  #deceleration;
-  #decelerationDictionary = {
-    zero: 0,
-    low: 0.0001875,
-    medium: 0.00075,
-    high: 0.006,
-    infinite: Infinity,
-  };
-  #grabCursor;
-  #grabbingCursor;
-  #stopScrollOnPointerDown;
-  #preventDefaultSelectors;
-  #onMomentumScrollActivation;
-  #onMomentumScrollDeactivation;
-  #onMomentumScrollPointerDown;
-  #onMomentumScrollPointerUp;
-  #onMomentumScrollStart;
-  #onMomentumScroll;
-  #onMomentumScrollStop;
+  #deceleration = "medium";
+  #grabCursor = "grab";
+  #grabbingCursor = "grabbing";
+  #stopScrollOnPointerDown = true;
+  #preventDefaultSelectors = [];
+  #decelerationMap = new Map([
+    ["zero", 0],
+    ["low", 0.0001875],
+    ["medium", 0.00075],
+    ["high", 0.006],
+    ["infinite", Infinity],
+  ]);
 
-  constructor(
-    scrollContainer,
-    {
-      deceleration = "medium",
-      grabCursor = "grab",
-      grabbingCursor = "grabbing",
-      stopScrollOnPointerDown = true,
-      preventDefaultSelectors = [],
-      onMomentumScrollActivation,
-      onMomentumScrollDeactivation,
-      onMomentumScrollPointerDown,
-      onMomentumScrollPointerUp,
-      onMomentumScrollStart,
-      onMomentumScroll,
-      onMomentumScrollStop,
-    } = {}
-  ) {
+  constructor(scrollContainer) {
     if (deviceHeuristics.isTouchScreen)
       throw new Error(
         "MomentumScroller instantiation blocked. Due to conflicts between native momentum scrolling systems and MomentumScroller.js, touch screen devices, such as this one, are not supported."
       );
 
-    if (!(scrollContainer instanceof Element))
-      throw new TypeError("scrollContainer must be an instance of Element");
+    this.#scrollContainer = validateArgument(
+      "scrollContainer",
+      scrollContainer,
+      {
+        allowedPrototypes: [Element],
+      }
+    );
 
-    if (
-      typeof deceleration != "string" ||
-      !Object.keys(this.#decelerationDictionary).some(
-        (dictionaryDeceleration) => dictionaryDeceleration == deceleration
-      )
-    )
-      throw new TypeError(
-        "deceleration must be of type string and be a valid value (zero, low, medium, high, or infinite)"
+    if (MomentumScroller.scrollerMap.has(scrollContainer))
+      throw new Error(
+        "A MomentumScroller instance for this scrollContainer already exists"
       );
-
-    if (typeof grabCursor != "string")
-      throw new TypeError(
-        "grabCursor must be of type string and should be a value appropriate for the CSS Cursor property (https://developer.mozilla.org/en-US/docs/Web/CSS/cursor)"
-      );
-
-    if (typeof grabbingCursor != "string")
-      throw new TypeError(
-        "grabbingCursor must be of type string and should be a value appropriate for the CSS Cursor property (https://developer.mozilla.org/en-US/docs/Web/CSS/cursor)"
-      );
-
-    if (typeof stopScrollOnPointerDown != "boolean")
-      throw new TypeError("stopScrollOnPointerDown must be of type boolean");
-
-    if (Array.isArray(preventDefaultSelectors)) {
-      if (
-        preventDefaultSelectors.some(
-          (cssSelector) => typeof cssSelector != "string"
-        )
-      )
-        throw new TypeError(
-          "preventDefaultSelectors must all be of type string"
-        );
-    } else if (!Array.isArray(preventDefaultSelectors)) {
-      throw new TypeError("preventDefaultSelectors must be of type array");
-    }
-
-    if (
-      (onMomentumScrollActivation &&
-        typeof onMomentumScrollActivation != "function") ||
-      (onMomentumScrollDeactivation &&
-        typeof onMomentumScrollDeactivation != "function") ||
-      (onMomentumScrollPointerDown &&
-        typeof onMomentumScrollPointerDown != "function") ||
-      (onMomentumScrollPointerUp &&
-        typeof onMomentumScrollPointerUp != "function") ||
-      (onMomentumScrollStart && typeof onMomentumScrollStart != "function") ||
-      (onMomentumScroll && typeof onMomentumScroll != "function") ||
-      (onMomentumScrollStop && typeof onMomentumScrollStop != "function")
-    )
-      throw new TypeError("Callbacks must be of type function");
-
-    this.#scrollContainer = scrollContainer;
-    this.#deceleration = deceleration;
-    this.#grabCursor = grabCursor;
-    this.#grabbingCursor = grabbingCursor;
-    this.#stopScrollOnPointerDown = stopScrollOnPointerDown;
-    this.#preventDefaultSelectors = preventDefaultSelectors;
-    this.#onMomentumScrollActivation = onMomentumScrollActivation;
-    this.#onMomentumScrollDeactivation = onMomentumScrollDeactivation;
-    this.#onMomentumScrollPointerDown = onMomentumScrollPointerDown;
-    this.#onMomentumScrollPointerUp = onMomentumScrollPointerUp;
-    this.#onMomentumScrollStart = onMomentumScrollStart;
-    this.#onMomentumScroll = onMomentumScroll;
-    this.#onMomentumScrollStop = onMomentumScrollStop;
 
     this.#scrollContainer.addEventListener("pointerdown", (event) =>
       this.pointerDownHandler(event)
     );
 
-    this.#scrollContainer.addEventListener("smoothscroll", () => {
-      this.abortPriorScrolls({
-        abortedBy: "SmoothScroller.js smooth scroll on same container",
-      });
+    this.#scrollContainer.addEventListener("smoothScrollStart", () => {
+      if (this.#resolve)
+        this.abortPriorScrolls({
+          abortedBy: "Smooth scroll on same container",
+        });
     });
 
-    MomentumScroller.allMomentumScrollers.push(this);
+    MomentumScroller.scrollerMap.set(scrollContainer, this);
+  }
+
+  setDeceleration(deceleration) {
+    validateArgument("deceleration", deceleration, {
+      allowedValues: Array.from(this.#decelerationMap.keys()),
+    });
+
+    this.#deceleration = deceleration;
+    return this;
+  }
+
+  setGrabCursor(grabCursor) {
+    validateArgument("grabCursor", grabCursor, {
+      allowedTypes: ["string"],
+      customErrorMessage:
+        "grabCursor must be a String and should be appropriate for the CSS Cursor property (https://developer.mozilla.org/en-US/docs/Web/CSS/cursor)",
+    });
+
+    this.#grabCursor = grabCursor;
+    return this;
+  }
+
+  setGrabbingCursor(grabbingCursor) {
+    validateArgument("grabbingCursor", grabbingCursor, {
+      allowedTypes: ["string"],
+      customErrorMessage:
+        "grabbingCursor must be a String and should be appropriate for the CSS Cursor property (https://developer.mozilla.org/en-US/docs/Web/CSS/cursor)",
+    });
+
+    this.#grabbingCursor = grabbingCursor;
+    return this;
+  }
+
+  setStopScrollOnPointerDown(stopScrollOnPointerDown) {
+    validateArgument("stopScrollOnPointerDown", stopScrollOnPointerDown, {
+      allowedTypes: ["boolean"],
+    });
+
+    this.#stopScrollOnPointerDown = stopScrollOnPointerDown;
+    return this;
+  }
+
+  setPreventDefaultSelectors(preventDefaultSelectors) {
+    validateArgument("preventDefaultSelectors", preventDefaultSelectors, {
+      allowedTypes: ["array"],
+    });
+
+    preventDefaultSelectors.forEach((preventDefaultSelector) =>
+      validateArgument("preventDefaultSelectors", preventDefaultSelector, {
+        allowedTypes: ["string"],
+      })
+    );
+
+    this.#preventDefaultSelectors = preventDefaultSelectors;
+    return this;
+  }
+
+  setDecelerationMap(decelerationMap) {
+    validateArgument("decelerationMap", decelerationMap, {
+      allowedPrototypes: [Map],
+    });
+
+    Array.from(decelerationMap.keys()).forEach((decelerationMapKey) =>
+      validateArgument("decelerationMapKeys", decelerationMapKey, {
+        allowedTypes: ["string"],
+      })
+    );
+
+    Array.from(decelerationMap.values()).forEach((decelerationMapValue) =>
+      validateArgument("decelerationMapValues", decelerationMapValue, {
+        allowedTypes: ["number"],
+      })
+    );
+
+    this.#decelerationMap = decelerationMap;
+    return this;
   }
 
   #active = false;
@@ -139,12 +141,15 @@ class MomentumScroller {
   activate() {
     if (this.#active) return;
 
-    if (this.#onMomentumScrollActivation)
-      this.#onMomentumScrollActivation(
-        this.getEventData({
-          eventType: "onMomentumScrollActivation",
-        })
-      );
+    const momentumScrollActivateEvent = new CustomEvent(
+      "momentumScrollActivate",
+      {
+        bubbles: true,
+        cancelable: true,
+        detail: this.getEventData(),
+      }
+    );
+    this.#scrollContainer.dispatchEvent(momentumScrollActivateEvent);
 
     this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
 
@@ -154,12 +159,15 @@ class MomentumScroller {
   deactivate() {
     if (!this.#active) return;
 
-    if (this.#onMomentumScrollDeactivation)
-      this.#onMomentumScrollDeactivation(
-        this.getEventData({
-          eventType: "onMomentumScrollDeactivation",
-        })
-      );
+    const momentumScrollDeactivateEvent = new CustomEvent(
+      "momentumScrollDeactivate",
+      {
+        bubbles: true,
+        cancelable: true,
+        detail: this.getEventData(),
+      }
+    );
+    this.#scrollContainer.dispatchEvent(momentumScrollDeactivateEvent);
 
     this.#scrollContainer.style.removeProperty("cursor");
 
@@ -176,20 +184,6 @@ class MomentumScroller {
     this.#paused = false;
   }
 
-  changeDeceleration(deceleration) {
-    if (
-      typeof deceleration != "string" ||
-      !Object.keys(this.#decelerationDictionary).some(
-        (dictionaryDeceleration) => dictionaryDeceleration == deceleration
-      )
-    )
-      throw new TypeError(
-        "deceleration must be of type string and be a valid value (zero, low, medium, high, or infinite)"
-      );
-
-    this.#deceleration = deceleration;
-  }
-
   #xAxisIsScrollable;
   #yAxisIsScrollable;
   #scrollerType;
@@ -203,8 +197,6 @@ class MomentumScroller {
 
   pointerDownHandler(event) {
     if (!this.#active) return;
-
-    if (MomentumScroller.pointerIsDown) return;
 
     if (this.#preventDefaultSelectors) {
       if (
@@ -234,20 +226,23 @@ class MomentumScroller {
 
     if (this.#scrollerType == "none") return;
 
-    MomentumScroller.pointerIsDown = true;
     this.#pointerIsDown = true;
 
     if (this.#stopScrollOnPointerDown)
-      this.abortPriorScrolls({
-        abortedBy: "Pointer down on scroll container",
-      });
+      if (this.#resolve)
+        this.abortPriorScrolls({
+          abortedBy: "Pointer down on scroll container",
+        });
 
-    if (this.#onMomentumScrollPointerDown)
-      this.#onMomentumScrollPointerDown(
-        this.getEventData({
-          eventType: "onMomentumScrollPointerDown",
-        })
-      );
+    const momentumScrollPointerDownEvent = new CustomEvent(
+      "momentumScrollPointerDown",
+      {
+        bubbles: true,
+        cancelable: true,
+        detail: this.getEventData(),
+      }
+    );
+    this.#scrollContainer.dispatchEvent(momentumScrollPointerDownEvent);
 
     this.#scrollContainer.style.setProperty("cursor", this.#grabbingCursor);
 
@@ -307,17 +302,19 @@ class MomentumScroller {
   }
 
   pointerUpHandler(event) {
-    MomentumScroller.pointerIsDown = false;
     this.#pointerIsDown = false;
 
     this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
 
-    if (this.#onMomentumScrollPointerUp)
-      this.#onMomentumScrollPointerUp(
-        this.getEventData({
-          eventType: "onMomentumScrollPointerUp",
-        })
-      );
+    const momentumScrollPointerUpEvent = new CustomEvent(
+      "momentumScrollPointerUp",
+      {
+        bubbles: true,
+        cancelable: true,
+        detail: this.getEventData(),
+      }
+    );
+    this.#scrollContainer.dispatchEvent(momentumScrollPointerUpEvent);
 
     this.#pointerMoveUpCancelAbortController.abort();
     this.#pointerMoveUpCancelAbortController = new AbortController();
@@ -399,25 +396,18 @@ class MomentumScroller {
     deceleration,
     currentTime
   ) {
-    const scrollContainerClientRects =
-      this.#scrollContainer.getBoundingClientRect();
-
-    const scrollContainerBottomEdge =
-      this.#scrollContainer.scrollHeight - this.#scrollContainer.scrollTop;
-    const scrollContainerTopEdge = 0;
-    const scrollContainerRightEdge =
-      this.#scrollContainer.scrollWidth - this.#scrollContainer.scrollLeft;
-    const scrollContainerLeftEdge = 0;
-
-    const reachedTopEdge =
-      this.#scrollContainer.scrollTop == scrollContainerTopEdge;
+    const reachedTopEdge = this.#scrollContainer.scrollTop == 0;
     const reachedBottomEdge =
-      Math.abs(scrollContainerClientRects.height - scrollContainerBottomEdge) <
+      this.#scrollContainer.scrollHeight -
+        this.#scrollContainer.scrollTop -
+        this.#scrollContainer.clientHeight <=
       1;
-    const reachedLeftEdge =
-      this.#scrollContainer.scrollLeft == scrollContainerLeftEdge;
+    const reachedLeftEdge = this.#scrollContainer.scrollLeft == 0;
     const reachedRightEdge =
-      Math.abs(scrollContainerClientRects.width - scrollContainerRightEdge) < 1;
+      this.#scrollContainer.scrollWidth -
+        this.#scrollContainer.scrollLeft -
+        this.#scrollContainer.clientWidth <=
+      1;
 
     const reachedEdgeOfVerticalOnlyScroller =
       (reachedTopEdge || reachedBottomEdge) &&
@@ -443,34 +433,20 @@ class MomentumScroller {
       this.#scrollerType == "horizontal-and-vertical";
 
     if (newMomentumScroll) {
-      if (!velocityX && !velocityY) {
-        this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
-        return new Promise((resolve) => {
-          this.#resolve = resolve;
-          return this.abortPriorScrolls({
-            abortedBy: "No velocity in X and Y direction",
-          });
-        });
-      }
-
-      if (!Number.isFinite(velocityX) || !Number.isFinite(velocityY)) {
-        this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
-        return new Promise((resolve) => {
-          this.#resolve = resolve;
-          return this.abortPriorScrolls({
-            abortedBy: "TypeError: X and Y must be finite numbers",
-          });
-        });
-      }
-
-      this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
+      validateArgument("velocityX", velocityX, {
+        allowedTypes: ["number"],
+        allowFiniteNumbersOnly: true,
+      });
+      validateArgument("velocityY", velocityY, {
+        allowedTypes: ["number"],
+        allowFiniteNumbersOnly: true,
+      });
 
       const velocityHypotenuse = Math.hypot(velocityX, velocityY);
 
-      const quantifiedDeceleration =
-        this.#decelerationDictionary[this.#deceleration];
+      const decelerationValue = this.#decelerationMap.get(this.#deceleration);
 
-      this.#scrollDuration = velocityHypotenuse / quantifiedDeceleration;
+      this.#scrollDuration = velocityHypotenuse / decelerationValue;
       this.#scrollDistance = (velocityHypotenuse * this.#scrollDuration) / 2;
 
       const scrollDistanceX =
@@ -483,20 +459,25 @@ class MomentumScroller {
       const yDistanceBelowMinimum = scrollDistanceY < minimumScrollableDistance;
 
       if (
+        (velocityX === 0 && velocityY === 0) ||
         (this.#scrollerType == "horizontal-only" && xDistanceBelowMinimum) ||
         (this.#scrollerType == "vertical-only" && yDistanceBelowMinimum) ||
         (this.#scrollerType == "horizontal-and-vertical" &&
           xDistanceBelowMinimum &&
           yDistanceBelowMinimum)
       ) {
-        this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
+        if (this.#resolve)
+          this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
         return new Promise((resolve) => {
           this.#resolve = resolve;
           return this.abortPriorScrolls({
-            abortedBy: "Scroll distance < minimum scrollable distance",
+            abortedBy: "Scroll distance is below minimum scrollable distance",
           });
         });
       }
+
+      if (this.#resolve)
+        this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
 
       const scrollTimestamp = Date.now();
       this.#scrollStartingPointY = this.#scrollContainer.scrollTop;
@@ -565,7 +546,7 @@ class MomentumScroller {
               velocityY: multiplierAdjustedVelocityY,
             },
             false,
-            quantifiedDeceleration,
+            decelerationValue,
             currentTime
           );
         });
@@ -574,12 +555,13 @@ class MomentumScroller {
 
     if (!this.#startTime) {
       this.#startTime = currentTime;
-      if (this.#onMomentumScrollStart)
-        this.#onMomentumScrollStart(
-          this.getEventData({
-            eventType: "onMomentumScrollStart",
-          })
-        );
+
+      const momentumScrollStartEvent = new CustomEvent("momentumScrollStart", {
+        bubbles: true,
+        cancelable: true,
+        detail: this.getEventData(),
+      });
+      this.#scrollContainer.dispatchEvent(momentumScrollStartEvent);
     }
 
     this.#elapsedTime = currentTime - this.#startTime;
@@ -620,10 +602,12 @@ class MomentumScroller {
       this.#scrollContainer.scrollTop = nextScrollY;
     }
 
-    if (this.#onMomentumScroll)
-      this.#onMomentumScroll(
-        this.getEventData({ eventType: "onMomentumScroll" })
-      );
+    const momentumScrollEvent = new CustomEvent("momentumScroll", {
+      bubbles: true,
+      cancelable: true,
+      detail: this.getEventData(),
+    });
+    this.#scrollContainer.dispatchEvent(momentumScrollEvent);
 
     if (
       elapsedTimeRatio < 1 &&
@@ -671,13 +655,12 @@ class MomentumScroller {
   abortPriorScrolls(extraData = {}) {
     if (this.#resolve) this.#resolve(this.getEventData(extraData));
 
-    if (this.#onMomentumScrollStop) {
-      this.#onMomentumScrollStop(
-        this.getEventData(
-          Object.assign(extraData, { eventType: "onMomentumScrollStop" })
-        )
-      );
-    }
+    const momentumScrollStopEvent = new CustomEvent("momentumScrollStop", {
+      bubbles: true,
+      cancelable: true,
+      detail: this.getEventData(extraData),
+    });
+    this.#scrollContainer.dispatchEvent(momentumScrollStopEvent);
 
     this.#abortionTimestamp = Date.now();
     cancelAnimationFrame(this.#scrollRafId);
