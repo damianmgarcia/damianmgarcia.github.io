@@ -1,6 +1,7 @@
-export function awaitElement({ selector } = {}) {
-  if (typeof selector != "string")
-    throw new TypeError("selector must be of type string");
+export function awaitElement({ selector = "" } = {}) {
+  validateArgument("selector", selector, {
+    allowedTypes: ["string"],
+  });
 
   return new Promise((resolve) => {
     if (document.querySelector(selector)) return resolve(selector);
@@ -23,10 +24,13 @@ export function awaitElement({ selector } = {}) {
   });
 }
 
-export function awaitTimeout({ milliseconds = 0 } = {}) {
-  if (!Number.isFinite(milliseconds))
-    throw new TypeError("milliseconds must be a finite number");
-  if (milliseconds < 0) throw new RangeError("milliseconds must be >= 0");
+export function awaitTimeout({ milliseconds = NaN } = {}) {
+  validateArgument("milliseconds", milliseconds, {
+    allowedTypes: ["number"],
+    allowedMin: 0,
+    allowIntegerNumbersOnly: true,
+    allowFiniteNumbersOnly: true,
+  });
 
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -118,6 +122,9 @@ export class Calendar {
 }
 
 export function cancelAllElementAnimations(element) {
+  validateArgument("element", element, {
+    allowedPrototypes: [Element, Document],
+  });
   const animations = element.getAnimations();
   if (animations.length) {
     animations.forEach((animation) => animation.cancel());
@@ -163,12 +170,26 @@ export function getDeviceHeuristics() {
   return deviceHeuristics;
 }
 
-export function getRandomNumber({ min, max, randomIntegersOnly = false } = {}) {
-  if (!Number.isFinite(min) || !Number.isFinite(max))
-    throw new TypeError("min and max must be finite numbers");
-  if (min >= max) throw new RangeError("min must be less than max");
-  if (typeof randomIntegersOnly != "boolean")
-    throw new TypeError("randomIntegersOnly must be of type boolean");
+export function getRandomNumber({
+  min = NaN,
+  max = NaN,
+  randomIntegersOnly = false,
+} = {}) {
+  validateArgument("min", min, {
+    allowedTypes: ["number"],
+  });
+  validateArgument("max", max, {
+    allowedTypes: ["number"],
+  });
+  validateArgument("min", min, {
+    allowedMax: max,
+  });
+  validateArgument("max", max, {
+    allowedMin: min,
+  });
+  validateArgument("randomIntegersOnly", randomIntegersOnly, {
+    allowedTypes: ["boolean"],
+  });
 
   const randomNumber = !randomIntegersOnly
     ? Math.random() * (max - min) + min
@@ -177,6 +198,9 @@ export function getRandomNumber({ min, max, randomIntegersOnly = false } = {}) {
 }
 
 export function isPrimaryInput(event) {
+  validateArgument("event", event, {
+    allowedPrototypes: [Event],
+  });
   if (event.type.includes("pointer")) {
     const isPrimaryPointer = event.isPrimary;
     const isPrimaryButton = event.button == 0 || event.button == -1;
@@ -191,10 +215,12 @@ export class MetaViewportWidthPreserver {
   #metaViewportElement;
   #width;
 
-  constructor(width) {
-    if (!Number.isFinite(width))
-      return TypeError("width argument must be a finite number");
-    if (width < 0) return RangeError("width must be >= 0");
+  constructor(width = NaN) {
+    validateArgument("width", width, {
+      allowedTypes: ["number"],
+      allowedMin: 0,
+      allowFiniteNumbersOnly: true,
+    });
 
     this.#width = width;
 
@@ -237,23 +263,6 @@ export class MetaViewportWidthPreserver {
   }
 }
 
-export function setBulkStyleProperties({
-  selectorsPropertiesValues = [],
-  constantSelector,
-  constantProperty,
-} = {}) {
-  if (!Array.isArray(selectorsPropertiesValues))
-    throw new TypeError("selectorsPropertiesValues must be of type array");
-
-  selectorsPropertiesValues.forEach(({ selector, property, value }) => {
-    document
-      .querySelectorAll(constantSelector || selector)
-      .forEach((item) =>
-        item.style.setProperty(constantProperty || property, value)
-      );
-  });
-}
-
 export function showCaughtErrorsOnScreen() {
   addEventListener("error", (event) => {
     const errorScreen = document.createElement("div");
@@ -264,4 +273,249 @@ export function showCaughtErrorsOnScreen() {
     errorScreen.textContent = event.message;
     document.querySelector(":root").append(errorScreen);
   });
+}
+
+export function validateArgument(
+  parameterName = "",
+  argument,
+  {
+    allowedTypes = [],
+    allowedPrototypes = [],
+    allowedValues = [],
+    allowedMin = NaN,
+    allowedMinIsInclusive = true,
+    allowedMax = NaN,
+    allowedMaxIsInclusive = true,
+    allowIntegerNumbersOnly = false,
+    allowFiniteNumbersOnly = false,
+    allowNonNaNNumbersOnly = true,
+    customErrorMessage = "",
+  } = {}
+) {
+  if (typeof parameterName !== "string")
+    throw new TypeError("parameterName must be a String");
+  if (parameterName.length === 0)
+    throw new TypeError("parameterName must be at least 1 character");
+  if (!Array.isArray(allowedTypes))
+    throw new TypeError("allowedTypes must be an Array");
+  if (!Array.isArray(allowedPrototypes))
+    throw new TypeError("allowedPrototypes must be an Array");
+  if (!Array.isArray(allowedValues))
+    throw new TypeError("allowedValues must be an Array");
+  if (typeof allowedMin !== "number")
+    throw new TypeError("allowedMin must be a Number");
+  if (typeof allowedMax !== "number")
+    throw new TypeError("allowedMax must be a Number");
+  if (typeof allowedMinIsInclusive !== "boolean")
+    throw new TypeError("allowedMinIsInclusive must be a Boolean");
+  if (typeof allowedMaxIsInclusive !== "boolean")
+    throw new TypeError("allowedMaxIsInclusive must be a Boolean");
+  if (typeof allowIntegerNumbersOnly !== "boolean")
+    throw new TypeError("allowIntegerNumbersOnly must be a Boolean");
+  if (typeof allowFiniteNumbersOnly !== "boolean")
+    throw new TypeError("allowFiniteNumbersOnly must be a Boolean");
+  if (typeof allowNonNaNNumbersOnly !== "boolean")
+    throw new TypeError("allowNonNaNNumbersOnly must be a Boolean");
+  if (typeof customErrorMessage !== "string")
+    throw new TypeError("customErrorMessage must be a String");
+
+  const argumentType = getControlledType(argument);
+
+  function getControlledType(data) {
+    const controlledTypes = new Set([
+      "array",
+      "boolean",
+      "bigint",
+      "function",
+      "map",
+      "null",
+      "number",
+      "object",
+      "regexp",
+      "set",
+      "string",
+      "symbol",
+      "undefined",
+      "weakmap",
+      "weakset",
+    ]);
+    const uncontrolledType = Object.prototype.toString
+      .call(data)
+      .slice(8, -1)
+      .toLowerCase();
+
+    return controlledTypes.has(uncontrolledType)
+      ? uncontrolledType
+      : typeof data;
+  }
+
+  // allowedTypes
+  if (allowedTypes.length > 0) {
+    const argumentIsNotAnAllowedType = !allowedTypes.includes(argumentType);
+
+    if (argumentIsNotAnAllowedType)
+      throw new TypeError(
+        customErrorMessage ||
+          `${parameterName} must be one of the following types: ${allowedTypes.join(
+            ", "
+          )}`
+      );
+  }
+
+  // allowedNumbers
+  const argumentIsANumber = argumentType === "number";
+  if (argumentIsANumber) {
+    const argumentIsAnInteger = Number.isInteger(argument);
+    const argumentIsFinite = Number.isFinite(argument);
+    const argumentIsNaN = Number.isNaN(argument);
+
+    if (allowIntegerNumbersOnly && !argumentIsAnInteger)
+      throw new TypeError(
+        customErrorMessage || `${parameterName} must be an integer Number`
+      );
+    if (allowFiniteNumbersOnly && !argumentIsFinite)
+      throw new TypeError(
+        customErrorMessage || `${parameterName} must be a finite Number`
+      );
+    if (allowNonNaNNumbersOnly && argumentIsNaN)
+      throw new TypeError(
+        customErrorMessage || `${parameterName} must not be NaN`
+      );
+
+    const allowedMinIsNotNaN = !Number.isNaN(allowedMin);
+    const allowedMaxIsNotNaN = !Number.isNaN(allowedMax);
+
+    if (allowedMinIsNotNaN || allowedMaxIsNotNaN) {
+      if (
+        allowedMinIsNotNaN &&
+        allowedMaxIsNotNaN &&
+        allowedMinIsInclusive &&
+        allowedMaxIsInclusive &&
+        (argument < allowedMin || argument > allowedMax)
+      )
+        throw new RangeError(
+          customErrorMessage ||
+            `${parameterName} must be within the interval [${allowedMin}, ${allowedMax}]`
+        );
+
+      if (
+        allowedMinIsNotNaN &&
+        allowedMaxIsNotNaN &&
+        !allowedMinIsInclusive &&
+        !allowedMaxIsInclusive &&
+        (argument <= allowedMin || argument >= allowedMax)
+      )
+        throw new RangeError(
+          customErrorMessage ||
+            `${parameterName} must be within the interval (${allowedMin}, ${allowedMax})`
+        );
+
+      if (
+        allowedMinIsNotNaN &&
+        allowedMaxIsNotNaN &&
+        allowedMinIsInclusive &&
+        !allowedMaxIsInclusive &&
+        (argument < allowedMin || argument >= allowedMax)
+      )
+        throw new RangeError(
+          customErrorMessage ||
+            `${parameterName} must be within the interval [${allowedMin}, ${allowedMax})`
+        );
+
+      if (
+        allowedMinIsNotNaN &&
+        allowedMaxIsNotNaN &&
+        !allowedMinIsInclusive &&
+        allowedMaxIsInclusive &&
+        (argument <= allowedMin || argument > allowedMax)
+      )
+        throw new RangeError(
+          customErrorMessage ||
+            `${parameterName} must be within the interval (${allowedMin}, ${allowedMax}]`
+        );
+
+      if (
+        allowedMinIsNotNaN &&
+        !allowedMaxIsNotNaN &&
+        allowedMinIsInclusive &&
+        argument < allowedMin
+      )
+        throw new RangeError(
+          customErrorMessage ||
+            `${parameterName} must be within the interval [${allowedMin}, +Infinity${
+              allowedMaxIsInclusive ? "]" : ")"
+            }`
+        );
+
+      if (
+        allowedMinIsNotNaN &&
+        !allowedMaxIsNotNaN &&
+        !allowedMinIsInclusive &&
+        argument <= allowedMin
+      )
+        throw new RangeError(
+          customErrorMessage ||
+            `${parameterName} must be within the interval (${allowedMin}, +Infinity${
+              allowedMaxIsInclusive ? "]" : ")"
+            }`
+        );
+
+      if (
+        !allowedMinIsNotNaN &&
+        allowedMaxIsNotNaN &&
+        allowedMaxIsInclusive &&
+        argument > allowedMax
+      )
+        throw new RangeError(
+          customErrorMessage ||
+            `${parameterName} must be within the interval ${
+              allowedMinIsInclusive ? "[" : "("
+            }-Infinity, ${allowedMax}]`
+        );
+
+      if (
+        !allowedMinIsNotNaN &&
+        allowedMaxIsNotNaN &&
+        !allowedMaxIsInclusive &&
+        argument >= allowedMax
+      )
+        throw new RangeError(
+          customErrorMessage ||
+            `${parameterName} must be within the interval ${
+              allowedMinIsInclusive ? "[" : "("
+            }-Infinity, ${allowedMax})`
+        );
+    }
+  }
+
+  // allowedPrototypes
+  if (allowedPrototypes.length > 0) {
+    const argumentIsNotFromAnAllowedPrototype = allowedPrototypes.every(
+      (prototype) => !(argument instanceof prototype)
+    );
+
+    if (argumentIsNotFromAnAllowedPrototype)
+      throw new TypeError(
+        customErrorMessage ||
+          `${parameterName} must have one of the following prototypes in its prototype chain: ${allowedPrototypes
+            .map((prototype) => prototype.name)
+            .join(", ")}`
+      );
+  }
+
+  // allowedValues
+  if (allowedValues.length > 0) {
+    const argumentIsNotAnAllowedValue = !allowedValues.includes(argument);
+
+    if (argumentIsNotAnAllowedValue) {
+      throw new TypeError(
+        customErrorMessage ||
+          `${parameterName} must be one of the following values: ${allowedValues.join(
+            ", "
+          )}`
+      );
+    }
+  }
+
+  return argument;
 }
