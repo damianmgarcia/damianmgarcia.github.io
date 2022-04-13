@@ -361,7 +361,7 @@ class MomentumScroller {
       return 0;
     }
 
-    this.momentumScroll({
+    this.scroll({
       velocityX: velocityX,
       velocityY: velocityY,
     });
@@ -390,7 +390,7 @@ class MomentumScroller {
   #elapsedTime;
   #resolve;
 
-  momentumScroll(
+  scroll(
     { velocityX = 0, velocityY = 0 },
     newMomentumScroll = true,
     deceleration,
@@ -540,7 +540,7 @@ class MomentumScroller {
       return new Promise((resolve) => {
         this.#resolve = resolve;
         this.#scrollRafId = requestAnimationFrame((currentTime) => {
-          this.momentumScroll(
+          this.scroll(
             {
               velocityX: multiplierAdjustedVelocityX,
               velocityY: multiplierAdjustedVelocityY,
@@ -616,7 +616,7 @@ class MomentumScroller {
     ) {
       this.#isCurrentlyScrolling = true;
       this.#scrollRafId = requestAnimationFrame((currentTime) => {
-        this.momentumScroll(
+        this.scroll(
           { velocityX: velocityX, velocityY: velocityY },
           false,
           deceleration,

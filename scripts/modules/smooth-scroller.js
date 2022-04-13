@@ -18,7 +18,7 @@ class SmoothScroller {
       ? matchingScroller
       : new this(scrollContainer);
 
-    return scroller.smoothScroll({
+    return scroller.scroll({
       x,
       y,
       duration,
@@ -109,7 +109,7 @@ class SmoothScroller {
   #elapsedTime;
   #resolve;
 
-  async smoothScroll(
+  async scroll(
     {
       x = this.#scrollContainer.scrollLeft,
       y = this.#scrollContainer.scrollTop,
@@ -212,7 +212,7 @@ class SmoothScroller {
           return new Promise((resolve) => {
             this.#resolve = resolve;
             this.#scrollRafId = requestAnimationFrame((currentTime) => {
-              this.smoothScroll(
+              this.scroll(
                 {
                   x,
                   y,
@@ -269,7 +269,7 @@ class SmoothScroller {
     if (elapsedTimeRatio < 1) {
       this.#isCurrentlyScrolling = true;
       this.#scrollRafId = requestAnimationFrame((currentTime) => {
-        this.smoothScroll(
+        this.scroll(
           {
             x,
             y,
