@@ -114,7 +114,7 @@ class SmoothScroller {
       x = this.#scrollContainer.scrollLeft,
       y = this.#scrollContainer.scrollTop,
       duration = 600,
-      easing = [0.25, 0.1, 0.25, 1],
+      easing = "ease",
       stopScrollOnPointerDown = true,
     } = {},
     newSmoothScroll = true,
