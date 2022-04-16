@@ -1535,14 +1535,14 @@ const insideMainViewport = new IntersectionObserver(
     const incoming = entries.find((entry) => entry.isIntersecting);
 
     if (incoming && incoming.target.matches("video")) {
-      const smoothScrollerIsCurrentlyScrolling = SmoothScroller.scrollerMap.get(
+      const smoothScrollerIsScrolling = SmoothScroller.scrollerMap.get(
         incoming.target.closest(".video-gallery")
-      )?.isCurrentlyScrolling;
+      )?.isScrolling;
 
       if (
         incoming.target.paused &&
         !VideoGalleryObservers.aVideoGalleryIsActive &&
-        !smoothScrollerIsCurrentlyScrolling
+        !smoothScrollerIsScrolling
       ) {
         try {
           await incoming.target.play();

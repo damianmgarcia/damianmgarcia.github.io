@@ -91,10 +91,10 @@ class SmoothScroller {
     return this.#scrollContainer;
   }
 
-  #isCurrentlyScrolling = false;
+  #isScrolling = false;
 
-  get isCurrentlyScrolling() {
-    return this.#isCurrentlyScrolling;
+  get isScrolling() {
+    return this.#isScrolling;
   }
 
   #cubicBezierSolver;
@@ -161,7 +161,7 @@ class SmoothScroller {
         this.#scrollContainer.style.setProperty("overflow", "hidden");
       } // Stops Safari's momentum scrolling to prevent scroll interference
 
-      this.#isCurrentlyScrolling = true;
+      this.#isScrolling = true;
       this.#stopScrollOnPointerDown = stopScrollOnPointerDown;
       this.#scrollStartingPointX = this.#scrollContainer.scrollLeft;
       this.#scrollStartingPointY = this.#scrollContainer.scrollTop;
@@ -267,7 +267,7 @@ class SmoothScroller {
     this.#scrollContainer.dispatchEvent(smoothScrollEvent);
 
     if (elapsedTimeRatio < 1) {
-      this.#isCurrentlyScrolling = true;
+      this.#isScrolling = true;
       this.#scrollRafId = requestAnimationFrame((currentTime) => {
         this.scroll(
           {
@@ -309,7 +309,7 @@ class SmoothScroller {
     this.#duration = null;
     this.#elapsedTime = null;
     this.#resolve = null;
-    this.#isCurrentlyScrolling = false;
+    this.#isScrolling = false;
   }
 
   getEventData(extraData) {

@@ -369,10 +369,10 @@ class MomentumScroller {
     this.#pointerMoveLog = [];
   }
 
-  #isCurrentlyScrolling = false;
+  #isScrolling = false;
 
-  get isCurrentlyScrolling() {
-    return this.#isCurrentlyScrolling;
+  get isScrolling() {
+    return this.#isScrolling;
   }
 
   #scrollDirectionPreviousY;
@@ -615,7 +615,7 @@ class MomentumScroller {
       !reachedEdgeOfOneDimensionalScroller &&
       !reachedVertexOfTwoDimensionalScroller
     ) {
-      this.#isCurrentlyScrolling = true;
+      this.#isScrolling = true;
       this.#scrollRafId = requestAnimationFrame((currentTime) => {
         this.scroll(
           { velocityX: velocityX, velocityY: velocityY },
@@ -632,7 +632,7 @@ class MomentumScroller {
     ) {
       const resolveData = this.getEventData();
 
-      this.#isCurrentlyScrolling = false;
+      this.#isScrolling = false;
       this.#scrollVelocityMultiplierX = 1;
       this.#scrollVelocityMultiplierY = 1;
       this.#scrollDirectionPreviousX = null;
