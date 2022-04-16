@@ -375,7 +375,6 @@ class CubicBezierSolver {
 
   constructor(controlPoints) {
     const validatedControlPoints = easingValidator(controlPoints);
-
     const [p1x, p1y, p2x, p2y] = validatedControlPoints;
 
     this.#controlPoints = {
@@ -404,17 +403,14 @@ class CubicBezierSolver {
         });
         easing = CubicBezierSolver.easingKeywordMap.get(easing);
       } else if (Array.isArray(easing)) {
-        validateArgument(
-          "easing array length (# of control points)",
-          easing.length,
-          {
-            allowedValues: [4],
-          }
-        );
+        validateArgument("easing", easing.length, {
+          allowedValues: [4],
+          customErrorMessage:
+            "easing must comprise 4 numbers, e.g. [ 0, 0.25, 0.1, 0.25]",
+        });
         easing.forEach((controlPoint) =>
-          validateArgument("controlPoint", controlPoint, {
+          validateArgument("easing values", controlPoint, {
             allowedTypes: ["number"],
-            allowFiniteNumbersOnly: true,
           })
         );
         validateArgument("x1", easing[0], {
@@ -425,6 +421,15 @@ class CubicBezierSolver {
           allowedMin: 0,
           allowedMax: 1,
         });
+
+        // Prevent precision loss through y-value limitation; no BigInts
+        easing[1] = yLimiter(easing[1]);
+        easing[3] = yLimiter(easing[3]);
+
+        function yLimiter(y) {
+          const limit = Math.floor(Number.MAX_SAFE_INTEGER / 6);
+          return Math.abs(y) < limit ? y : limit;
+        }
       }
 
       return easing;
@@ -457,7 +462,6 @@ class CubicBezierSolver {
       allowedTypes: ["number"],
       allowedMin: 0,
       allowedMax: 1,
-      allowFiniteNumbersOnly: true,
     });
 
     // Newton's
