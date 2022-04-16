@@ -288,47 +288,47 @@ const kittehAppointerAndThemer = {
       this.appointedKittehElement &&
       this.appointedKittehTheme
     ) {
-      if (kitteh != "same") {
+      if (kitteh !== "same") {
         const availableKittehFound = this.availableKittehs.includes(
           kitteh.toLowerCase()
         );
         if (
           !availableKittehFound ||
-          (availableKittehFound && this.appointedKitteh == kitteh)
+          (availableKittehFound && this.appointedKitteh === kitteh)
         )
           kitteh = "same";
       }
 
-      if (theme == "auto") theme = this.getAutoTheme();
+      if (theme === "auto") theme = this.getAutoTheme();
 
-      if (theme != "same") {
+      if (theme !== "same") {
         const availableThemeFound = this.availableThemes.includes(
           theme.toLowerCase()
         );
         if (
           !availableThemeFound ||
-          (availableThemeFound && this.appointedKittehTheme == theme)
+          (availableThemeFound && this.appointedKittehTheme === theme)
         )
           theme = "same";
       }
     }
 
-    if (kitteh != "same") {
+    if (kitteh !== "same") {
       this.appointedKitteh = kitteh;
       this.appointedKittehElement = document.querySelector(
         `#logo #${kitteh}-logo`
       );
       this.changeKitteh();
     }
-    if (theme != "same") {
+    if (theme !== "same") {
       this.appointedKittehTheme = theme;
       this.changeKittehTheme();
     }
 
     if (
-      theme == "same" &&
-      this.appointedKittehTheme == "halloween" &&
-      kitteh != "same"
+      theme === "same" &&
+      this.appointedKittehTheme === "halloween" &&
+      kitteh !== "same"
     ) {
       this.switchHalloweenFangs();
     }
@@ -337,15 +337,15 @@ const kittehAppointerAndThemer = {
   },
 
   getAutoTheme() {
-    if (calendar.month == 10) {
-      if (calendar.day == 31) {
+    if (calendar.month === 10) {
+      if (calendar.day === 31) {
         return "halloween";
-      } else if (calendar.day != 31) {
+      } else if (calendar.day !== 31) {
         return "october";
       }
-    } else if (calendar.month == 11) {
+    } else if (calendar.month === 11) {
       return "november";
-    } else if (calendar.month == 12) {
+    } else if (calendar.month === 12) {
       return "december";
     } else {
       return "none";
@@ -355,7 +355,7 @@ const kittehAppointerAndThemer = {
   changeKitteh() {
     const allKittehs = document.querySelectorAll("#logo .subject > g");
     allKittehs.forEach((kitteh) => {
-      if (kitteh != this.appointedKittehElement) {
+      if (kitteh !== this.appointedKittehElement) {
         kitteh.style.setProperty("visibility", "hidden");
       }
     });
@@ -382,7 +382,7 @@ const kittehAppointerAndThemer = {
   switchHalloweenFangs() {
     const allKittehs = document.querySelectorAll("#logo .subject > g");
     allKittehs.forEach((kitteh) => {
-      if (kitteh != this.appointedKittehElement)
+      if (kitteh !== this.appointedKittehElement)
         kitteh
           .querySelectorAll(".halloween")
           .forEach((element) =>
@@ -404,15 +404,15 @@ const kittehAppointerAndThemer = {
 
     await Promise.all([snowGlobeAnimation.stop(), logoPumpkinLights.stop()]);
 
-    if (this.appointedKittehTheme == "none") return;
+    if (this.appointedKittehTheme === "none") return;
 
-    if (this.appointedKittehTheme == "october") {
+    if (this.appointedKittehTheme === "october") {
       applyOctoberTheme();
-    } else if (this.appointedKittehTheme == "halloween") {
+    } else if (this.appointedKittehTheme === "halloween") {
       applyHalloweenTheme();
-    } else if (this.appointedKittehTheme == "november") {
+    } else if (this.appointedKittehTheme === "november") {
       applyNovemberTheme();
-    } else if (this.appointedKittehTheme == "december") {
+    } else if (this.appointedKittehTheme === "december") {
       applyDecemberTheme();
     }
 
@@ -440,7 +440,7 @@ const kittehAppointerAndThemer = {
         .querySelectorAll(".november")
         .forEach((item) => item.style.setProperty("visibility", "visible"));
 
-      if (calendar.holiday == "thanksgiving")
+      if (calendar.holiday === "thanksgiving")
         document
           .querySelector("#logo")
           .setAttribute("title", "\u{1F967} It is Thanksgiving \u{1F967}");
@@ -482,7 +482,7 @@ kittehAppointerAndThemer.appointKitteh();
 
 document.addEventListener("momentumScrollActivate", (event) => {
   const scrollContainer = event.detail.scrollContainer;
-  if (scrollContainer == document.querySelector("main")) {
+  if (scrollContainer === document.querySelector("main")) {
     localStorage.setItem("momentumScrollerPreference", "on");
     document.querySelector("#touch-app-button").dataset.toggleButtonState =
       "on";
@@ -503,7 +503,7 @@ document.addEventListener("momentumScrollActivate", (event) => {
 
 document.addEventListener("momentumScrollDeactivate", (event) => {
   const scrollContainer = event.detail.scrollContainer;
-  if (scrollContainer == document.querySelector("main")) {
+  if (scrollContainer === document.querySelector("main")) {
     localStorage.setItem("momentumScrollerPreference", "off");
     document.querySelector("#touch-app-button").dataset.toggleButtonState =
       "off";
@@ -552,7 +552,7 @@ document.addEventListener("momentumScrollStop", (event) => {
     document.querySelector("#momentum-scroller-demo-container")
   ) {
     if (
-      event.detail.abortedBy ==
+      event.detail.interruptedBy ==
       "Scroll distance is below minimum scrollable distance"
     )
       return enableOrDisableDemoMomentumScrollerSelectors("enable");
@@ -560,7 +560,7 @@ document.addEventListener("momentumScrollStop", (event) => {
     if (
       event.detail.momentumScroller.isActive &&
       !event.detail.momentumScroller.pointerIsDown &&
-      !event.detail.abortedBy
+      !event.detail.interruptedBy
     ) {
       enableOrDisableDemoMomentumScrollerSelectors("enable");
       const demoContainer = scrollContainer.closest(".demo-container");
@@ -732,18 +732,18 @@ function getCursorDataUri(cursorType, fillColor) {
       kittehAppointerAndThemer.initialKitteh;
     const appearance = lightDarkAppearanceSwitcher.currentAppearance;
 
-    if (kitteh == "shelby") {
+    if (kitteh === "shelby") {
       return "hsl(28, 53.6%, 27.1%)";
-    } else if (kitteh == "charm" && appearance == "dark") {
+    } else if (kitteh === "charm" && appearance === "dark") {
       return "hsl(0, 0%, 0%)";
-    } else if (kitteh == "charm" && appearance == "light") {
+    } else if (kitteh === "charm" && appearance === "light") {
       return "hsl(0, 0%, 20%)";
     }
   }
 
-  if (cursorType == "grab") {
+  if (cursorType === "grab") {
     return `'data:image/svg+xml,<svg viewBox="0 0 100 100" width="32px" height="32px" xmlns="http://www.w3.org/2000/svg"><g fill="${fillColor}"><rect x="30" width="40" height="72.311" y="27.689"></rect><ellipse cx="35" cy="47.615" rx="15.272" ry="24.031" transform="matrix(0.5, -0.866025, 0.866025, 0.5, -30.288789, 42.249315)"></ellipse><ellipse cx="35.585" cy="47.898" rx="15.272" ry="24.031" transform="matrix(0.866025, -0.5, 0.5, 0.866025, -12.56623, -1.28844)"></ellipse><ellipse cx="57.544" cy="55.893" rx="15.272" ry="24.031" transform="matrix(0.866025, 0.5, -0.5, 0.866025, 35.903162, -54.729734)"></ellipse><ellipse cx="53.171" cy="70.887" rx="15.272" ry="24.031" transform="matrix(0.5, 0.866025, -0.866025, 0.5, 106.357134, -45.745589)"></ellipse></g></svg>'`;
-  } else if (cursorType == "grabbing") {
+  } else if (cursorType === "grabbing") {
     return `'data:image/svg+xml,<svg viewBox="0 0 100 100" width="32px" height="32px" xmlns="http://www.w3.org/2000/svg"><g fill="${fillColor}"><rect x="30" width="40" height="72.311" y="27.689"></rect><ellipse cx="35" cy="47.615" rx="15.272" ry="24.031" transform="matrix(0.5, -0.866025, 0.866025, 0.5, -22.288949, 44.249315)"></ellipse><ellipse cx="57.544" cy="55.893" rx="15.272" ry="24.031" transform="matrix(0.866025, 0.5, -0.5, 0.866025, 33.903124, -50.729856)"></ellipse><ellipse cx="53.171" cy="70.887" rx="15.272" ry="24.031" transform="matrix(0.5, 0.866025, -0.866025, 0.5, 98.35721, -43.745818)"></ellipse><ellipse cx="57.929" cy="56.061" rx="15.272" ry="24.031" transform="matrix(0.866025, -0.5, 0.5, 0.866025, -33.998213, 6.814154)"></ellipse></g></svg>'`;
   }
 }
@@ -1161,21 +1161,22 @@ const kittehMessageLibrary = {
   submitMessagesToKittehMessages({ index, preferHoliday = false } = {}) {
     const messagePackages = this.kittehMessages.find(
       (kittehMessagePackages) =>
-        kittehMessagePackages.kitteh == kittehAppointerAndThemer.appointedKitteh
+        kittehMessagePackages.kitteh ===
+        kittehAppointerAndThemer.appointedKitteh
     ).messagePackages;
 
     if (!messagePackages.length) return;
 
     const messagePackagesMinusInappropriateHolidays = messagePackages.filter(
       (messagePackage) =>
-        !messagePackage.holiday || messagePackage.holiday == calendar.holiday
+        !messagePackage.holiday || messagePackage.holiday === calendar.holiday
     );
     if (preferHoliday && calendar.holiday) {
       const holidayMessageIndex =
         messagePackagesMinusInappropriateHolidays.findIndex(
-          (messagePackage) => messagePackage.holiday == calendar.holiday
+          (messagePackage) => messagePackage.holiday === calendar.holiday
         );
-      if (holidayMessageIndex != -1) index = holidayMessageIndex;
+      if (holidayMessageIndex !== -1) index = holidayMessageIndex;
     }
 
     if (index === undefined) {
@@ -1191,7 +1192,8 @@ const kittehMessageLibrary = {
       messagePackageSubmissions.sort((a, b) => a.submissions - b.submissions);
       const leastSubmittedMessagePackages = messagePackageSubmissions.filter(
         (messagePackage) =>
-          messagePackage.submissions == messagePackageSubmissions[0].submissions
+          messagePackage.submissions ===
+          messagePackageSubmissions[0].submissions
       );
 
       index =
@@ -1583,7 +1585,7 @@ const outsideMainViewport = new IntersectionObserver(
     }
 
     for (const entry of entries) {
-      if (entry.intersectionRatio == 0) {
+      if (entry.intersectionRatio === 0) {
         insideMainViewport.observe(entry.target);
       }
     }
@@ -1613,7 +1615,7 @@ videos.forEach((video) => {
     const percentProgress =
       video.currentTime > 0.1 ? (video.currentTime * 100) / video.duration : 0;
 
-    const videoIndex = videos.findIndex((videoInList) => videoInList == video);
+    const videoIndex = videos.findIndex((videoInList) => videoInList === video);
 
     document
       .querySelectorAll(".video-progress-bar")
@@ -1621,7 +1623,7 @@ videos.forEach((video) => {
   });
 
   video.addEventListener("play", () => {
-    const videoIndex = videos.findIndex((videoInList) => videoInList == video);
+    const videoIndex = videos.findIndex((videoInList) => videoInList === video);
 
     insideMainViewport.unobserve(video);
 
@@ -1630,7 +1632,7 @@ videos.forEach((video) => {
       [videoIndex].style.setProperty("width", "calc(750px / 34)");
 
     videos.forEach((otherVideo) => {
-      if (otherVideo != video) {
+      if (otherVideo !== video) {
         otherVideo.pause();
         if (!VideoGalleryObservers.aVideoGalleryIsActive) {
           insideMainViewport.observe(otherVideo);
@@ -1641,7 +1643,7 @@ videos.forEach((video) => {
 
   video.addEventListener("pause", () => {
     video.currentTime = 0.1;
-    const videoIndex = videos.findIndex((videoInList) => videoInList == video);
+    const videoIndex = videos.findIndex((videoInList) => videoInList === video);
 
     document
       .querySelectorAll(".video-progress-bar-container")
@@ -1651,7 +1653,7 @@ videos.forEach((video) => {
   video.addEventListener("ended", async () => {
     insideMainViewport.unobserve(video);
 
-    const videoIndex = videos.findIndex((videoInList) => videoInList == video);
+    const videoIndex = videos.findIndex((videoInList) => videoInList === video);
 
     document
       .querySelectorAll(".video-progress-bar-container")
@@ -1680,8 +1682,8 @@ videos.forEach((video) => {
 });
 
 document.addEventListener("smoothScrollStop", (event) => {
-  if (event.detail.scrollContainer == document.querySelector("main")) {
-    if (event.detail.abortedBy == "New smooth scroll") return;
+  if (event.detail.scrollContainer === document.querySelector("main")) {
+    if (event.detail.interruptedBy === "New smooth scroll") return;
 
     SmoothScroller.scroll({
       scrollContainer: document.querySelector("#article-selector"),
@@ -1805,7 +1807,7 @@ class InputEventDelegator {
     const inputState = this.getInputState(event);
     if (!inputState) return;
 
-    if (inputState == "pressed") {
+    if (inputState === "pressed") {
       if (this.#isAlreadyHandlingInput) return event.preventDefault();
 
       this.#isAlreadyHandlingInput = true;
@@ -1822,7 +1824,7 @@ class InputEventDelegator {
       this.#handlers = handlers;
 
       handlers.inputDownHandler(event);
-    } else if (inputState == "activated") {
+    } else if (inputState === "activated") {
       this.#isAlreadyHandlingInput = false;
       this.#handlers.inputUpHandler({
         event: event,
@@ -1830,7 +1832,7 @@ class InputEventDelegator {
         targetsMatch: true,
       });
       this.reset();
-    } else if (inputState == "canceled") {
+    } else if (inputState === "canceled") {
       const pointerCancelEvent = new PointerEvent("pointercancel", {
         bubbles: true,
       });
@@ -1848,13 +1850,13 @@ class InputEventDelegator {
 
   getInputState(event) {
     if (
-      event.type == "pointerdown" ||
-      (event.type == "keydown" && event.key == "Enter")
+      event.type === "pointerdown" ||
+      (event.type === "keydown" && event.key === "Enter")
     ) {
       return "pressed";
     } else if (
       this.#inputDownEvent &&
-      event.target == this.#inputDownEvent.target &&
+      event.target === this.#inputDownEvent.target &&
       !(
         deviceHeuristics.isTouchScreen &&
         this.#inputDownEvent.target.hasPointerCapture(event.pointerId) &&
@@ -1865,15 +1867,15 @@ class InputEventDelegator {
             10 ||
           event.clientY < 10)
       ) &&
-      (event.type == "pointerup" ||
-        (event.type == "keyup" && event.key == "Enter"))
+      (event.type === "pointerup" ||
+        (event.type === "keyup" && event.key === "Enter"))
     ) {
       return "activated";
     } else if (
       this.#inputDownEvent &&
-      (event.type == "pointerup" ||
-        event.type == "pointercancel" ||
-        (event.type == "keydown" && event.key == "Escape"))
+      (event.type === "pointerup" ||
+        event.type === "pointercancel" ||
+        (event.type === "keydown" && event.key === "Escape"))
     ) {
       return "canceled";
     }
@@ -2069,14 +2071,14 @@ class InputEventDelegator {
             easingSelectorObserver,
             kittehSelectorObserver,
             kittehThemeSelectorObserver,
-          ].find((observer) => observer.root == target);
+          ].find((observer) => observer.root === target);
 
           this.currentOffsetTop = observer.incoming.offsetTop;
 
           const isArticleSelector =
-            target == document.querySelector("#article-selector");
+            target === document.querySelector("#article-selector");
           const isProjectSelector =
-            target == document.querySelector("#project-selector");
+            target === document.querySelector("#project-selector");
 
           if (isArticleSelector || isProjectSelector) {
             if (browserHeuristics.isIOsSafari) {
@@ -2088,7 +2090,7 @@ class InputEventDelegator {
 
           target.classList.toggle("pressed");
 
-          if (event.type == "keydown") return;
+          if (event.type === "keydown") return;
 
           target.style.setProperty("cursor", "var(--kitteh-grabbing-cursor)");
 
@@ -2118,23 +2120,23 @@ class InputEventDelegator {
           target.style.setProperty("cursor", "var(--kitteh-grab-cursor)");
 
           const isArticleSelector =
-            target == document.querySelector("#article-selector");
+            target === document.querySelector("#article-selector");
 
           const isProjectSelector =
-            target == document.querySelector("#project-selector");
+            target === document.querySelector("#project-selector");
 
           const isKittehSelectorOrThemeSelector =
-            target == document.querySelector("#kitteh-selector") ||
-            target == document.querySelector("#kitteh-theme-selector");
+            target === document.querySelector("#kitteh-selector") ||
+            target === document.querySelector("#kitteh-theme-selector");
 
           const isScrollerTypeSelector =
-            target == document.querySelector("#scroller-type-selector");
+            target === document.querySelector("#scroller-type-selector");
 
           const isEasingSelector =
-            target == document.querySelector("#easing-selector");
+            target === document.querySelector("#easing-selector");
 
           const isDecelerationSelector =
-            target == document.querySelector("#deceleration-selector");
+            target === document.querySelector("#deceleration-selector");
 
           const observer = [
             articleSelectorObserver,
@@ -2144,7 +2146,7 @@ class InputEventDelegator {
             easingSelectorObserver,
             kittehSelectorObserver,
             kittehThemeSelectorObserver,
-          ].find((observer) => observer.root == target);
+          ].find((observer) => observer.root === target);
 
           let matchingMainScrollTop;
           if (isArticleSelector || isProjectSelector) {
@@ -2156,7 +2158,7 @@ class InputEventDelegator {
 
             const main = document.querySelector("main");
             const selectorItem =
-              event.type == "pointerup"
+              event.type === "pointerup"
                 ? observer.incoming
                 : observer.incoming.nextElementSibling && targetsMatch
                 ? observer.incoming.nextElementSibling
@@ -2180,7 +2182,7 @@ class InputEventDelegator {
           }
 
           const incomingOffsetTop =
-            event.type == "pointerup" && targetsMatch
+            event.type === "pointerup" && targetsMatch
               ? observer.incoming.offsetTop
               : observer.incoming.nextElementSibling && targetsMatch
               ? observer.incoming.nextElementSibling.offsetTop
@@ -2249,7 +2251,7 @@ class InputEventDelegator {
 
           VideoGalleryObservers.aVideoGalleryIsActive = false;
 
-          if (event.type == "keydown") return;
+          if (event.type === "keydown") return;
 
           VideoGalleryObservers.aVideoGalleryIsActive = true;
 
@@ -2326,7 +2328,7 @@ class InputEventDelegator {
             VideoGalleryObservers.videoGalleryObserverMap.get(target);
 
           const lastObservedVideo =
-            (event.type == "pointerup" || event.type == "pointermove") &&
+            (event.type === "pointerup" || event.type === "pointermove") &&
             targetsMatch
               ? videoGalleryObserver.lastObservedVideo
               : videoGalleryObserver.lastObservedVideo.nextElementSibling &&
@@ -2367,7 +2369,7 @@ class InputEventDelegator {
 
           if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.pause();
 
-          if (event.type == "pointerdown") {
+          if (event.type === "pointerdown") {
             target.releasePointerCapture(event.pointerId);
           }
 
@@ -2375,12 +2377,12 @@ class InputEventDelegator {
             target.querySelector(".link-content")
           );
 
-          if (event.type == "pointerdown") {
+          if (event.type === "pointerdown") {
             inputEventDelegator.animationLibrary.ripple(target, {
               x: event.pageX,
               y: event.pageY,
             });
-          } else if (event.type == "keydown") {
+          } else if (event.type === "keydown") {
             if (!browserHeuristics.isChromium && target.closest("a"))
               return (inputEventDelegator.#isAlreadyHandlingInput = false);
 
@@ -2390,7 +2392,7 @@ class InputEventDelegator {
           if (
             !deviceHeuristics.isTouchScreen &&
             mainMomentumScroller.isActive &&
-            event.type == "pointerdown"
+            event.type === "pointerdown"
           ) {
             const pointerDownX = event.x;
             const pointerDownY = event.y;
@@ -2439,11 +2441,11 @@ class InputEventDelegator {
 
           if (
             targetsMatch &&
-            derippled == "finished" &&
+            derippled === "finished" &&
             !inputEventDelegator.isAlreadyHandlingInput
           ) {
             if (target.href && browserHeuristics.isChromium) {
-              if (target.href == location.href) return location.reload();
+              if (target.href === location.href) return location.reload();
               open(target.href, target.id, "noreferrer");
             } else if (target.dataset.idToScrollTo) {
               const main = document.querySelector("main");
@@ -2475,11 +2477,11 @@ class InputEventDelegator {
 
           if (
             target.matches("#message-submit-button") &&
-            target.dataset.validMessage == "false"
+            target.dataset.validMessage === "false"
           )
             return;
 
-          if (target.closest("main") && event.type == "pointerdown") {
+          if (target.closest("main") && event.type === "pointerdown") {
             if (!deviceHeuristics.isTouchScreen) mainMomentumScroller.pause();
 
             if (
@@ -2518,7 +2520,7 @@ class InputEventDelegator {
             }
           }
 
-          if (event.type == "pointerdown")
+          if (event.type === "pointerdown")
             target.releasePointerCapture(event.pointerId);
 
           if (target.matches("#appearance-switcher-button")) {
@@ -2526,24 +2528,24 @@ class InputEventDelegator {
           }
 
           if (
-            target.dataset.rippleAnimate == "true" &&
-            (target.dataset.toggleButtonState == "off" ||
+            target.dataset.rippleAnimate === "true" &&
+            (target.dataset.toggleButtonState === "off" ||
               !target.dataset.toggleButtonState)
           ) {
-            if (event.type == "pointerdown") {
+            if (event.type === "pointerdown") {
               inputEventDelegator.animationLibrary.ripple(target, {
                 x: event.pageX,
                 y: event.pageY,
               });
-            } else if (event.type == "keydown") {
+            } else if (event.type === "keydown") {
               if (!browserHeuristics.isChromium && target.closest("a"))
                 return (inputEventDelegator.#isAlreadyHandlingInput = false);
 
               inputEventDelegator.animationLibrary.ripple(target);
             }
           } else if (
-            target.dataset.rippleAnimate == "true" &&
-            target.dataset.toggleButtonState == "on"
+            target.dataset.rippleAnimate === "true" &&
+            target.dataset.toggleButtonState === "on"
           ) {
             inputEventDelegator.animationLibrary.deripple(target);
           }
@@ -2552,7 +2554,7 @@ class InputEventDelegator {
         async inputUpHandler({ target, targetsMatch }) {
           if (
             target.matches("#message-submit-button") &&
-            target.dataset.validMessage == "false"
+            target.dataset.validMessage === "false"
           )
             return;
 
@@ -2584,7 +2586,7 @@ class InputEventDelegator {
           ) {
             target.dataset.userInteraction = "true";
 
-            if (target.dataset.toggleButtonState == "on") {
+            if (target.dataset.toggleButtonState === "on") {
               target
                 .closest("#kitteh-messages-container")
                 .querySelectorAll("audio, video")
@@ -2592,7 +2594,7 @@ class InputEventDelegator {
                   element.muted = true;
                   element.volume = 0;
                 });
-            } else if (target.dataset.toggleButtonState == "off") {
+            } else if (target.dataset.toggleButtonState === "off") {
               target
                 .closest("#kitteh-messages-container")
                 .querySelectorAll("audio, video")
@@ -2603,7 +2605,7 @@ class InputEventDelegator {
             }
 
             target.dataset.toggleButtonState =
-              target.dataset.toggleButtonState == "on" ? "off" : "on";
+              target.dataset.toggleButtonState === "on" ? "off" : "on";
           } else if (
             targetsMatch &&
             target.matches("#smooth-scroller-go-button")
@@ -2642,7 +2644,7 @@ class InputEventDelegator {
 
               demoContainer.querySelector(
                 "[data-label='aborted']"
-              ).textContent = result.abortedBy ? "True" : "False";
+              ).textContent = result.interruptedBy ? "True" : "False";
               demoContainer.querySelector(
                 "[data-label='elapsed-time']"
               ).textContent = `${elapsedTime} ms`;
@@ -2746,18 +2748,18 @@ class InputEventDelegator {
           let derippled;
           if (
             !targetsMatch &&
-            target.dataset.rippleAnimate == "true" &&
-            target.dataset.toggleButtonState == "off"
+            target.dataset.rippleAnimate === "true" &&
+            target.dataset.toggleButtonState === "off"
           ) {
             inputEventDelegator.animationLibrary.deripple(target);
           } else if (
             !targetsMatch &&
-            target.dataset.rippleAnimate == "true" &&
-            target.dataset.toggleButtonState == "on"
+            target.dataset.rippleAnimate === "true" &&
+            target.dataset.toggleButtonState === "on"
           ) {
             inputEventDelegator.animationLibrary.ripple(target);
           } else if (
-            target.dataset.rippleAnimate == "true" &&
+            target.dataset.rippleAnimate === "true" &&
             !target.dataset.toggleButtonState
           ) {
             derippled = await inputEventDelegator.animationLibrary.deripple(
@@ -2769,7 +2771,7 @@ class InputEventDelegator {
             browserHeuristics.isChromium &&
             target.href &&
             targetsMatch &&
-            derippled == "finished" &&
+            derippled === "finished" &&
             !inputEventDelegator.isAlreadyHandlingInput
           ) {
             open(target.href, target.id, "noreferrer");
@@ -2781,7 +2783,7 @@ class InputEventDelegator {
       cssSelectors: "#logo",
       handlers: {
         inputDownHandler(event) {
-          if (event.type == "pointerdown")
+          if (event.type === "pointerdown")
             event.target.releasePointerCapture(event.pointerId);
 
           kittehBlinkAnimation.pointerIsDown = true;
@@ -2818,7 +2820,7 @@ class InputEventDelegator {
       handlers: {
         inputDownHandler(event) {
           event.target.style.setProperty("filter", "invert(0.25)");
-          if (event.type == "pointerdown")
+          if (event.type === "pointerdown")
             event.target.releasePointerCapture(event.pointerId);
         },
 
@@ -2831,7 +2833,9 @@ class InputEventDelegator {
           const progressBarIndex = Array.from(
             closestMediaElement.querySelector(".video-progress-bars-container")
               .children
-          ).findIndex((progressBarContainer) => progressBarContainer == target);
+          ).findIndex(
+            (progressBarContainer) => progressBarContainer === target
+          );
 
           const correspondingVideo =
             closestMediaElement.querySelectorAll("video")[progressBarIndex];
@@ -2855,7 +2859,7 @@ const inputEventDelegator = new InputEventDelegator();
 
 if (browserHeuristics.isChromium)
   document.addEventListener("click", (event) => {
-    if (event.pointerId == -1 && event.pointerType == "") return;
+    if (event.pointerId === -1 && event.pointerType === "") return;
     event.preventDefault();
   });
 
@@ -2913,7 +2917,7 @@ const momentumScrollerPreference = localStorage.getItem(
 );
 if (
   !deviceHeuristics.isTouchScreen &&
-  (!momentumScrollerPreference || momentumScrollerPreference == "on")
+  (!momentumScrollerPreference || momentumScrollerPreference === "on")
 ) {
   createTouchAppButton("on");
   inputEventDelegator.animationLibrary.ripple(
@@ -2925,7 +2929,7 @@ if (
   );
 } else if (
   !deviceHeuristics.isTouchScreen &&
-  momentumScrollerPreference == "off"
+  momentumScrollerPreference === "off"
 ) {
   createTouchAppButton("off");
   MomentumScroller.scrollerMap.forEach((momentumScroller) =>
@@ -2975,13 +2979,13 @@ function enableOrDisableDemoMomentumScrollerSelectors(request) {
   );
 
   selectors.forEach((selector) => {
-    request == "enable"
+    request === "enable"
       ? (selector.dataset.disabledSelector = "false")
       : (selector.dataset.disabledSelector = "true");
-    request == "enable"
+    request === "enable"
       ? selector.setAttribute("tabindex", "0")
       : selector.setAttribute("tabindex", "-1");
-    if (request == "disable") selector.blur();
+    if (request === "disable") selector.blur();
   });
 }
 
@@ -3048,7 +3052,7 @@ async function switchOverflowMenu() {
   );
 
   const overflowMenuIsOpen =
-    overflowButton.dataset.toggleButtonState == "on" ? true : false;
+    overflowButton.dataset.toggleButtonState === "on" ? true : false;
   overflowMenuIsOpen ? closeTheMenu() : openTheMenu();
 
   function closeTheMenu() {
@@ -3080,13 +3084,13 @@ class ElapsedTimeCalculator {
     const parsedDate1 =
       date1 instanceof Date
         ? date1
-        : date1 == "Current"
+        : date1 === "Current"
         ? calendar.date
         : parseDate(date1);
     const parsedDate2 =
       date2 instanceof Date
         ? date2
-        : date2 == "Current"
+        : date2 === "Current"
         ? calendar.date
         : parseDate(date2);
 
@@ -3119,15 +3123,15 @@ class ElapsedTimeCalculator {
       const roundedElapsedYears = Math.round(elapsedYears);
       if (roundedElapsedYears > 1) {
         return (element.textContent = `${roundedElapsedYears} Years`);
-      } else if (roundedElapsedYears == 1 && elapsedYears >= 1) {
+      } else if (roundedElapsedYears === 1 && elapsedYears >= 1) {
         return (element.textContent = `${roundedElapsedYears} Year`);
-      } else if (roundedElapsedYears == 0 || elapsedYears < 1) {
+      } else if (roundedElapsedYears === 0 || elapsedYears < 1) {
         const roundedElapsedMonths = Math.round(elapsedYears * 12);
         if (roundedElapsedMonths > 1) {
           return (element.textContent = `${roundedElapsedMonths} Months`);
-        } else if (roundedElapsedMonths == 1) {
+        } else if (roundedElapsedMonths === 1) {
           return (element.textContent = `${roundedElapsedMonths} Month`);
-        } else if (roundedElapsedMonths == 0) {
+        } else if (roundedElapsedMonths === 0) {
           return (element.textContent = `${roundedElapsedMonths} Months`);
         }
       }
@@ -3175,7 +3179,7 @@ class TypeAndTalk {
     this.#messageSoundButton = messageSoundButton;
     this.#messageText = messageText;
     this.#messageContainer.addEventListener("pointerdown", (event) => {
-      if (event.target == this.#messageSoundButton) return;
+      if (event.target === this.#messageSoundButton) return;
       const inputIsAnAcceptableInput = isPrimaryInput(event);
       if (!inputIsAnAcceptableInput) return;
       this.#messageContainer.setPointerCapture(event.pointerId);
@@ -3203,13 +3207,13 @@ class TypeAndTalk {
 
   get messageContainerIsClear() {
     return (
-      this.#messageText.textContent == "" &&
-      (this.#messageContainer.style.getPropertyValue("opacity") == "0" ||
-        getComputedStyle(this.#messageContainer).opacity == "0")
+      this.#messageText.textContent === "" &&
+      (this.#messageContainer.style.getPropertyValue("opacity") === "0" ||
+        getComputedStyle(this.#messageContainer).opacity === "0")
     );
   }
   get thereAreUntypedMessages() {
-    return this.#messageLog.some((message) => message.status == "untyped");
+    return this.#messageLog.some((message) => message.status === "untyped");
   }
 
   submitMessage(
@@ -3241,7 +3245,7 @@ class TypeAndTalk {
       message
         .replaceAll(/{.*?}/g, "")
         .replaceAll(/\s/g, "")
-        .replaceAll(/[{}]/g, "") == "";
+        .replaceAll(/[{}]/g, "") === "";
     if (messageIsBlank) return;
 
     delayStart = delayStart < 0 ? 0 : delayStart > 5000 ? 5000 : delayStart;
@@ -3265,7 +3269,7 @@ class TypeAndTalk {
       createPromise() {
         this.finishedTyping = new Promise((resolve) => {
           const recheckInterval = setInterval(() => {
-            if (this.status == "typed") {
+            if (this.status === "typed") {
               clearInterval(recheckInterval);
               resolve(true);
             }
@@ -3301,9 +3305,9 @@ class TypeAndTalk {
   startProcessingMessageQueueIfNecessary() {
     const typingCount = this.#messageLog.filter(
       (message) =>
-        message.status == "typing" || message.status == "typing (paused)"
+        message.status === "typing" || message.status === "typing (paused)"
     ).length;
-    if (typingCount == 0) this.processMessageQueue();
+    if (typingCount === 0) this.processMessageQueue();
   }
 
   #autoClearTimer = {
@@ -3349,15 +3353,17 @@ class TypeAndTalk {
     if (existingMediaElement) return existingMediaElement;
 
     const mediaElement =
-      this.#messageSoundButton.dataset.userInteraction == "false"
+      this.#messageSoundButton.dataset.userInteraction === "false"
         ? document.createElement("video")
         : document.createElement("audio"); // Muted autoplay works with video, not audio
     mediaElement.setAttribute("src", audioSource);
     mediaElement.volume =
-      this.#messageSoundButton.dataset.toggleButtonState == "on" ? 0.1 : 0;
+      this.#messageSoundButton.dataset.toggleButtonState === "on" ? 0.1 : 0;
     mediaElement.muted =
-      this.#messageSoundButton.dataset.toggleButtonState == "on" ? false : true;
-    if (this.#messageSoundButton.dataset.userInteraction == "false") {
+      this.#messageSoundButton.dataset.toggleButtonState === "on"
+        ? false
+        : true;
+    if (this.#messageSoundButton.dataset.userInteraction === "false") {
       mediaElement.muted = true;
       mediaElement.autoplay = true;
     }
@@ -3374,7 +3380,7 @@ class TypeAndTalk {
   #requestToPauseTyping = false;
 
   get soundButtonIsActive() {
-    return this.#messageSoundButton.dataset.toggleButtonState == "on";
+    return this.#messageSoundButton.dataset.toggleButtonState === "on";
   }
 
   async typeAndPlayMessage(
@@ -3420,9 +3426,9 @@ class TypeAndTalk {
       });
     }
 
-    if (messageCharacters.length == 0 && !audio) {
+    if (messageCharacters.length === 0 && !audio) {
       return resolve();
-    } else if (messageCharacters.length == 0 && audio) {
+    } else if (messageCharacters.length === 0 && audio) {
       if (audio.ended) {
         return resolve();
       } else if (!audio.ended) {
@@ -3471,17 +3477,17 @@ class TypeAndTalk {
         character.match(pattern)
       );
 
-      if (character == "{") {
+      if (character === "{") {
         return this.#pointerIsDown
           ? intrastringCommandProcessor() * pointerDownDelayFactor
           : intrastringCommandProcessor();
       } else if (punctuation) {
-        if (messageCharacters[0] == "{") {
+        if (messageCharacters[0] === "{") {
           return this.#pointerIsDown
             ? intrastringCommandProcessor(punctuation.delay, 1) *
                 pointerDownDelayFactor
             : intrastringCommandProcessor(punctuation.delay, 1);
-        } else if (messageCharacters[0] != "{") {
+        } else if (messageCharacters[0] !== "{") {
           return this.#pointerIsDown
             ? punctuation.delay * pointerDownDelayFactor
             : punctuation.delay;
@@ -3497,9 +3503,9 @@ class TypeAndTalk {
         startingIndexOfCommand = 0
       ) {
         const indexOfClosingBracket = messageCharacters.indexOf("}");
-        if (indexOfClosingBracket == -1) {
+        if (indexOfClosingBracket === -1) {
           return customDelay;
-        } else if (indexOfClosingBracket != -1) {
+        } else if (indexOfClosingBracket !== -1) {
           const command = messageCharacters
             .splice(
               startingIndexOfCommand,
@@ -3520,15 +3526,15 @@ class TypeAndTalk {
                 : parsedInteger;
             return delay;
           } else if (!commandIsAnInteger) {
-            if (command.toLowerCase() == "blink") {
+            if (command.toLowerCase() === "blink") {
               kittehBlinkAnimation.blink();
-            } else if (command.toLowerCase() == "longblink") {
+            } else if (command.toLowerCase() === "longblink") {
               kittehBlinkAnimation.blink("long");
-            } else if (command.toLowerCase() == "charm") {
+            } else if (command.toLowerCase() === "charm") {
               kittehAppointerAndThemer.appointKitteh({
                 kitteh: "charm",
               });
-            } else if (command.toLowerCase() == "shelby") {
+            } else if (command.toLowerCase() === "shelby") {
               kittehAppointerAndThemer.appointKitteh({
                 kitteh: "shelby",
               });
@@ -3539,10 +3545,10 @@ class TypeAndTalk {
       }
     })();
 
-    if (!(character == "{" || character == "}"))
+    if (!(character === "{" || character === "}"))
       this.#messageText.textContent += character;
 
-    if (this.#messageText.textContent.length == 1)
+    if (this.#messageText.textContent.length === 1)
       await this.unhideMessageContainer();
 
     setTimeout(() => {
@@ -3576,14 +3582,14 @@ class TypeAndTalk {
     const hidingMessageContainerStatus = await new Promise((resolve) => {
       const checkInterval = setInterval(() => {
         if (
-          getComputedStyle(this.#messageContainer).opacity == "0" &&
-          this.#messageContainer.style.getPropertyValue("opacity") == "0"
+          getComputedStyle(this.#messageContainer).opacity === "0" &&
+          this.#messageContainer.style.getPropertyValue("opacity") === "0"
         ) {
           clearInterval(checkInterval);
           resolve("finished");
         } else if (
-          getComputedStyle(this.#messageContainer).opacity == "1" &&
-          this.#messageContainer.style.getPropertyValue("opacity") == "1"
+          getComputedStyle(this.#messageContainer).opacity === "1" &&
+          this.#messageContainer.style.getPropertyValue("opacity") === "1"
         ) {
           clearInterval(checkInterval);
           resolve("canceled");
@@ -3606,7 +3612,7 @@ class TypeAndTalk {
       clearing: true,
     });
 
-    if (hidingMessageContainerStatus == "canceled") return;
+    if (hidingMessageContainerStatus === "canceled") return;
 
     this.#autoClearTimer.reset();
     this.#messageText.textContent = "";
@@ -3661,7 +3667,7 @@ function messageValidator(message) {
     message
       .replaceAll(/{.*?}/g, "")
       .replaceAll(/\s/g, "")
-      .replaceAll(/[{}]/g, "") == "";
+      .replaceAll(/[{}]/g, "") === "";
 
   if (messageIsBlank) {
     messageInput.dataset.validMessage = "false";
@@ -3685,10 +3691,10 @@ const charmCursorDemo = {
 
   play({ loop = false } = {}) {
     if (loop) this.requestToLoop = true;
-    const nextCursor = this.currentCursor == "grab" ? "grabbing" : "grab";
+    const nextCursor = this.currentCursor === "grab" ? "grabbing" : "grab";
 
     const nextCursorUri =
-      this.currentCursor == "grab"
+      this.currentCursor === "grab"
         ? getCursorDataUri("grabbing", "hsl(0, 0%, 20%)")
         : getCursorDataUri("grab", "hsl(0, 0%, 20%)");
 
@@ -3720,12 +3726,12 @@ document.querySelectorAll(".number-input").forEach((input) => {
 
   const min = 0;
   const max =
-    input.dataset.axis == "x"
+    input.dataset.axis === "x"
       ? Math.floor(
           smoothScrollerDemoContentRects.width -
             smoothScrollerDemoContainerRects.width
         )
-      : input.dataset.axis == "y"
+      : input.dataset.axis === "y"
       ? Math.floor(
           smoothScrollerDemoContentRects.height -
             smoothScrollerDemoContainerRects.height
@@ -3743,10 +3749,10 @@ document.querySelectorAll(".number-input").forEach((input) => {
     flashAnimation(input, [
       [
         "backgroundColor",
-        lightDarkAppearanceSwitcher.currentAppearance == "dark"
+        lightDarkAppearanceSwitcher.currentAppearance === "dark"
           ? "hsl(0, 0%, 30%)"
           : "hsl(0, 0%, 90%)",
-        lightDarkAppearanceSwitcher.currentAppearance == "dark"
+        lightDarkAppearanceSwitcher.currentAppearance === "dark"
           ? "hsl(0, 15%, 30%)"
           : "hsl(0, 45%, 90%)",
       ],
@@ -3803,25 +3809,25 @@ document.querySelectorAll(".number-input").forEach((input) => {
     oldValue = validationResult.validatedValue;
     input.focus();
     input.selectionStart =
-      input.value.length == max.toString().length
+      input.value.length === max.toString().length
         ? input.value.length
         : selectionStart + 1;
     input.selectionEnd =
-      input.value.length == max.toString().length
+      input.value.length === max.toString().length
         ? input.value.length
         : selectionStart + 1;
   });
 
   input.addEventListener("keydown", async (event) => {
-    if (event.key == "Enter") return event.preventDefault();
+    if (event.key === "Enter") return event.preventDefault();
     if (event.ctrlKey && /v|c|a|x/.test(event.key)) return;
     if (event.ctrlKey && /z/.test(event.key)) return event.preventDefault();
     if (
       !input.value.length &&
-      (event.key == "Backspace" || event.key == "Delete")
+      (event.key === "Backspace" || event.key === "Delete")
     )
       return playInvalidFlashAnimation();
-    if (event.key.length != 1) return;
+    if (event.key.length !== 1) return;
     if (!/[0-9]/.test(event.key)) {
       event.preventDefault();
       return playInvalidFlashAnimation();
@@ -3837,11 +3843,11 @@ document.querySelectorAll(".number-input").forEach((input) => {
     oldValue = validationResult.validatedValue;
     input.focus();
     input.selectionStart =
-      input.value.length == max.toString().length
+      input.value.length === max.toString().length
         ? input.value.length
         : selectionStart + 1;
     input.selectionEnd =
-      input.value.length == max.toString().length
+      input.value.length === max.toString().length
         ? input.value.length
         : selectionStart + 1;
   });
@@ -3874,7 +3880,7 @@ document.addEventListener("keydown", (event) => {
     .querySelector("main")
     .getBoundingClientRect().height;
 
-  if (key == "Enter" && target.matches("#message-input")) {
+  if (key === "Enter" && target.matches("#message-input")) {
     event.preventDefault();
     if (
       document.querySelector("#message-submit-button").dataset.validMessage ==
@@ -3886,54 +3892,54 @@ document.addEventListener("keydown", (event) => {
       document.querySelector("#message-input").value = "";
       return messageValidator(document.querySelector("#message-input").value);
     }
-  } else if (key == " " && !target.matches("textarea")) {
+  } else if (key === " " && !target.matches("textarea")) {
     return event.preventDefault();
   } else if (keyIsRepeating) {
-    if (key == "ArrowDown") {
+    if (key === "ArrowDown") {
       event.preventDefault();
       return (main.scrollTop += pageHeight * 0.1);
-    } else if (key == "ArrowUp") {
+    } else if (key === "ArrowUp") {
       event.preventDefault();
       return (main.scrollTop -= pageHeight * 0.1);
-    } else if (key == "PageDown") {
+    } else if (key === "PageDown") {
       event.preventDefault();
       return (main.scrollTop += pageHeight);
-    } else if (key == "PageUp") {
+    } else if (key === "PageUp") {
       event.preventDefault();
       return (main.scrollTop -= pageHeight);
     }
   } else if (!keyIsRepeating) {
-    if (key == "ArrowDown") {
+    if (key === "ArrowDown") {
       event.preventDefault();
       return SmoothScroller.scroll({
         scrollContainer: document.querySelector("main"),
         y: currentScrollTop + pageHeight * 0.1,
       });
-    } else if (key == "ArrowUp") {
+    } else if (key === "ArrowUp") {
       event.preventDefault();
       return SmoothScroller.scroll({
         scrollContainer: document.querySelector("main"),
         y: currentScrollTop - pageHeight * 0.1,
       });
-    } else if (key == "PageDown") {
+    } else if (key === "PageDown") {
       event.preventDefault();
       return SmoothScroller.scroll({
         scrollContainer: document.querySelector("main"),
         y: currentScrollTop + pageHeight,
       });
-    } else if (key == "PageUp") {
+    } else if (key === "PageUp") {
       event.preventDefault();
       return SmoothScroller.scroll({
         scrollContainer: document.querySelector("main"),
         y: currentScrollTop - pageHeight,
       });
-    } else if (key == "Home") {
+    } else if (key === "Home") {
       event.preventDefault();
       return SmoothScroller.scroll({
         scrollContainer: document.querySelector("main"),
         y: 0,
       });
-    } else if (key == "End") {
+    } else if (key === "End") {
       event.preventDefault();
       const bottomOfMain = main.scrollHeight - main.clientHeight;
       return SmoothScroller.scroll({

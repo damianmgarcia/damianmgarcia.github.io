@@ -59,16 +59,16 @@ export class Calendar {
   }
 
   get holiday() {
-    if (this.month == 10 && this.day == 31) {
+    if (this.month === 10 && this.day === 31) {
       return "halloween";
-    } else if (this.month == 11) {
+    } else if (this.month === 11) {
       const daysOfTheMonth = this.getDaysOfTheMonth();
       const thursdaysOfTheMonth = daysOfTheMonth.filter(
-        ({ dayName }) => dayName == "Thursday"
+        ({ dayName }) => dayName === "Thursday"
       );
       const dayNumberOfFourthThursday = thursdaysOfTheMonth[3].dayNumber;
-      if (this.day == dayNumberOfFourthThursday) return "thanksgiving";
-    } else if (this.month == 12 && this.day == 1) {
+      if (this.day === dayNumberOfFourthThursday) return "thanksgiving";
+    } else if (this.month === 12 && this.day === 1) {
       return "new-year";
     }
   }
@@ -109,11 +109,11 @@ export class Calendar {
   }
 
   isLeapYear() {
-    if (this.year % 4 != 0) {
+    if (this.year % 4 !== 0) {
       return false;
-    } else if (this.year % 100 != 0) {
+    } else if (this.year % 100 !== 0) {
       return true;
-    } else if (thi.syear % 400 != 0) {
+    } else if (thi.syear % 400 !== 0) {
       return false;
     } else {
       return true;
@@ -136,7 +136,7 @@ export function getBrowserHeuristics() {
 
   const isChromium =
     navigator?.userAgentData?.brands.some(
-      (brandInformation) => brandInformation.brand == "Chromium"
+      (brandInformation) => brandInformation.brand === "Chromium"
     ) || /Chrome\/[.0-9]*/.test(navigator.userAgent);
 
   const isSafari =
@@ -203,10 +203,10 @@ export function isPrimaryInput(event) {
   });
   if (event.type.includes("pointer")) {
     const isPrimaryPointer = event.isPrimary;
-    const isPrimaryButton = event.button == 0 || event.button == -1;
+    const isPrimaryButton = event.button === 0 || event.button === -1;
     return isPrimaryPointer && isPrimaryButton;
   } else if (event.type.includes("key")) {
-    const isEnterOrEscapeKey = event.key == "Enter" || event.key == "Escape";
+    const isEnterOrEscapeKey = event.key === "Enter" || event.key === "Escape";
     return isEnterOrEscapeKey;
   }
 }
@@ -243,7 +243,7 @@ export class MetaViewportWidthPreserver {
 
     const orientation = availHeight > availWidth ? "portrait" : "landscape";
 
-    if (orientation == "portrait") {
+    if (orientation === "portrait") {
       if (availWidth < this.#width) {
         return (this.#metaViewportElement.content = `width=${
           this.#width
@@ -251,7 +251,7 @@ export class MetaViewportWidthPreserver {
       } else if (availWidth >= this.#width) {
         return (this.#metaViewportElement.content = `width=${availWidth}, shrink-to-fit=no`);
       }
-    } else if (orientation == "landscape") {
+    } else if (orientation === "landscape") {
       if (!(availWidth >= this.#width && availHeight >= this.#width)) {
         return (this.#metaViewportElement.content = `width=${
           (availWidth / availHeight) * this.#width

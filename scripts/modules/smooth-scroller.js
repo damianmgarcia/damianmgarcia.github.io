@@ -46,7 +46,7 @@ class SmoothScroller {
       if (this.#stopScrollOnPointerDown)
         if (this.#resolve)
           this.abortPriorScrolls({
-            abortedBy: "Pointer down on scroll container",
+            interruptedBy: "Pointer down on scroll container",
           });
 
       const smoothScrollPointerDownEvent = new CustomEvent(
@@ -139,7 +139,7 @@ class SmoothScroller {
         allowedTypes: ["boolean"],
       });
 
-      if (typeof easing == "string") {
+      if (typeof easing === "string") {
         easing = CubicBezierSolver.easingKeywordMap.get(easing);
       }
 
@@ -155,7 +155,7 @@ class SmoothScroller {
       }
 
       if (this.#resolve)
-        this.abortPriorScrolls({ abortedBy: "New smooth scroll" });
+        this.abortPriorScrolls({ interruptedBy: "New smooth scroll" });
 
       if (browserHeuristics.isIOsSafari) {
         this.#scrollContainer.style.setProperty("overflow", "hidden");
@@ -314,7 +314,7 @@ class SmoothScroller {
 
   getEventData(extraData) {
     const eventData = {
-      abortedBy: null,
+      interruptedBy: null,
       x: this.#scrollContainer.scrollLeft,
       y: this.#scrollContainer.scrollTop,
       duration: this.#duration,
@@ -323,7 +323,7 @@ class SmoothScroller {
       smoothScroller: this,
     };
 
-    if (extraData && typeof extraData == "object")
+    if (extraData && typeof extraData === "object")
       Object.assign(eventData, extraData);
 
     return eventData;
@@ -397,7 +397,7 @@ class CubicBezierSolver {
         allowedTypes: ["string", "array"],
       });
 
-      if (typeof easing == "string") {
+      if (typeof easing === "string") {
         validateArgument("easing", easing, {
           allowedValues: Array.from(CubicBezierSolver.easingKeywordMap.keys()),
         });
@@ -438,10 +438,10 @@ class CubicBezierSolver {
 
   controlPointsMatchCurrentControlPoints(p1x, p1y, p2x, p2y) {
     return (
-      p1x == this.#controlPoints.p1x &&
-      p1y == this.#controlPoints.p1y &&
-      p2x == this.#controlPoints.p2x &&
-      p2y == this.#controlPoints.p2y
+      p1x === this.#controlPoints.p1x &&
+      p1y === this.#controlPoints.p1y &&
+      p2x === this.#controlPoints.p2x &&
+      p2y === this.#controlPoints.p2y
     );
   }
 

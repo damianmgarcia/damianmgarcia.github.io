@@ -49,7 +49,7 @@ class MomentumScroller {
     this.#scrollContainer.addEventListener("smoothScrollStart", () => {
       if (this.#resolve)
         this.abortPriorScrolls({
-          abortedBy: "Smooth scroll on same container",
+          interruptedBy: "Smooth scroll on same container",
         });
     });
 
@@ -224,14 +224,14 @@ class MomentumScroller {
         ? "vertical-only"
         : "none";
 
-    if (this.#scrollerType == "none") return;
+    if (this.#scrollerType === "none") return;
 
     this.#pointerIsDown = true;
 
     if (this.#stopScrollOnPointerDown)
       if (this.#resolve)
         this.abortPriorScrolls({
-          abortedBy: "Pointer down on scroll container",
+          interruptedBy: "Pointer down on scroll container",
         });
 
     const momentumScrollPointerDownEvent = new CustomEvent(
@@ -396,13 +396,13 @@ class MomentumScroller {
     deceleration,
     currentTime
   ) {
-    const reachedTopEdge = this.#scrollContainer.scrollTop == 0;
+    const reachedTopEdge = this.#scrollContainer.scrollTop === 0;
     const reachedBottomEdge =
       this.#scrollContainer.scrollHeight -
         this.#scrollContainer.scrollTop -
         this.#scrollContainer.clientHeight <=
       1;
-    const reachedLeftEdge = this.#scrollContainer.scrollLeft == 0;
+    const reachedLeftEdge = this.#scrollContainer.scrollLeft === 0;
     const reachedRightEdge =
       this.#scrollContainer.scrollWidth -
         this.#scrollContainer.scrollLeft -
@@ -411,11 +411,11 @@ class MomentumScroller {
 
     const reachedEdgeOfVerticalOnlyScroller =
       (reachedTopEdge || reachedBottomEdge) &&
-      this.#scrollerType == "vertical-only";
+      this.#scrollerType === "vertical-only";
 
     const reachedEdgeOfHorizontalOnlyScroller =
       (reachedLeftEdge || reachedRightEdge) &&
-      this.#scrollerType == "horizontal-only";
+      this.#scrollerType === "horizontal-only";
 
     const reachedEdgeOfOneDimensionalScroller =
       reachedEdgeOfVerticalOnlyScroller || reachedEdgeOfHorizontalOnlyScroller;
@@ -430,7 +430,7 @@ class MomentumScroller {
         reachedTopRightVertex ||
         reachedBottomRightVertex ||
         reachedBottomLeftVertex) &&
-      this.#scrollerType == "horizontal-and-vertical";
+      this.#scrollerType === "horizontal-and-vertical";
 
     if (newMomentumScroll) {
       validateArgument("velocityX", velocityX, {
@@ -460,24 +460,25 @@ class MomentumScroller {
 
       if (
         (velocityX === 0 && velocityY === 0) ||
-        (this.#scrollerType == "horizontal-only" && xDistanceBelowMinimum) ||
-        (this.#scrollerType == "vertical-only" && yDistanceBelowMinimum) ||
-        (this.#scrollerType == "horizontal-and-vertical" &&
+        (this.#scrollerType === "horizontal-only" && xDistanceBelowMinimum) ||
+        (this.#scrollerType === "vertical-only" && yDistanceBelowMinimum) ||
+        (this.#scrollerType === "horizontal-and-vertical" &&
           xDistanceBelowMinimum &&
           yDistanceBelowMinimum)
       ) {
         if (this.#resolve)
-          this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
+          this.abortPriorScrolls({ interruptedBy: "New momentum scroll" });
         return new Promise((resolve) => {
           this.#resolve = resolve;
           return this.abortPriorScrolls({
-            abortedBy: "Scroll distance is below minimum scrollable distance",
+            interruptedBy:
+              "Scroll distance is below minimum scrollable distance",
           });
         });
       }
 
       if (this.#resolve)
-        this.abortPriorScrolls({ abortedBy: "New momentum scroll" });
+        this.abortPriorScrolls({ interruptedBy: "New momentum scroll" });
 
       const scrollTimestamp = Date.now();
       this.#scrollStartingPointY = this.#scrollContainer.scrollTop;
@@ -496,7 +497,7 @@ class MomentumScroller {
       const scrollDirectionX = Math.sign(velocityX);
       if (scrollDirectionX) {
         const sameDirectionX =
-          scrollDirectionX == this.#scrollDirectionPreviousX;
+          scrollDirectionX === this.#scrollDirectionPreviousX;
         const multipleQuickSameDirectionXScrolls =
           !reachedLeftEdge &&
           !reachedRightEdge &&
@@ -513,7 +514,7 @@ class MomentumScroller {
       const scrollDirectionY = Math.sign(velocityY);
       if (scrollDirectionY) {
         const sameScrollDirectionY =
-          scrollDirectionY == this.#scrollDirectionPreviousY;
+          scrollDirectionY === this.#scrollDirectionPreviousY;
         const multipleQuickSameDirectionYScrolls =
           !reachedTopEdge &&
           !reachedBottomEdge &&
@@ -572,7 +573,7 @@ class MomentumScroller {
 
     if (!this.#active) {
       return this.abortPriorScrolls({
-        abortedBy: "Momentum scroller deactivation",
+        interruptedBy: "Momentum scroller deactivation",
       });
     }
 
@@ -674,7 +675,7 @@ class MomentumScroller {
 
   getEventData(extraData) {
     const eventData = {
-      abortedBy: null,
+      interruptedBy: null,
       xInitial: this.#scrollStartingPointX,
       xFinal: this.#scrollContainer.scrollLeft,
       yInitial: this.#scrollStartingPointY,
@@ -692,7 +693,7 @@ class MomentumScroller {
       momentumScroller: this,
     };
 
-    if (extraData && typeof extraData == "object")
+    if (extraData && typeof extraData === "object")
       Object.assign(eventData, extraData);
 
     return eventData;
