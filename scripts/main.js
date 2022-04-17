@@ -2643,7 +2643,7 @@ class InputEventDelegator {
               const endPointY = Math.round(result.endPoint[1]);
 
               demoContainer.querySelector(
-                "[data-label='aborted']"
+                "[data-label='interrupted']"
               ).textContent = result.interruptedBy ? "True" : "False";
               demoContainer.querySelector(
                 "[data-label='elapsed-time']"

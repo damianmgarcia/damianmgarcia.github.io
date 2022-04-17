@@ -3346,10 +3346,10 @@
                   drivers typically do not include momentum-scrolling features.
                 </div>
                 <div class="paragraph">
-                  This system will generally be enabled for non-touch-screen
-                  devices, but it will likely conflict with some pointing
-                  devices, such as trackpads, that may provide their own
-                  driver-based momentum scrolling implementations.
+                  However, it will conflict with some pointing devices, such as
+                  trackpads, that provide their own driver-based momentum
+                  scrolling implementations. In these cases, one of the momentum
+                  scrolling systems should be disabled.
                 </div>
                 <div class="media-container">
                   <div class="video-progress-bars-container">
@@ -3409,20 +3409,25 @@
                   supported and both axes may be scrolled simultaneously.
                 </div>
                 <div class="paragraph">
-                  Instantiation of a MomentumScroller requires a reference to
-                  the scroll container at minimum. Optionally, you may also
-                  change the default grab and grabbing cursors, and you may also
-                  add handlers to react to the following events:
+                  The system depends on a JavaScript module that I built, called
+                  <a
+                    class="link-container"
+                    draggable="false"
+                    href="https://github.com/damianmgarcia/MomentumScroller"
+                    id="link-momentum-scroller-repository"
+                    rel="noreferrer"
+                    target="_blank"
+                    ><span class="link-content"
+                      >MomentumScroller
+                      <div class="ripple-container">
+                        <div class="ripple"></div></div></span></a
+                  >. It has its own repository and documentation. Briefly,
+                  however, instantiation of a MomentumScroller simply requires a
+                  reference to the scroll container. Optionally, you may chain
+                  various setters, either during or after instantiation, to set
+                  custom grab and grabbing cursors, set the deceleration rate,
+                  and more.
                 </div>
-                <pre><code style="white-space: pre">onMomentumScrollInitialActivation,
-onMomentumScrollActivation,
-onMomentumScrollDeactivation,
-onMomentumScrollPointerDown,
-onMomentumScrollPointerUp,
-onMomentumScrollStart,
-onMomentumScroll,
-onMomentumScrollStop,
-</code></pre>
                 <div class="paragraph">
                   After instantiation, pointer flicks on the scroll container
                   will generate momentum scrolls.
@@ -3583,11 +3588,13 @@ onMomentumScrollStop,
                   <span class="light-italic"
                     >smooth scrolling implementation</span
                   >
-                  that resolves a promise upon scroll completion and allows you
-                  to customize duration and easing.
+                  that provides advanced, easy-to-use smooth scrolling
+                  functionality. It allows you to customize smooth scrolling
+                  properties, such as duration and easing. Additionally, it
+                  includes advanced features such as scroll events and promises.
                 </div>
                 <div class="paragraph">
-                  Every smooth scroll on this site is performed by this
+                  Every smooth scroll on this site is accomplished with this
                   implementation.
                 </div>
                 <div class="paragraph">
@@ -3595,29 +3602,22 @@ onMomentumScrollStop,
                   supported and both axes may be scrolled simultaneously.
                 </div>
                 <div class="paragraph">
-                  Instantiation of a SmoothScroller requires a reference to the
-                  scroll container at minimum. Optionally, you may also add
-                  handlers for the following events:
-                </div>
-                <pre><code style="white-space: pre">onSmoothScrollPointerDown,
-onSmoothScrollPointerUp,
-onSmoothScrollStart,
-onSmoothScroll,
-onSmoothScrollStop,
-</code></pre>
-                <div class="paragraph">
-                  After instantiation, the smoothScrollTo method may be called
-                  to produce a smooth scroll. The syntax is:
-                </div>
-                <pre><code style="white-space: pre">SmoothScroller.smoothScrollTo({
-  x,
-  y,
-  duration,
-  easing,
-})
-</code></pre>
-                <div class="paragraph">
-                  Defaults for duration and easing are used if not provided.
+                  This implementation depends on a JavaScript module that I
+                  built, called
+                  <a
+                    class="link-container"
+                    draggable="false"
+                    href="https://github.com/damianmgarcia/SmoothScroller"
+                    id="link-smooth-scroller-repository"
+                    rel="noreferrer"
+                    target="_blank"
+                    ><span class="link-content"
+                      >SmoothScroller
+                      <div class="ripple-container">
+                        <div class="ripple"></div></div></span></a
+                  >. Briefly, however, smooth scrolling may be accomplished by
+                  calling the static SmoothScroller.scroll() method or by
+                  calling an instance's scroll() method.
                 </div>
                 <div class="paragraph">
                   Below is a demonstration smooth scroller container along with
@@ -3626,9 +3626,10 @@ onSmoothScrollStop,
                 </div>
                 <div class="paragraph">
                   Although the easing selector only includes five options, the
-                  smoothScrollTo method's easing argument accepts any valid set
-                  of control points (e.g. [p1x, p1y, p2x, p2y]), along with the
-                  standard keywords you may use when writing CSS transitions and
+                  scroll method's easing argument accepts any valid set of
+                  control points (e.g. [ P<sub>1</sub>x, P<sub>1</sub>y,
+                  P<sub>2</sub>x, P<sub>2</sub>y ]), along with the standard
+                  keywords you may use when writing CSS transitions and
                   animations (e.g. "ease", "ease-in", "linear", etc.).
                 </div>
                 <div class="paragraph">
@@ -3787,8 +3788,8 @@ onSmoothScrollStop,
                         <div data-label="elapsed-time">-</div>
                       </div>
                       <div class="input-and-label-container">
-                        <div class="input-label">Aborted</div>
-                        <div data-label="aborted">-</div>
+                        <div class="input-label">Interrupted</div>
+                        <div data-label="interrupted">-</div>
                       </div>
                     </div>
                     <div id="smooth-scroller-demo-container" tabindex="-1">
