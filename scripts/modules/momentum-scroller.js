@@ -154,6 +154,8 @@ class MomentumScroller {
     this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
 
     this.#active = true;
+
+    return this;
   }
 
   deactivate() {
@@ -172,16 +174,28 @@ class MomentumScroller {
     this.#scrollContainer.style.removeProperty("cursor");
 
     this.#active = false;
+
+    return this;
+  }
+
+  toggleOnOff() {
+    if (this.#active) {
+      return this.deactivate();
+    } else if (!this.#active) {
+      return this.activate();
+    }
   }
 
   #paused = false;
 
   pause() {
     this.#paused = true;
+    return this;
   }
 
   unpause() {
     this.#paused = false;
+    return this;
   }
 
   #xAxisIsScrollable;
@@ -643,14 +657,6 @@ class MomentumScroller {
     }
   }
 
-  toggleOnOff() {
-    if (this.#active) {
-      this.deactivate();
-    } else if (!this.#active) {
-      this.activate();
-    }
-  }
-
   #abortionTimestamp;
 
   abortPriorScrolls(extraData = {}) {
@@ -687,8 +693,6 @@ class MomentumScroller {
       ),
       duration: this.#scrollDuration,
       elapsedTime: this.#elapsedTime,
-      velocityMultiplierX: this.#scrollVelocityMultiplierX,
-      velocityMultiplierY: this.#scrollVelocityMultiplierY,
       scrollContainer: this.#scrollContainer,
       momentumScroller: this,
     };
