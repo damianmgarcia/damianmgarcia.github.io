@@ -2639,8 +2639,8 @@ class InputEventDelegator {
 
             promise.then((result) => {
               const elapsedTime = Math.round(result.elapsedTime);
-              const xPosition = Math.round(result.x);
-              const yPosition = Math.round(result.y);
+              const endPointX = Math.round(result.endPoint[0]);
+              const endPointY = Math.round(result.endPoint[1]);
 
               demoContainer.querySelector(
                 "[data-label='aborted']"
@@ -2649,9 +2649,9 @@ class InputEventDelegator {
                 "[data-label='elapsed-time']"
               ).textContent = `${elapsedTime} ms`;
               demoContainer.querySelector("[data-label='x']").textContent =
-                xPosition;
+                endPointX;
               demoContainer.querySelector("[data-label='y']").textContent =
-                yPosition;
+                endPointY;
 
               demoContainer
                 .querySelectorAll("[data-label]")
