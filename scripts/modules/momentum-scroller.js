@@ -682,11 +682,11 @@ class MomentumScroller {
   getEventData(extraData) {
     const eventData = {
       interruptedBy: null,
-      xInitial: this.#scrollStartingPointX,
-      xFinal: this.#scrollContainer.scrollLeft,
-      yInitial: this.#scrollStartingPointY,
-      yFinal: this.#scrollContainer.scrollTop,
-      deceleration: this.#deceleration,
+      startPoint: [this.#scrollStartingPointX, this.#scrollStartingPointY],
+      endPoint: [
+        this.#scrollContainer.scrollLeft,
+        this.#scrollContainer.scrollTop,
+      ],
       distance: Math.hypot(
         Math.abs(this.#scrollStartingPointX - this.#scrollContainer.scrollLeft),
         Math.abs(this.#scrollStartingPointY - this.#scrollContainer.scrollTop)
