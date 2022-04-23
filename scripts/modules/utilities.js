@@ -39,81 +39,291 @@ export function awaitTimeout({ milliseconds = NaN } = {}) {
   });
 }
 
-export class Calendar {
-  #date = new Date();
+export class DateTools {
+  static millisecondConversionMap = new Map([
+    ["year", 1000 * 60 * 60 * 24 * 30.436875 * 12],
+    ["month", 1000 * 60 * 60 * 24 * 30.436875],
+    ["week", 1000 * 60 * 60 * 24 * 7],
+    ["day", 1000 * 60 * 60 * 24],
+    ["hour", 1000 * 60 * 60],
+    ["minute", 1000 * 60],
+    ["second", 1000],
+    ["millisecond", 1],
+  ]);
 
-  get date() {
-    return this.#date;
+  static convertTime(fromQuantity = NaN, fromUnit = "", toUnit = "") {
+    validateArgument("fromQuantity", fromQuantity, {
+      allowedTypes: ["number"],
+      allowedMin: 0,
+      allowFiniteNumbersOnly: true,
+    });
+
+    validateArgument("fromUnit", fromUnit, {
+      allowedValues: Array.from(this.millisecondConversionMap.keys()),
+    });
+
+    validateArgument("toUnit", toUnit, {
+      allowedValues: Array.from(this.millisecondConversionMap.keys()),
+    });
+
+    return (
+      (fromQuantity * this.millisecondConversionMap.get(fromUnit)) /
+      this.millisecondConversionMap.get(toUnit)
+    );
   }
 
-  get year() {
-    return this.#date.getFullYear();
-  }
+  static getBreakpointTime(
+    timeQuantity = NaN,
+    timeUnit = "",
+    {
+      maxMonths = 12,
+      maxWeeks = 8,
+      maxDays = 7,
+      maxHours = 24,
+      maxMinutes = 60,
+      maxSeconds = 60,
+      maxMilliseconds = 1000,
+    } = {}
+  ) {
+    const largestUnit = this.millisecondConversionMap.keys().next().value;
 
-  get month() {
-    return this.#date.getMonth() + 1;
-  }
+    const breakpoints = [
+      ["month", maxMonths],
+      ["week", maxWeeks],
+      ["day", maxDays],
+      ["hour", maxHours],
+      ["minute", maxMinutes],
+      ["second", maxSeconds],
+      ["millisecond", maxMilliseconds],
+    ];
 
-  get day() {
-    return this.#date.getDate();
-  }
+    const timeInMilliseconds = this.convertTime(
+      timeQuantity,
+      timeUnit,
+      "millisecond"
+    );
 
-  get holiday() {
-    if (this.month === 10 && this.day === 31) {
-      return "halloween";
-    } else if (this.month === 11) {
-      const daysOfTheMonth = this.getDaysOfTheMonth();
-      const thursdaysOfTheMonth = daysOfTheMonth.filter(
-        ({ dayName }) => dayName === "Thursday"
+    const breakpointUnit = getBreakpointUnit();
+
+    const breakpointQuantity = this.convertTime(
+      timeInMilliseconds,
+      "millisecond",
+      breakpointUnit
+    );
+
+    return {
+      breakpointQuantity: breakpointQuantity,
+      breakpointUnit: breakpointUnit,
+    };
+
+    function getBreakpointUnit() {
+      const breakpointIndex = breakpoints.findIndex(
+        ([unit, breakpoint]) =>
+          timeInMilliseconds >=
+          DateTools.convertTime(breakpoint, unit, "millisecond")
       );
-      const dayNumberOfFourthThursday = thursdaysOfTheMonth[3].dayNumber;
-      if (this.day === dayNumberOfFourthThursday) return "thanksgiving";
-    } else if (this.month === 12 && this.day === 1) {
+
+      if (breakpointIndex === 0) {
+        return largestUnit;
+      } else if (breakpointIndex > 0) {
+        const [breakpoint] = breakpoints[breakpointIndex - 1];
+        return breakpoint;
+      } else if (breakpointIndex === -1) {
+        const [breakpoint] = breakpoints[breakpoints.length - 1];
+        return breakpoint;
+      }
+    }
+  }
+
+  static getElapsedTimeRecord(
+    timeQuantity = NaN,
+    fromUnit = "",
+    {
+      toUnits = Array.from(this.millisecondConversionMap.keys()),
+      remainderRounding = "none",
+    } = {}
+  ) {
+    validateArgument("toUnits", toUnits, {
+      allowedTypes: ["array"],
+    });
+    toUnits = new Set(toUnits);
+    validateArgument("remainderRounding", remainderRounding, {
+      allowedValues: ["ceil", "floor", "none", "round"],
+    });
+
+    let timeInMilliseconds = this.convertTime(
+      timeQuantity,
+      fromUnit,
+      "millisecond"
+    );
+
+    const elapsedTimeRecord = [];
+
+    Array.from(this.millisecondConversionMap.keys()).forEach(
+      (conversionUnit) => {
+        if (!toUnits.has(conversionUnit)) return;
+
+        const quotientInMilliseconds =
+          timeInMilliseconds -
+          (timeInMilliseconds %
+            this.convertTime(1, conversionUnit, "millisecond"));
+
+        const quotientInUnit = this.convertTime(
+          quotientInMilliseconds,
+          "millisecond",
+          conversionUnit
+        );
+
+        timeInMilliseconds -= quotientInMilliseconds;
+
+        elapsedTimeRecord.push([conversionUnit, quotientInUnit]);
+      }
+    );
+
+    if (timeInMilliseconds !== 0) {
+      const [unit, quantity] = elapsedTimeRecord[elapsedTimeRecord.length - 1];
+      const remainingMillisecondsConvertedToUnit = this.convertTime(
+        timeInMilliseconds,
+        "millisecond",
+        unit
+      );
+
+      const updatedQuantity =
+        remainderRounding === "none"
+          ? quantity + remainingMillisecondsConvertedToUnit
+          : remainderRounding === "round"
+          ? Math.round(quantity + remainingMillisecondsConvertedToUnit)
+          : remainderRounding === "floor"
+          ? Math.floor(quantity + remainingMillisecondsConvertedToUnit)
+          : Math.ceil(quantity + remainingMillisecondsConvertedToUnit);
+
+      elapsedTimeRecord[elapsedTimeRecord.length - 1] = [unit, updatedQuantity];
+    }
+
+    return new Map(elapsedTimeRecord);
+  }
+
+  static getDateHolidayName(date = new Date()) {
+    validateArgument("date", date, {
+      allowedPrototypes: [Date],
+    });
+
+    const day = date.getDate();
+    const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+    const month = date.getMonth() + 1;
+
+    if (month === 10 && day === 31) {
+      return "halloween";
+    } else if (month === 11 && day >= 22 && dayName === "Thursday") {
+      const daysOfTheMonth = this.getDaysOfTheMonth(date);
+      const [thanksgivingDay] = daysOfTheMonth.find(
+        ([dayNumber, dayName]) => dayNumber >= 22 && dayName === "Thursday"
+      );
+      if (day === thanksgivingDay) return "thanksgiving";
+    } else if (month === 1 && day === 1) {
       return "new-year";
     }
   }
 
-  getDaysOfTheMonth() {
-    const monthDayCount = this.getMonthDayCount();
+  static getDateInISOFormat(date = new Date()) {
+    validateArgument("date", date, {
+      allowedPrototypes: [Date],
+    });
+
+    const year = date.getFullYear();
+    const month = date.toLocaleDateString("en-us", {
+      month: "2-digit",
+    });
+    const day = date.toLocaleDateString("en-us", {
+      day: "2-digit",
+    });
+
+    return `${year}-${month}-${day}`;
+  }
+
+  static getDaysOfTheMonth(date = new Date()) {
+    validateArgument("date", date, {
+      allowedPrototypes: [Date],
+    });
+
+    const numberOfDaysInTheMonth = this.getNumberOfDaysInTheMonth(date);
+    const year = date.getFullYear();
+    const month = date.getMonth();
 
     const daysOfTheMonth = [];
+    for (let dayNumber = 1; dayNumber <= numberOfDaysInTheMonth; dayNumber++) {
+      const dayName = new Date(year, month, dayNumber).toLocaleDateString(
+        "en-US",
+        { weekday: "long" }
+      );
 
-    for (let dayNumber = 1; dayNumber <= monthDayCount; dayNumber++) {
-      const dayName = new Date(
-        this.year,
-        this.month - 1,
-        dayNumber
-      ).toLocaleDateString("en-US", { weekday: "long" });
-      daysOfTheMonth.push({
-        dayNumber: dayNumber,
-        dayName: dayName,
-      });
+      daysOfTheMonth.push([dayNumber, dayName]);
     }
 
     return daysOfTheMonth;
   }
 
-  getMonthDayCount() {
+  static getGrammaticalTimeUnit(quantity = NaN, unit = "", capitalize = true) {
+    validateArgument("quantity", quantity, {
+      allowedTypes: ["number"],
+      allowedMin: 0,
+      allowFiniteNumbersOnly: true,
+    });
+
+    validateArgument("unit", unit, {
+      allowedValues: Array.from(this.millisecondConversionMap.keys()),
+    });
+
+    validateArgument("capitalize", capitalize, {
+      allowedTypes: ["boolean"],
+    });
+
+    return quantity === 1 ? getSingularUnit() : getPluralUnit();
+
+    function getSingularUnit() {
+      return capitalize ? unit.charAt(0).toUpperCase() + unit.slice(1) : unit;
+    }
+
+    function getPluralUnit() {
+      return capitalize
+        ? unit.charAt(0).toUpperCase() + unit.slice(1) + "s"
+        : unit + "s";
+    }
+  }
+
+  static getNumberOfDaysInTheMonth(date = new Date()) {
+    validateArgument("date", date, {
+      allowedPrototypes: [Date],
+    });
+
+    const month = date.getMonth() + 1;
+
     const monthsWithThirtyDays = [4, 6, 9, 11];
     const monthsWithThirtyOneDays = [1, 3, 5, 7, 8, 10, 12];
 
-    if (monthsWithThirtyDays.includes(this.month)) {
+    if (monthsWithThirtyDays.includes(month)) {
       return 30;
-    } else if (monthsWithThirtyOneDays.includes(this.month)) {
+    } else if (monthsWithThirtyOneDays.includes(month)) {
       return 31;
-    } else if (!this.isLeapYear()) {
+    } else if (!this.yearIsLeapYear()) {
       return 28;
-    } else if (this.isLeapYear()) {
+    } else if (this.yearIsLeapYear()) {
       return 29;
     }
   }
 
-  isLeapYear() {
-    if (this.year % 4 !== 0) {
+  static yearIsLeapYear(date = new Date()) {
+    validateArgument("date", date, {
+      allowedPrototypes: [Date],
+    });
+
+    const year = date.getFullYear();
+
+    if (year % 4 !== 0) {
       return false;
-    } else if (this.year % 100 !== 0) {
+    } else if (year % 100 !== 0) {
       return true;
-    } else if (thi.syear % 400 !== 0) {
+    } else if (year % 400 !== 0) {
       return false;
     } else {
       return true;
@@ -275,6 +485,52 @@ export function showCaughtErrorsOnScreen() {
   });
 }
 
+export class SimpleDate {
+  #date;
+  #year;
+  #month;
+  #monthName;
+  #day;
+  #dayName;
+
+  constructor(date = new Date()) {
+    validateArgument("date", date, {
+      allowedPrototypes: [Date],
+    });
+
+    this.#date = date;
+    this.#year = date.getFullYear();
+    this.#month = date.getMonth() + 1;
+    this.#monthName = date.toLocaleDateString("en-US", { month: "long" });
+    this.#day = date.getDate();
+    this.#dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+  }
+
+  get date() {
+    return this.#date;
+  }
+
+  get year() {
+    return this.#year;
+  }
+
+  get month() {
+    return this.#month;
+  }
+
+  get day() {
+    return this.#day;
+  }
+
+  get dayName() {
+    return this.#dayName;
+  }
+
+  get monthName() {
+    return this.#monthName;
+  }
+}
+
 export function validateArgument(
   parameterName = "",
   argument,
@@ -388,6 +644,25 @@ export function validateArgument(
     if (allowedMinIsNotNaN || allowedMaxIsNotNaN) {
       if (
         allowedMinIsNotNaN &&
+        !Number.isFinite(allowedMin) &&
+        allowedMinIsInclusive &&
+        allowFiniteNumbersOnly
+      )
+        throw new TypeError(
+          `allowedMin cannot be ${allowedMin} with allowedMinIsInclusive set to true and allowFiniteNumbersOnly set to true`
+        );
+      if (
+        allowedMaxIsNotNaN &&
+        !Number.isFinite(allowedMax) &&
+        allowedMaxIsInclusive &&
+        allowFiniteNumbersOnly
+      )
+        throw new TypeError(
+          `allowedMax cannot be ${allowedMax} with allowedMaxIsInclusive set to true and allowFiniteNumbersOnly set to true`
+        );
+
+      if (
+        allowedMinIsNotNaN &&
         allowedMaxIsNotNaN &&
         allowedMinIsInclusive &&
         allowedMaxIsInclusive &&
@@ -443,7 +718,7 @@ export function validateArgument(
         throw new RangeError(
           customErrorMessage ||
             `${parameterName} must be within the interval [${allowedMin}, +Infinity${
-              allowedMaxIsInclusive ? "]" : ")"
+              allowedMaxIsInclusive && !allowFiniteNumbersOnly ? "]" : ")"
             }`
         );
 
@@ -456,7 +731,7 @@ export function validateArgument(
         throw new RangeError(
           customErrorMessage ||
             `${parameterName} must be within the interval (${allowedMin}, +Infinity${
-              allowedMaxIsInclusive ? "]" : ")"
+              allowedMaxIsInclusive && !allowFiniteNumbersOnly ? "]" : ")"
             }`
         );
 
@@ -469,7 +744,7 @@ export function validateArgument(
         throw new RangeError(
           customErrorMessage ||
             `${parameterName} must be within the interval ${
-              allowedMinIsInclusive ? "[" : "("
+              allowedMinIsInclusive && !allowFiniteNumbersOnly ? "[" : "("
             }-Infinity, ${allowedMax}]`
         );
 
@@ -482,7 +757,7 @@ export function validateArgument(
         throw new RangeError(
           customErrorMessage ||
             `${parameterName} must be within the interval ${
-              allowedMinIsInclusive ? "[" : "("
+              allowedMinIsInclusive && !allowFiniteNumbersOnly ? "[" : "("
             }-Infinity, ${allowedMax})`
         );
     }

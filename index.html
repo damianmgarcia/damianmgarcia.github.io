@@ -81,7 +81,7 @@
           const orientation =
             availHeight > availWidth ? "portrait" : "landscape";
 
-          if (orientation == "portrait") {
+          if (orientation === "portrait") {
             if (availWidth < this.#width) {
               return (this.#metaViewportElement.content = `width=${
                 this.#width
@@ -89,7 +89,7 @@
             } else if (availWidth >= this.#width) {
               return (this.#metaViewportElement.content = `width=${availWidth}, shrink-to-fit=no`);
             }
-          } else if (orientation == "landscape") {
+          } else if (orientation === "landscape") {
             if (!(availWidth >= this.#width && availHeight >= this.#width)) {
               return (this.#metaViewportElement.content = `width=${
                 (availWidth / availHeight) * this.#width
@@ -115,7 +115,7 @@
           if (!(parentElement instanceof Element))
             throw new TypeError("parentElement must be an instance of Element");
 
-          if (onApplyAppearance && typeof onApplyAppearance != "function")
+          if (onApplyAppearance && typeof onApplyAppearance !== "function")
             throw new TypeError("Callbacks must be of type function");
 
           this.#parentElement = parentElement;
@@ -140,14 +140,14 @@
         }
 
         applyAppearance(appearance) {
-          if (appearance == "dark") {
+          if (appearance === "dark") {
             const appearanceWasReplaced = this.#parentElement.classList.replace(
               "light",
               "dark"
             );
             if (!appearanceWasReplaced)
               this.#parentElement.classList.add("dark");
-          } else if (appearance == "light") {
+          } else if (appearance === "light") {
             const appearanceWasReplaced = this.#parentElement.classList.replace(
               "dark",
               "light"
@@ -179,15 +179,15 @@
         }
 
         switchAppearance() {
-          if (this.#currentAppearance == "dark") {
+          if (this.#currentAppearance === "dark") {
             this.applyAppearance("light");
-          } else if (this.#currentAppearance == "light") {
+          } else if (this.#currentAppearance === "light") {
             this.applyAppearance("dark");
           }
         }
 
         updateOnApplyAppearanceHandler(onApplyAppearance) {
-          if (onApplyAppearance && typeof onApplyAppearance != "function")
+          if (onApplyAppearance && typeof onApplyAppearance !== "function")
             throw new TypeError("Callbacks must be of type function");
 
           this.#onApplyAppearance = onApplyAppearance;
@@ -357,7 +357,12 @@
         max-width: 100%;
       }
 
-      .light-italic {
+      .font-normal-normal {
+        font-style: normal;
+        font-weight: var(--font-weight-normal);
+      }
+
+      .font-light-italic {
         font-style: italic;
         font-weight: var(--font-weight-light);
       }
@@ -1241,7 +1246,7 @@
       }
 
       .start-date,
-      .duration,
+      .status,
       .end-date {
         border: 1px solid var(--text-color);
         border-radius: calc(750px / 34 * 1);
@@ -1256,7 +1261,7 @@
         transition: background-color 400ms ease 0ms, border-color 400ms ease 0ms;
       }
 
-      .duration {
+      .status {
         background: var(--text-color);
         color: var(--button-background-color);
         grid-column: 2 / 3;
@@ -3147,10 +3152,25 @@
         >
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2021-09</div>
+              <div
+                class="start-date"
+                data-year="2021"
+                data-month="09"
+                data-day="01"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2022-02</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="Completed"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2022"
+                data-month="02"
+                data-day="10"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -3211,12 +3231,12 @@
                 <a
                   class="link-container"
                   draggable="false"
-                  href="resume.pdf"
-                  id="link-resume-portfolio-intro"
+                  href="old-resume.pdf"
+                  id="link-old-resume-portfolio-intro"
                   rel="noreferrer"
                   target="_blank"
                   ><span class="link-content"
-                    >my resume
+                    >my <span class="font-light-italic">old</span> resume
                     <div class="ripple-container">
                       <div class="ripple"></div></div></span
                 ></a>
@@ -3239,7 +3259,7 @@
               <div class="paragraph">
                 Fast-forward several months later and I have a resume, a
                 portfolio with two projects, and logos based on my
-                cats&thinsp;&mdash;&thinsp;<span class="light-italic"
+                cats&thinsp;&mdash;&thinsp;<span class="font-light-italic"
                   >and they talk</span
                 >.
               </div>
@@ -3328,7 +3348,7 @@
                 Everything else&thinsp;&mdash;&thinsp;the design, the scrolling
                 systems, the type and talk system, the interactive elements, the
                 logic,
-                <span class="light-italic">everything</span
+                <span class="font-light-italic">everything</span
                 >&thinsp;&mdash;&thinsp;all down to the smallest detail, was
                 built with JavaScript, HTML, and CSS. No libraries. No
                 frameworks.
@@ -3336,10 +3356,11 @@
               <div class="list-title">Features</div>
               <div class="list-item">
                 <div class="paragraph">
-                  A
-                  <span class="light-italic">momentum scrolling system</span>
-                  for non-touch-screen devices that simulates the touch-based
-                  scrolling systems found on smartphones and tablets.
+                  <span class="font-normal-normal"
+                    >Momentum Scrolling System</span
+                  >&thinsp;&mdash;&thinsp;This momentum scrolling system for
+                  non-touch-screen devices simulates the touch-based scrolling
+                  systems found on smartphones and tablets.
                 </div>
                 <div class="paragraph">
                   This feature is intended to be used by mouse-users since mouse
@@ -3443,9 +3464,9 @@
                   systems.
                 </div>
                 <div class="paragraph">
-                  <span class="light-italic">The Yowl</span>, by Charlotte Ma,
-                  is used as the background image of the two-dimensional scroll
-                  container in this demonstration.
+                  <span class="font-light-italic">The Yowl</span>, by Charlotte
+                  Ma, is used as the background image of the two-dimensional
+                  scroll container in this demonstration.
                 </div>
                 <div
                   class="demo-container"
@@ -3584,14 +3605,13 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  A
-                  <span class="light-italic"
-                    >smooth scrolling implementation</span
-                  >
-                  that provides advanced, easy-to-use smooth scrolling
-                  functionality. It allows you to customize smooth scrolling
-                  properties, such as duration and easing. Additionally, it
-                  includes advanced features such as scroll events and promises.
+                  <span class="font-normal-normal"
+                    >Advanced Smooth Scrolling</span
+                  >&thinsp;&mdash;&thinsp;This smooth scrolling implementation
+                  provides advanced, easy-to-use smooth scrolling functionality.
+                  It allows you to customize smooth scrolling properties, such
+                  as duration and easing. Additionally, it includes advanced
+                  features such as scroll events and promises.
                 </div>
                 <div class="paragraph">
                   Every smooth scroll on this site is accomplished with this
@@ -3651,7 +3671,7 @@
                     id="link-the-scream"
                     rel="noreferrer"
                     target="_blank"
-                    ><span class="link-content light-italic"
+                    ><span class="link-content font-light-italic"
                       >The Scream
                       <div class="ripple-container">
                         <div class="ripple"></div></div></span
@@ -3830,7 +3850,7 @@
                     id="link-safari-smooth-behavior-support"
                     rel="noreferrer"
                     target="_blank"
-                    ><span class="link-content light-italic"
+                    ><span class="link-content font-light-italic"
                       >not supported by Safari
                       <div class="ripple-container">
                         <div class="ripple"></div></div></span></a
@@ -3864,26 +3884,31 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic">Responsive video galleries</span>
-                  that know when to play, stop, and scroll their videos
-                  depending on their locations relative to the viewport as well
-                  as other criteria.
+                  <span class="font-normal-normal"
+                    >Responsive Video Galleries</span
+                  >&thinsp;&mdash;&thinsp;All video galleries are aware of their
+                  location relative to the viewport, as well as their location
+                  relative to other video galleries, and they use this data to
+                  intelligently decide when to play, stop, or scroll content.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  A <span class="light-italic">section selector</span> at the
-                  top for quickly navigating the portfolio. It also
-                  automatically scrolls itself when necessary to keep in sync
-                  with the main content.
+                  <span class="font-normal-normal">Section Scroller</span
+                  >&thinsp;&mdash;&thinsp;At the top of the portfolio is the
+                  section scroller. It emerges from the slogan during the
+                  loading animation sequence, and it is used for quickly
+                  navigating the portfolio. It also automatically scrolls itself
+                  when necessary to keep in sync with the main content.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic">Original logos</span> based on my
-                  kittehs, Charm and Shelby, that blink and talk when you tap
-                  them. They also include seasonal themes that automatically
-                  activate.
+                  <span class="font-normal-normal">Original Logos</span
+                  >&thinsp;&mdash;&thinsp;Based on my two kittehs, Charm and
+                  Shelby, these original logos blink and talk when you tap them.
+                  Festive, seasonal logo themes automatically appear during
+                  certain times of the year.
                 </div>
                 <div id="overlap-gallery-calendar-container">
                   <div class="calendar">
@@ -3924,7 +3949,6 @@
                     <div class="non-month-day"></div>
                     <div class="non-month-day"></div>
                   </div>
-
                   <div
                     aria-label="Charm Logo October Halloween Demo"
                     id="charm-logo-october-halloween-demo"
@@ -3961,7 +3985,6 @@
                         d="M 43.4 244.987 C 43.4 150 456.601 155.644 456.6 244.987 L 440 280 L 248.732 280 L 55 275 L 43.4 244.987 Z"
                         class="halloween-demo"
                       ></path>
-
                       <path
                         style="
                           stroke-width: 3px;
@@ -4030,7 +4053,6 @@
                         d="M 233.32 303.41 C 233.32 302.919 267.736 300.274 267.736 301.963 C 270.98 301.963 267.194 332.711 265.99 332.711 C 262.439 338.218 230.936 307.108 233.32 303.41 Z"
                         transform="matrix(-0.679305, 0.733856, -0.733856, -0.679305, 654.596726, 348.709857)"
                       ></path>
-
                       <path
                         d="M 217.5 -411.659 L 225 -385.967 L 210 -385.967 L 217.5 -411.659 Z"
                         style="fill: rgb(255, 255, 255); opacity: 0"
@@ -4038,7 +4060,6 @@
                         class="halloween-demo"
                         bx:shape="triangle 210 -411.659 15 25.692 0.5 0 1@d8234d65"
                       ></path>
-
                       <path
                         style="
                           fill: none;
@@ -4049,7 +4070,6 @@
                         "
                         d="M 250.589 336.034 L 252.443 361.372 C 230.077 409.832 166.815 377.88 183.845 340.978"
                       ></path>
-
                       <path
                         d="M 280.986 -402.974 L 288.486 -377.282 L 273.486 -377.282 L 280.986 -402.974 Z"
                         style="fill: rgb(255, 255, 255); opacity: 0"
@@ -4057,7 +4077,6 @@
                         class="halloween-demo"
                         bx:shape="triangle 273.486 -402.974 15 25.692 0.5 0 1@027a9276"
                       ></path>
-
                       <path
                         style="
                           fill: none;
@@ -4106,7 +4125,6 @@
                         "
                         d="M 278.801 251.337 C 278.801 251.337 339.019 218.997 339.019 218.997"
                       ></path>
-
                       <path
                         style="opacity: 0"
                         d="M 43.4 365 C 43.4 365 49.566 421.618 65 435 C 86.419 453.571 155.001 458.3 155.001 458.3 C 155.001 458.3 105 360 105 315 C 105 283.918 43.4 245 43.4 245 L 43.4 365 Z"
@@ -4118,7 +4136,6 @@
                         class="halloween-demo"
                         transform="matrix(-1, 0, 0, -1, 801.598999, 703.273987)"
                       ></path>
-
                       <g
                         class="october-demo"
                         transform="matrix(0.997702, 0.067773, -0.067773, 0.997702, -232.497971, -269.879852)"
@@ -4187,7 +4204,6 @@
                           bx:shape="triangle 223.745 -671.542 15 25.692 0.5 0 1@0abea120"
                         ></path>
                       </g>
-
                       <g
                         class="october-demo"
                         transform="matrix(0.656575, -0.049106, 0.049106, 0.656575, 282.243622, -10.956932)"
@@ -4324,11 +4340,11 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  An
-                  <span class="light-italic"
-                    >original opening animation sequence</span
-                  >
-                  featuring the Charm and Shelby logos and my slogan.
+                  <span class="font-normal-normal"
+                    >Original Opening Animation Sequence</span
+                  >&thinsp;&mdash;&thinsp;The logo, slogan, section selector,
+                  and other elements have been carefully choreographed to create
+                  a delightful opening animation sequence.
                 </div>
                 <div class="media-container">
                   <div class="video-progress-bars-container">
@@ -4384,10 +4400,13 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  A
-                  <span class="light-italic"
-                    >typewriter-style message typing system with audio</span
-                  >. Messages are typed character-by-character inside a bubble
+                  <span class="font-normal-normal">Type and Talk System</span
+                  >&thinsp;&mdash;&thinsp;This typewriter-style messaging system
+                  hearkens to the old-school dialogue systems of 80s and 90s
+                  video games.
+                </div>
+                <div class="paragraph">
+                  Messages are typed, character-by-character, inside a bubble
                   below the Charm or Shelby logo. If an audio source is
                   provided, it will play as the message is typed. The syntax is:
                 </div>
@@ -4484,19 +4503,20 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic">Dark and light appearances</span>.
-                  On first visit, the site's appearance is determined by the
-                  device's appearance, light or dark, if available. If not, the
-                  appearance defaults to light. The appearance may be toggled
-                  between light and dark, and the preferred setting is
-                  remembered for future visits.
+                  <span class="font-normal-normal">Dark and Light Modes</span
+                  >&thinsp;&mdash;&thinsp;On first visit, the site's appearance
+                  is determined by the device's mode, light or dark, if
+                  available. If not, the appearance defaults to light. The
+                  appearance may be toggled between light and dark, and the
+                  preferred setting is remembered for future visits.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic">Keyboard accessibility</span>. All
-                  interactive elements are keyboard accessible. Simply tab to an
-                  element and press the "Enter" key to interact with it.
+                  <span class="font-normal-normal">Keyboard Accessibility</span
+                  >&thinsp;&mdash;&thinsp;All interactive elements are keyboard
+                  accessible. Simply tab to an element and press the "Enter" key
+                  to interact with it.
                 </div>
                 <div class="paragraph">
                   Elements intuitively gain or lose focus when necessary
@@ -4505,10 +4525,11 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic">Cancellable actions</span>. If the
-                  "Escape" key is pressed while holding the "Enter" key or while
-                  holding the pointer on an interactive element, the behavior
-                  that would have been triggered is canceled.
+                  <span class="font-normal-normal">Cancellable Actions</span
+                  >&thinsp;&mdash;&thinsp;If the "Escape" key is pressed while
+                  holding the "Enter" key or while holding the pointer on an
+                  interactive element, the behavior that would have been
+                  triggered is canceled.
                 </div>
                 <div class="paragraph">
                   Additionally, if you tap and hold on an interactive element,
@@ -4533,10 +4554,25 @@
         >
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2021-09</div>
+              <div
+                class="start-date"
+                data-year="2021"
+                data-month="09"
+                data-day="01"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">Current</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="Paused"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2022"
+                data-month="02"
+                data-day="10"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -4620,7 +4656,6 @@
                   tabindex="-1"
                 ></video>
               </div>
-
               <div class="caption">
                 Charm's Jobs Sardine theme background varies with the time of
                 day<br />
@@ -4720,7 +4755,7 @@
                   id="link-gecko-compatibility"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content light-italic"
+                  ><span class="link-content font-light-italic"
                     >Gecko does not support CSS backdrop-filter
                     <div class="ripple-container">
                       <div class="ripple"></div></div></span></a
@@ -4730,9 +4765,10 @@
               <div class="list-title">Features</div>
               <div class="list-item">
                 <div class="paragraph">
-                  A <span class="light-italic">responsive design</span> that
-                  displays one or two pages depending on the book container's
-                  aspect ratio&thinsp;&mdash;&thinsp;not simply the device's
+                  <span class="font-normal-normal">Responsive Design</span
+                  >&thinsp;&mdash;&thinsp;The book displays one or two pages
+                  depending on the book container's aspect
+                  ratio&thinsp;&mdash;&thinsp;not simply the device's
                   orientation.
                 </div>
                 <div class="paragraph">
@@ -4744,13 +4780,11 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  The ability to
-                  <span class="light-italic"
-                    >read and listen to books offline.</span
-                  >
-                  The Charm's Jobs app leverages the service worker API and
-                  cache storage API, along with a custom file versioning system,
-                  to efficiently manage cache.
+                  <span class="font-normal-normal">Works Offline</span
+                  >&thinsp;&mdash;&thinsp;Books can be read offline as long as
+                  they have been downloaded. The Charm's Jobs app leverages the
+                  service worker API and cache storage API, along with a custom
+                  file versioning system, to efficiently manage cache.
                 </div>
                 <div class="paragraph">
                   Every time a book is loaded, the app checks that all required
@@ -4761,32 +4795,36 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic"
-                    >Touch gestures and keyboard shortcuts</span
-                  >
-                  to turn pages, control audio playback, and adjust volume.
+                  <span class="font-normal-normal"
+                    >Touch Gestures and Keyboard Shortcuts</span
+                  >&thinsp;&mdash;&thinsp;Navigating Charm's Jobs is intuitive.
+                  Custom touch gestures and keyboard shortcuts are available to
+                  turn pages, control audio playback, and adjust volume.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic"
-                    >Preferences that are remembered</span
-                  >
-                  for future visits, such as the last-used theme (including time
-                  of day and weather for the Sardine theme), volume level,
-                  auto-play, and bottom navigation bar position.
+                  <span class="font-normal-normal">Saved Preferences</span
+                  >&thinsp;&mdash;&thinsp;User preferences, such as the
+                  last-used theme (including time of day and weather for the
+                  Sardine theme), volume level, auto-play, and bottom navigation
+                  bar position, are saved for future visits.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic">Automatic resumption</span> of
-                  books from the last-viewed page.
+                  <span class="font-normal-normal">Auto Resume</span
+                  >&thinsp;&mdash;&thinsp;The last page that a user viewed is
+                  remembered so that the book will automatically scroll to that
+                  page the next time the book is opened.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic">Progress bars</span> while book
-                  resources are being loaded or downloaded.
+                  <span class="font-normal-normal">Real Progress Bars</span
+                  >&thinsp;&mdash;&thinsp;Progress bars are shown when book
+                  resources are being loaded or downloaded and they reflect the
+                  actual progress of the data being downloaded to the device.
                 </div>
               </div>
             </div>
@@ -4794,14 +4832,14 @@
               <div class="list-title">Sardine Theme Features</div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic"
-                    >Dynamic time of day backgrounds</span
-                  >. When the time of day is set to current, the background will
-                  become a dynamic one, updating itself every minute. When a
-                  specific time of day&thinsp;&mdash;&thinsp;dawn, sunrise,
-                  morning, afternoon, sunset, dusk, or
-                  night&thinsp;&mdash;&thinsp;is chosen, the background will
-                  become static after transitioning to that time of day.
+                  <span class="font-normal-normal">Dynamic Backgrounds</span
+                  >&thinsp;&mdash;&thinsp;When the time of day is set to
+                  current, the background will become a dynamic one, updating
+                  itself every minute. When a specific time of
+                  day&thinsp;&mdash;&thinsp;dawn, sunrise, morning, afternoon,
+                  sunset, dusk, or night&thinsp;&mdash;&thinsp;is chosen, the
+                  background will become static after transitioning to that time
+                  of day.
                 </div>
                 <div class="paragraph">
                   Twinkling stars and a cat-themed-constellation start to appear
@@ -4811,19 +4849,20 @@
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="light-italic">Weather layers</span>. When the
-                  weather is set to calm, the sky becomes clear and the waves
-                  gently sway back and forth. When set to storm, the sky
-                  gradually darkens, lightning begins to flash, and the waves
-                  become choppier.
+                  <span class="font-normal-normal">Weather</span
+                  >&thinsp;&mdash;&thinsp;When the weather is set to calm, the
+                  sky becomes clear and the waves gently sway back and forth.
+                  When set to storm, the sky gradually darkens, lightning begins
+                  to flash, and the waves become choppier.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  A <span class="light-italic">buoy with flashing lights</span>.
-                  The brightness of the buoy's lights varies with the time of
-                  day. The position of the reflections off the surface of the
-                  sea take into account the position of the lights.
+                  <span class="font-normal-normal">Animated Buoy</span
+                  >&thinsp;&mdash;&thinsp;The brightness of the buoy's lights
+                  varies with the time of day. The position of the reflections
+                  off the surface of the sea take into account the position of
+                  the lights.
                 </div>
               </div>
             </div>
@@ -4838,10 +4877,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2015-08</div>
+              <div
+                class="start-date"
+                data-year="2015"
+                data-month="08"
+                data-day="26"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2019-05</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="Graduated"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2019"
+                data-month="05"
+                data-day="25"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -4948,10 +5002,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2019-08</div>
+              <div
+                class="start-date"
+                data-year="2019"
+                data-month="08"
+                data-day="22"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration">Active</div>
-              <div class="end-date">2023-04</div>
+              <div
+                class="status"
+                data-status-type="has-expired"
+                data-status-yes="Inactive"
+                data-status-no="Active"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2023"
+                data-month="04"
+                data-day="last"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -4978,10 +5047,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2020-08</div>
+              <div
+                class="start-date"
+                data-year="2020"
+                data-month="04"
+                data-day="08"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration">Active</div>
-              <div class="end-date">2022-04</div>
+              <div
+                class="status"
+                data-status-type="has-expired"
+                data-status-yes="Inactive"
+                data-status-no="Active"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2022"
+                data-month="04"
+                data-day="last"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5007,10 +5091,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2018-01</div>
+              <div
+                class="start-date"
+                data-year="2018"
+                data-month="01"
+                data-day="12"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration">Active</div>
-              <div class="end-date">Indefinite</div>
+              <div
+                class="status"
+                data-status-type="has-expired"
+                data-status-yes="Inactive"
+                data-status-no="Active"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2021"
+                data-month="01"
+                data-day="12"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5036,10 +5135,20 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2017-11</div>
+              <div
+                class="start-date"
+                data-year="2017"
+                data-month="11"
+                data-day="28"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration">Active</div>
-              <div class="end-date">Indefinite</div>
+              <div
+                class="status"
+                data-status-type="has-expired"
+                data-status-yes="Inactive"
+                data-status-no="Active"
+              ></div>
+              <div class="end-date" data-date="indefinite"></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5067,10 +5176,20 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2017-05</div>
+              <div
+                class="start-date"
+                data-year="2017"
+                data-month="05"
+                data-day="02"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration">Active</div>
-              <div class="end-date">Indefinite</div>
+              <div
+                class="status"
+                data-status-type="has-expired"
+                data-status-yes="Inactive"
+                data-status-no="Active"
+              ></div>
+              <div class="end-date" data-date="indefinite"></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5102,10 +5221,20 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2021-09</div>
+              <div
+                class="start-date"
+                data-year="2021"
+                data-month="09"
+                data-day="01"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">Current</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div class="end-date" data-date="current"></div>
             </div>
             <div class="position-organization-container">
               <div class="position">Web Developer and Designer</div>
@@ -5116,33 +5245,35 @@
             <div class="list">
               <div class="list-item">
                 <div class="paragraph">
-                  Independently designed, developed, serves, and maintains
-                  <a class="link-container" draggable="false" href="/">
-                    <span class="link-content"
-                      >my portfolio website
-                      <div class="ripple-container">
-                        <div class="ripple"></div>
-                      </div>
-                    </span>
-                  </a>
                   <a
                     class="link-container"
                     draggable="false"
-                    href="https://github.com/damianmgarcia/damianmgarcia.github.io"
+                    href="https://github.com/damianmgarcia/"
                   >
                     <span class="link-content">
-                      (GitHub Repository)
+                      GitHub Repositories
                       <div class="ripple-container">
                         <div class="ripple"></div>
-                      </div>
-                    </span> </a
-                  >, built with JavaScript, HTML, and CSS. No libraries. No
-                  frameworks.
+                      </div> </span
+                  ></a>
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  Independently designed, developed, serves, and maintains
+                  <a class="link-container" draggable="false" href="/">
+                    <span class="link-content"
+                      >damianmgarcia.com
+                      <div class="ripple-container">
+                        <div class="ripple"></div>
+                      </div>
+                    </span> </a
+                  >&thinsp;&mdash;&thinsp;Independently designed, developed,
+                  serves, and maintains my portfolio website, built with
+                  JavaScript, HTML, and CSS. No libraries. No frameworks.
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="paragraph">
                   <a
                     class="link-container"
                     draggable="false"
@@ -5152,23 +5283,69 @@
                     target="_blank"
                   >
                     <span class="link-content"
-                      >Charm's Jobs
+                      >charmsjobs.com
                       <div class="ripple-container">
                         <div class="ripple"></div>
-                      </div>
-                    </span> </a
-                  >, an audio book progressive web app built with JavaScript,
-                  HTML, and CSS. No libraries. No frameworks. It is currently in
-                  development.
+                      </div> </span></a
+                  >&thinsp;&mdash;&thinsp;Independently designed, developed,
+                  serves, and maintains Charm's Jobs, an audio book progressive
+                  web app built with JavaScript, HTML, and CSS. No libraries. No
+                  frameworks. It is currently in development.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  Tools: Adobe After Effects, Adobe Illustrator, Adobe
-                  Photoshop, Adobe Premiere Pro, Boxy SVG, CSS, ES6, Git,
-                  GitHub, HTML, JavaScript, JSON, Microsoft Excel, Microsoft
-                  IIS, Node.js, PowerShell, Python, SketchUp, SQL, SVG, Visual
-                  Studio Code
+                  <a
+                    class="link-container"
+                    draggable="false"
+                    href="https://github.com/damianmgarcia/MomentumScroller"
+                    id="link-momentum-scroller-repository-experience"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <span class="link-content"
+                      >MomentumScroller
+                      <div class="ripple-container">
+                        <div class="ripple"></div>
+                      </div> </span></a
+                  >&thinsp;&mdash;&thinsp;A JavaScript module that provides
+                  advanced, easy-to-use momentum scrolling functionality for
+                  your website's mouse-users. It allows mouse-users to flick
+                  through websites exactly as they would on touch-screen
+                  devices. You can easily customize the grab and grabbing
+                  cursors, the scroll deceleration rate, and more.
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="paragraph">
+                  <a
+                    class="link-container"
+                    draggable="false"
+                    href="https://github.com/damianmgarcia/SmoothScroller"
+                    id="link-smooth-scroller-repository-experience"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <span class="link-content"
+                      >SmoothScroller
+                      <div class="ripple-container">
+                        <div class="ripple"></div>
+                      </div> </span></a
+                  >&thinsp;&mdash;&thinsp;A JavaScript module that provides
+                  advanced, easy-to-use smooth scrolling functionality for your
+                  website. It allows you to customize smooth scrolling
+                  properties, such as duration and easing, to create a more
+                  delightful experience for your users. Additionally, it
+                  includes advanced features such as scroll events and promises.
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="paragraph">
+                  Tools&thinsp;&mdash;&thinsp;Adobe After Effects, Adobe
+                  Illustrator, Adobe Photoshop, Adobe Premiere Pro, Boxy SVG,
+                  CSS, ES6, Git, GitHub, HTML, JavaScript, JSON, Microsoft
+                  Excel, Microsoft IIS, Node.js, PowerShell, Python, SketchUp,
+                  SQL, SVG, Visual Studio Code
                 </div>
               </div>
             </div>
@@ -5177,10 +5354,20 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2019-12</div>
+              <div
+                class="start-date"
+                data-year="2019"
+                data-month="12"
+                data-day="23"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">Current</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div class="end-date" data-date="current"></div>
             </div>
             <div class="position-organization-container">
               <div class="position">Captioning Agent</div>
@@ -5211,10 +5398,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2019-04</div>
+              <div
+                class="start-date"
+                data-year="2019"
+                data-month="04"
+                data-day="01"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2019-05</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2019"
+                data-month="05"
+                data-day="10"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5269,10 +5471,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2019-02</div>
+              <div
+                class="start-date"
+                data-year="2019"
+                data-month="02"
+                data-day="18"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2019-03</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2019"
+                data-month="03"
+                data-day="29"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5316,10 +5533,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2019-01</div>
+              <div
+                class="start-date"
+                data-year="2019"
+                data-month="01"
+                data-day="07"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2019-02</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2019"
+                data-month="02"
+                data-day="15"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5378,10 +5610,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2018-11</div>
+              <div
+                class="start-date"
+                data-year="2018"
+                data-month="11"
+                data-day="05"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2018-12</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2018"
+                data-month="12"
+                data-day="14"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5434,10 +5681,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2018-09</div>
+              <div
+                class="start-date"
+                data-year="2018"
+                data-month="09"
+                data-day="24"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2018-11</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2018"
+                data-month="11"
+                data-day="02"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5488,10 +5750,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2018-08</div>
+              <div
+                class="start-date"
+                data-year="2018"
+                data-month="08"
+                data-day="13"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2018-09</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2018"
+                data-month="09"
+                data-day="21"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5522,10 +5799,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2018-07</div>
+              <div
+                class="start-date"
+                data-year="2018"
+                data-month="07"
+                data-day="02"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2018-08</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2018"
+                data-month="08"
+                data-day="10"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">
@@ -5566,10 +5858,25 @@
         <section>
           <div class="section-header">
             <div class="date-range-container">
-              <div class="start-date">2013-06</div>
+              <div
+                class="start-date"
+                data-year="2013"
+                data-month="06"
+                data-day="01"
+              ></div>
               <div class="date-line"></div>
-              <div class="duration"></div>
-              <div class="end-date">2015-06</div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2015"
+                data-month="06"
+                data-day="01"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">Pharmacy Technician</div>

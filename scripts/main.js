@@ -1,11 +1,12 @@
 import {
   awaitTimeout,
-  Calendar,
   cancelAllElementAnimations,
+  DateTools,
   getBrowserHeuristics,
   getDeviceHeuristics,
   getRandomNumber,
   isPrimaryInput,
+  SimpleDate,
   validateArgument,
 } from "./modules/utilities.js";
 import { MomentumScroller } from "./modules/momentum-scroller.js";
@@ -48,7 +49,7 @@ addEventListener(
 const browserHeuristics = getBrowserHeuristics();
 const deviceHeuristics = getDeviceHeuristics();
 
-const calendar = new Calendar();
+const today = new SimpleDate();
 
 const snowGlobeAnimation = {
   playing: false,
@@ -337,15 +338,15 @@ const kittehAppointerAndThemer = {
   },
 
   getAutoTheme() {
-    if (calendar.month === 10) {
-      if (calendar.day === 31) {
+    if (today.month === 10) {
+      if (today.day === 31) {
         return "halloween";
-      } else if (calendar.day !== 31) {
+      } else if (today.day !== 31) {
         return "october";
       }
-    } else if (calendar.month === 11) {
+    } else if (today.month === 11) {
       return "november";
-    } else if (calendar.month === 12) {
+    } else if (today.month === 12) {
       return "december";
     } else {
       return "none";
@@ -440,7 +441,7 @@ const kittehAppointerAndThemer = {
         .querySelectorAll(".november")
         .forEach((item) => item.style.setProperty("visibility", "visible"));
 
-      if (calendar.holiday === "thanksgiving")
+      if (DateTools.getDateHolidayName(today.date) === "thanksgiving")
         document
           .querySelector("#logo")
           .setAttribute("title", "\u{1F967} It is Thanksgiving \u{1F967}");
@@ -1167,14 +1168,17 @@ const kittehMessageLibrary = {
 
     if (!messagePackages.length) return;
 
+    const todaysHolidayName = DateTools.getDateHolidayName(today.date);
+
     const messagePackagesMinusInappropriateHolidays = messagePackages.filter(
       (messagePackage) =>
-        !messagePackage.holiday || messagePackage.holiday === calendar.holiday
+        !messagePackage.holiday || messagePackage.holiday === todaysHolidayName
     );
-    if (preferHoliday && calendar.holiday) {
+
+    if (preferHoliday && todaysHolidayName) {
       const holidayMessageIndex =
         messagePackagesMinusInappropriateHolidays.findIndex(
-          (messagePackage) => messagePackage.holiday === calendar.holiday
+          (messagePackage) => messagePackage.holiday === todaysHolidayName
         );
       if (holidayMessageIndex !== -1) index = holidayMessageIndex;
     }
@@ -3079,92 +3083,132 @@ async function switchOverflowMenu() {
   }
 }
 
-class ElapsedTimeCalculator {
-  getYearsElapsed(date1 = calendar.date, date2 = calendar.date) {
-    const parsedDate1 =
-      date1 instanceof Date
-        ? date1
-        : date1 === "Current"
-        ? calendar.date
-        : parseDate(date1);
-    const parsedDate2 =
-      date2 instanceof Date
-        ? date2
-        : date2 === "Current"
-        ? calendar.date
-        : parseDate(date2);
+const dateRangeContainers = document.querySelectorAll(".date-range-container");
+dateRangeContainers.forEach((dateRangeContainer) => {
+  const startDateElement = dateRangeContainer.querySelector(".start-date");
+  const statusElement = dateRangeContainer.querySelector(".status");
+  const endDateElement = dateRangeContainer.querySelector(".end-date");
 
-    const yearsElapsed = Math.abs(
-      (parsedDate1 - parsedDate2) / 1000 / 60 / 60 / 24 / 365.25
-    );
-
-    return yearsElapsed;
-
-    function parseDate(date) {
-      const datePattern = /(?<year>\d{4})\-(?<month>1[0-2]|0[1-9]|[1-9])/;
-      const dateMatch = date.match(datePattern);
-
-      if (!dateMatch)
-        throw new Error(
-          `The date provided, ${date}, was not successfully parsed"`
-        );
-
-      const parsedDate = new Date(
-        dateMatch.groups.year,
-        dateMatch.groups.month - 1
-      );
-
-      return parsedDate;
-    }
-  }
-
-  publishElapsedYearsToElements(elapsedYearsAndElements) {
-    elapsedYearsAndElements.forEach(([elapsedYears, element]) => {
-      const roundedElapsedYears = Math.round(elapsedYears);
-      if (roundedElapsedYears > 1) {
-        return (element.textContent = `${roundedElapsedYears} Years`);
-      } else if (roundedElapsedYears === 1 && elapsedYears >= 1) {
-        return (element.textContent = `${roundedElapsedYears} Year`);
-      } else if (roundedElapsedYears === 0 || elapsedYears < 1) {
-        const roundedElapsedMonths = Math.round(elapsedYears * 12);
-        if (roundedElapsedMonths > 1) {
-          return (element.textContent = `${roundedElapsedMonths} Months`);
-        } else if (roundedElapsedMonths === 1) {
-          return (element.textContent = `${roundedElapsedMonths} Month`);
-        } else if (roundedElapsedMonths === 0) {
-          return (element.textContent = `${roundedElapsedMonths} Months`);
-        }
-      }
-    });
-  }
-}
-const elapsedTimeCalculator = new ElapsedTimeCalculator();
-
-const yearsElapsedAndElements = getYearsElapsedAndElements();
-elapsedTimeCalculator.publishElapsedYearsToElements(yearsElapsedAndElements);
-
-function getYearsElapsedAndElements() {
-  const nonCredentialElements = Array.from(
-    document.querySelectorAll(".duration")
-  ).filter(
-    (result) => !result.closest("article").matches("#credentials-article")
-  );
-
-  const yearsElapsedAndElements = nonCredentialElements.map((element) => {
-    const date1 =
-      element.parentElement.querySelector(".start-date").textContent;
-    const date2 = element.parentElement.querySelector(".end-date").textContent;
-
-    const yearsElapsed = elapsedTimeCalculator.getYearsElapsed(date1, date2);
-
-    return [yearsElapsed, element];
+  const startDateYear = +startDateElement.dataset.year;
+  validateArgument("start-date data-year", startDateYear, {
+    allowedMax: today.year,
+    allowIntegerNumbersOnly: true,
   });
 
-  return yearsElapsedAndElements;
-}
+  const startDateMonth = +startDateElement.dataset.month - 1;
+  validateArgument("start-date data-month", startDateMonth, {
+    allowedMin: 0,
+    allowedMax: 11,
+    allowIntegerNumbersOnly: true,
+  });
+
+  const startDateDay =
+    startDateElement.dataset.day === "last"
+      ? DateTools.getNumberOfDaysInTheMonth(
+          new Date(startDateYear, startDateMonth)
+        )
+      : +startDateElement.dataset.day;
+  validateArgument("start-date data-day", startDateDay, {
+    allowedMin: 1,
+    allowedMax: DateTools.getNumberOfDaysInTheMonth(
+      new Date(startDateYear, startDateMonth)
+    ),
+    allowIntegerNumbersOnly: true,
+  });
+
+  const startDate = new Date(startDateYear, startDateMonth, startDateDay);
+  startDateElement.textContent = DateTools.getDateInISOFormat(startDate);
+
+  let endDate =
+    endDateElement.dataset.date === "current"
+      ? new Date(today.year, today.month - 1, today.day)
+      : endDateElement.dataset.date === "indefinite"
+      ? Infinity
+      : null;
+  if (!endDate) {
+    const endDateYear =
+      endDateElement.dataset.year === "current" ||
+      endDateElement.dataset.year === "indefinite"
+        ? today.year
+        : +endDateElement.dataset.year;
+    validateArgument("end-date data-year", endDateYear, {
+      allowedMin: startDateYear,
+      allowIntegerNumbersOnly: true,
+    });
+
+    const endDateMonth =
+      endDateElement.dataset.month === "current" ||
+      endDateElement.dataset.month === "indefinite"
+        ? today.month - 1
+        : +endDateElement.dataset.month - 1;
+    validateArgument("end-date data-month", endDateMonth, {
+      allowedMin: 0,
+      allowedMax: 11,
+      allowIntegerNumbersOnly: true,
+    });
+
+    const endDateDay =
+      endDateElement.dataset.day === "current" ||
+      endDateElement.dataset.day === "indefinite"
+        ? today.day
+        : endDateElement.dataset.day === "last"
+        ? DateTools.getNumberOfDaysInTheMonth(
+            new Date(endDateYear, endDateMonth)
+          )
+        : +endDateElement.dataset.day;
+    validateArgument("end-date data-da`", endDateDay, {
+      allowedMin: 1,
+      allowedMax: DateTools.getNumberOfDaysInTheMonth(
+        new Date(endDateYear, endDateMonth)
+      ),
+      allowIntegerNumbersOnly: true,
+    });
+
+    endDate = new Date(endDateYear, endDateMonth, endDateDay);
+  }
+
+  endDateElement.textContent =
+    endDateElement.dataset.date === "current"
+      ? "Current"
+      : endDateElement.dataset.date === "indefinite"
+      ? "Indefinite"
+      : DateTools.getDateInISOFormat(endDate);
+
+  const statusType = statusElement.dataset.statusType;
+  const statusYes =
+    statusElement.dataset.statusYes === "get-duration"
+      ? getDuration()
+      : statusElement.dataset.statusYes;
+  const statusNo =
+    statusElement.dataset.statusNo === "get-duration"
+      ? getDuration()
+      : statusElement.dataset.statusNo;
+
+  if (statusType === "has-completed") {
+    statusElement.textContent = endDate ? statusYes : statusNo;
+  } else if (statusType === "has-expired") {
+    statusElement.textContent =
+      new Date(today.year, today.month - 1, today.day) > endDate
+        ? statusYes
+        : statusNo;
+  }
+
+  function getDuration() {
+    const { breakpointQuantity, breakpointUnit } = DateTools.getBreakpointTime(
+      endDate - startDate,
+      "millisecond"
+    );
+    const roundedBreakpointQuantity = Math.round(breakpointQuantity);
+    const grammaticalTimeUnit = DateTools.getGrammaticalTimeUnit(
+      roundedBreakpointQuantity,
+      breakpointUnit
+    );
+    return `${roundedBreakpointQuantity} ${grammaticalTimeUnit}`;
+  }
+});
 
 function updateCopyrightYear() {
-  document.querySelector("#copyright-year").textContent = calendar.year;
+  document.querySelector("#copyright-year").textContent = today.year;
 }
 updateCopyrightYear();
 
