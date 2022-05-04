@@ -2604,7 +2604,7 @@ class InputEventDelegator {
                 .querySelectorAll("audio, video")
                 .forEach((element) => {
                   element.muted = false;
-                  element.volume = 0.1;
+                  element.volume = 0.25;
                 });
             }
 
@@ -3402,7 +3402,7 @@ class TypeAndTalk {
         : document.createElement("audio"); // Muted autoplay works with video, not audio
     mediaElement.setAttribute("src", audioSource);
     mediaElement.volume =
-      this.#messageSoundButton.dataset.toggleButtonState === "on" ? 0.1 : 0;
+      this.#messageSoundButton.dataset.toggleButtonState === "on" ? 0.25 : 0;
     mediaElement.muted =
       this.#messageSoundButton.dataset.toggleButtonState === "on"
         ? false
