@@ -39,6 +39,16 @@ export function awaitTimeout({ milliseconds = NaN } = {}) {
   });
 }
 
+export function cancelAllElementAnimations(element) {
+  validateArgument("element", element, {
+    allowedPrototypes: [Element, Document],
+  });
+  const animations = element.getAnimations();
+  if (animations.length) {
+    animations.forEach((animation) => animation.cancel());
+  }
+}
+
 export class DateTools {
   static millisecondConversionMap = new Map([
     ["year", 1000 * 60 * 60 * 24 * 30.436875 * 12],
@@ -331,14 +341,49 @@ export class DateTools {
   }
 }
 
-export function cancelAllElementAnimations(element) {
+export function flashAnimation(
+  element,
+  keyframes,
+  duration = 200,
+  easing = "ease"
+) {
   validateArgument("element", element, {
-    allowedPrototypes: [Element, Document],
+    allowedPrototypes: [Element],
   });
-  const animations = element.getAnimations();
-  if (animations.length) {
-    animations.forEach((animation) => animation.cancel());
-  }
+
+  validateArgument("keyframes", keyframes, {
+    allowedTypes: ["array"],
+  });
+
+  keyframes.forEach((keyframe) => {
+    validateArgument("keyframe", keyframe, {
+      allowedTypes: ["array"],
+    });
+    validateArgument("keyframe.length", keyframe.length, {
+      allowedValues: [3],
+    });
+  });
+
+  validateArgument("duration", duration, {
+    allowedTypes: ["number"],
+    allowedMin: 0,
+    allowFiniteNumbersOnly: true,
+  });
+
+  const startAndEndKeyframes = {};
+  const flashKeyframes = {};
+  keyframes.forEach(([property, startAndEndValue, flashValue]) => {
+    startAndEndKeyframes[property] = startAndEndValue;
+    flashKeyframes[property] = flashValue;
+  });
+
+  return element.animate(
+    [startAndEndKeyframes, flashKeyframes, startAndEndKeyframes],
+    {
+      duration: duration,
+      easing: easing,
+    }
+  );
 }
 
 export function getBrowserHeuristics() {
@@ -407,6 +452,26 @@ export function getRandomNumber({
   return randomNumber;
 }
 
+export function getTransformProperties(element) {
+  validateArgument("element", element, {
+    allowedPrototypes: [Element],
+  });
+
+  const cssTransformMatrix =
+    /matrix\((?<scaleX>[-\d.]{0,}),\s(?<skewY>[-\d.]{0,}),\s(?<skewX>[-\d.]{0,}),\s(?<scaleY>[-\d.]{0,}),\s(?<translateX>[-\d.]{0,}),\s(?<translateY>[-\d.]{0,})\)/.exec(
+      getComputedStyle(element).transform
+    )?.groups;
+
+  return {
+    scaleX: +cssTransformMatrix?.scaleX || 1,
+    skewY: +cssTransformMatrix?.skewY || 0,
+    skewX: +cssTransformMatrix?.skewX || 0,
+    scaleY: +cssTransformMatrix?.scaleY || 1,
+    translateX: +cssTransformMatrix?.translateX || 0,
+    translateY: +cssTransformMatrix?.translateY || 0,
+  };
+}
+
 export function isPrimaryInput(event) {
   validateArgument("event", event, {
     allowedPrototypes: [Event],
@@ -470,6 +535,34 @@ export class MetaViewportWidthPreserver {
         return (this.#metaViewportElement.content = `width=${availWidth}, shrink-to-fit=no`);
       }
     }
+  }
+}
+
+export class ScrollContainerTools {
+  static getScrollerPositionProperties(scrollContainer) {
+    validateArgument("scrollContainer", scrollContainer, {
+      allowedPrototypes: [Element],
+    });
+
+    const atLeftEdge = scrollContainer.scrollLeft === 0;
+    const atRightEdge =
+      scrollContainer.scrollWidth -
+        scrollContainer.scrollLeft -
+        scrollContainer.clientWidth <=
+      1;
+    const atTopEdge = scrollContainer.scrollTop === 0;
+    const atBottomEdge =
+      scrollContainer.scrollHeight -
+        scrollContainer.scrollTop -
+        scrollContainer.clientHeight <=
+      1;
+
+    return {
+      atLeftEdge: atLeftEdge,
+      atRightEdge: atRightEdge,
+      atTopEdge: atTopEdge,
+      atBottomEdge: atBottomEdge,
+    };
   }
 }
 

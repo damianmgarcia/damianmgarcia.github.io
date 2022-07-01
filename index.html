@@ -841,6 +841,7 @@
           0 0 0.3125rem 0 hsl(0, 0%, 0%, 0.125);
         filter: brightness(110%);
         transform: scale(1.4) translateZ(0);
+        z-index: 1;
       }
 
       .selector[data-disabled-selector="false"] {
@@ -984,6 +985,7 @@
         -webkit-user-select: none;
         user-select: none;
         width: 100%;
+        z-index: 1;
       }
 
       header * {
@@ -3426,6 +3428,17 @@
                   accumulation, i.e. faster scrolling.
                 </div>
                 <div class="paragraph">
+                  When the border of a scroll container is hit by a momentum
+                  scroll, it responds by bouncing. Harder impacts produce larger
+                  bounces.
+                </div>
+                <div class="paragraph">
+                  If a user tries to scroll beyond a border, the scroll
+                  container will stretch in the direction of the pointer while
+                  the pointer is being held down, but will then rebound when the
+                  pointer is let go.
+                </div>
+                <div class="paragraph">
                   One-dimensional and two-dimensional scroll containers are
                   supported and both axes may be scrolled simultaneously.
                 </div>
@@ -3455,8 +3468,8 @@
                 </div>
                 <div class="paragraph">
                   Below is a demonstration momentum scroller container along
-                  with controls for adjusting the container's axes and the
-                  momentum scroller's deceleration.
+                  with controls for adjusting the number of axes, the
+                  deceleration level, and the bounciness level.
                 </div>
                 <div class="paragraph">
                   Note that this demonstration will be disabled on touch-screen
@@ -3515,8 +3528,14 @@
                           id="deceleration-selector"
                           tabindex="-1"
                         >
-                          <div class="selector-item" data-deceleration="zero">
-                            Zero
+                          <div class="selector-item" data-deceleration="none">
+                            None
+                          </div>
+                          <div
+                            class="selector-item"
+                            data-deceleration="minimum"
+                          >
+                            Minimum
                           </div>
                           <div class="selector-item" data-deceleration="low">
                             Low
@@ -3529,9 +3548,37 @@
                           </div>
                           <div
                             class="selector-item"
-                            data-deceleration="infinite"
+                            data-deceleration="maximum"
                           >
-                            Infinite
+                            Maximum
+                          </div>
+                        </div>
+                      </div>
+                      <div class="input-and-label-container">
+                        <div class="input-label">Bounciness</div>
+                        <div
+                          class="selector"
+                          data-disabled-selector="true"
+                          id="bounciness-selector"
+                          tabindex="-1"
+                        >
+                          <div class="selector-item" data-bounciness="none">
+                            None
+                          </div>
+                          <div class="selector-item" data-bounciness="minimum">
+                            Minimum
+                          </div>
+                          <div class="selector-item" data-bounciness="low">
+                            Low
+                          </div>
+                          <div class="selector-item" data-bounciness="medium">
+                            Medium
+                          </div>
+                          <div class="selector-item" data-bounciness="high">
+                            High
+                          </div>
+                          <div class="selector-item" data-bounciness="maximum">
+                            Maximum
                           </div>
                         </div>
                       </div>
