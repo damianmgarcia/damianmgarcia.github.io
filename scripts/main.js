@@ -2,6 +2,7 @@ import {
   awaitTimeout,
   cancelAllElementAnimations,
   DateTools,
+  flashAnimation,
   getBrowserHeuristics,
   getDeviceHeuristics,
   getRandomNumber,
@@ -546,6 +547,7 @@ document.addEventListener("momentumScrollStart", (event) => {
     enableOrDisableDemoMomentumScrollerSelectors("disable");
   }
 });
+
 document.addEventListener("momentumScrollStop", (event) => {
   const scrollContainer = event.detail.scrollContainer;
   if (
@@ -1428,6 +1430,19 @@ document
   .querySelectorAll("#deceleration-selector .selector-item")
   .forEach((element) => decelerationSelectorObserver.observe(element));
 
+const elasticScrollBouncinessSelectorObserver = new IntersectionObserver(
+  selectorObserverProcessor,
+  {
+    root: document.querySelector("#bounciness-selector"),
+    threshold: 0.5,
+  }
+);
+document
+  .querySelectorAll("#bounciness-selector .selector-item")
+  .forEach((element) =>
+    elasticScrollBouncinessSelectorObserver.observe(element)
+  );
+
 const easingSelectorObserver = new IntersectionObserver(
   selectorObserverProcessor,
   {
@@ -2072,6 +2087,7 @@ class InputEventDelegator {
             projectSelectorObserver,
             scrollerTypeSelectorObserver,
             decelerationSelectorObserver,
+            elasticScrollBouncinessSelectorObserver,
             easingSelectorObserver,
             kittehSelectorObserver,
             kittehThemeSelectorObserver,
@@ -2142,11 +2158,15 @@ class InputEventDelegator {
           const isDecelerationSelector =
             target === document.querySelector("#deceleration-selector");
 
+          const isElasticScrollBouncinessSelector =
+            target === document.querySelector("#bounciness-selector");
+
           const observer = [
             articleSelectorObserver,
             projectSelectorObserver,
             scrollerTypeSelectorObserver,
             decelerationSelectorObserver,
+            elasticScrollBouncinessSelectorObserver,
             easingSelectorObserver,
             kittehSelectorObserver,
             kittehThemeSelectorObserver,
@@ -2227,8 +2247,14 @@ class InputEventDelegator {
               scrollerTypeSelectorObserver.incoming.dataset.scrollerType;
           } else if (isDecelerationSelector) {
             await smoothScrollerPromise;
-            demoMomentumScroller.setDeceleration(
+            demoMomentumScroller.setDecelerationLevel(
               decelerationSelectorObserver.incoming.dataset.deceleration
+            );
+          } else if (isElasticScrollBouncinessSelector) {
+            await smoothScrollerPromise;
+            demoMomentumScroller.setBorderBouncinessLevel(
+              elasticScrollBouncinessSelectorObserver.incoming.dataset
+                .bounciness
             );
           } else if (isEasingSelector) {
             await smoothScrollerPromise;
@@ -3026,6 +3052,14 @@ function demoMomentumScrollerInitializer() {
     scrollContainer: document.querySelector("#deceleration-selector"),
     y: document.querySelector(
       "#deceleration-selector .selector-item[data-deceleration='medium']"
+    ).offsetTop,
+    duration: 0,
+  });
+
+  SmoothScroller.scroll({
+    scrollContainer: document.querySelector("#bounciness-selector"),
+    y: document.querySelector(
+      "#bounciness-selector .selector-item[data-bounciness='medium']"
     ).offsetTop,
     duration: 0,
   });
@@ -3896,23 +3930,6 @@ document.querySelectorAll(".number-input").forEach((input) => {
         : selectionStart + 1;
   });
 });
-
-function flashAnimation(element, keyframes, duration = 200, easing = "ease") {
-  const startAndEndKeyframes = {};
-  const flashKeyframes = {};
-  keyframes.forEach(([property, startAndEndValue, flashValue]) => {
-    startAndEndKeyframes[property] = startAndEndValue;
-    flashKeyframes[property] = flashValue;
-  });
-
-  element.animate(
-    [startAndEndKeyframes, flashKeyframes, startAndEndKeyframes],
-    {
-      duration: duration,
-      easing: easing,
-    }
-  );
-}
 
 document.addEventListener("keydown", (event) => {
   const key = event.key;
