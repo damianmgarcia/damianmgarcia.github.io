@@ -341,6 +341,23 @@ export class DateTools {
   }
 }
 
+export function elementAIsAncestorOfElementB(elementA, elementB) {
+  validateArgument("elementA", elementA, {
+    allowedPrototypes: [Element],
+  });
+  validateArgument("elementB", elementB, {
+    allowedPrototypes: [Element],
+  });
+
+  if (!elementB.parentElement) return false;
+  let currentElement = elementB.parentElement;
+  while (currentElement !== null) {
+    if (elementA === currentElement) return true;
+    currentElement = currentElement.parentElement;
+  }
+  return false;
+}
+
 export function flashAnimation(
   element,
   keyframes,
