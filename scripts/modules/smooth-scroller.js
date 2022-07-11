@@ -48,39 +48,39 @@ class SmoothScroller {
           interruptedBy: "Pointer down on scroll container",
         });
 
-      const smoothScrollPointerDownEvent = new CustomEvent(
-        "smoothScrollPointerDown",
+      const smoothScrollerPointerDownEvent = new CustomEvent(
+        "smoothScrollerPointerDown",
         {
           bubbles: true,
           cancelable: true,
           detail: this.getEventData(),
         }
       );
-      this.#scrollContainer.dispatchEvent(smoothScrollPointerDownEvent);
+      this.#scrollContainer.dispatchEvent(smoothScrollerPointerDownEvent);
     });
 
     this.#scrollContainer.addEventListener("pointerup", () => {
-      const smoothScrollPointerUpEvent = new CustomEvent(
-        "smoothScrollPointerUp",
+      const smoothScrollerPointerUpEvent = new CustomEvent(
+        "smoothScrollerPointerUp",
         {
           bubbles: true,
           cancelable: true,
           detail: this.getEventData(),
         }
       );
-      this.#scrollContainer.dispatchEvent(smoothScrollPointerUpEvent);
+      this.#scrollContainer.dispatchEvent(smoothScrollerPointerUpEvent);
     });
 
     this.#scrollContainer.addEventListener("pointercancel", () => {
-      const smoothScrollPointerUpEvent = new CustomEvent(
-        "smoothScrollPointerUp",
+      const smoothScrollerPointerUpEvent = new CustomEvent(
+        "smoothScrollerPointerUp",
         {
           bubbles: true,
           cancelable: true,
           detail: this.getEventData(),
         }
       );
-      this.#scrollContainer.dispatchEvent(smoothScrollPointerUpEvent);
+      this.#scrollContainer.dispatchEvent(smoothScrollerPointerUpEvent);
     });
 
     SmoothScroller.scrollerMap.set(scrollContainer, this);
@@ -218,12 +218,15 @@ class SmoothScroller {
     if (!this.#startTime) {
       this.#startTime = currentTime;
 
-      const smoothScrollStartEvent = new CustomEvent("smoothScrollStart", {
-        bubbles: true,
-        cancelable: true,
-        detail: this.getEventData(),
-      });
-      this.#scrollContainer.dispatchEvent(smoothScrollStartEvent);
+      const smoothScrollerScrollStartEvent = new CustomEvent(
+        "smoothScrollerScrollStart",
+        {
+          bubbles: true,
+          cancelable: true,
+          detail: this.getEventData(),
+        }
+      );
+      this.#scrollContainer.dispatchEvent(smoothScrollerScrollStartEvent);
     }
 
     this.#elapsedTime = currentTime - this.#startTime;
@@ -246,12 +249,12 @@ class SmoothScroller {
       this.#scrollContainer.scrollTop = nextScrollY;
     }
 
-    const smoothScrollEvent = new CustomEvent("smoothScroll", {
+    const smoothScrollerScrollEvent = new CustomEvent("smoothScrollerScroll", {
       bubbles: true,
       cancelable: true,
       detail: this.getEventData(),
     });
-    this.#scrollContainer.dispatchEvent(smoothScrollEvent);
+    this.#scrollContainer.dispatchEvent(smoothScrollerScrollEvent);
 
     if (elapsedTimeRatio < 1) {
       this.#isScrolling = true;
@@ -275,12 +278,15 @@ class SmoothScroller {
   abortPriorScrolls(extraData = {}) {
     if (this.#resolve) this.#resolve(this.getEventData(extraData));
 
-    const smoothScrollStopEvent = new CustomEvent("smoothScrollStop", {
-      bubbles: true,
-      cancelable: true,
-      detail: this.getEventData(extraData),
-    });
-    this.#scrollContainer.dispatchEvent(smoothScrollStopEvent);
+    const smoothScrollerScrollStopEvent = new CustomEvent(
+      "smoothScrollerScrollStop",
+      {
+        bubbles: true,
+        cancelable: true,
+        detail: this.getEventData(extraData),
+      }
+    );
+    this.#scrollContainer.dispatchEvent(smoothScrollerScrollStopEvent);
 
     if (browserHeuristics.isIOsSafari) {
       this.#scrollContainer.style.removeProperty("overflow");
