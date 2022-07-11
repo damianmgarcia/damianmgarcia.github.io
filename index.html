@@ -254,8 +254,6 @@
         box-sizing: border-box;
         -webkit-text-size-adjust: none;
         text-size-adjust: none;
-        -webkit-user-select: none;
-        user-select: var(--user-select);
       }
 
       :root {
@@ -266,7 +264,6 @@
         --font-size-verysmall: 0.6rem;
         --font-weight-normal: 400;
         --font-weight-light: 300;
-        --user-select: "auto";
         background: var(--body-background-color);
         color: var(--text-color);
         font: 300 24px "Open Sans", sans-serif;
@@ -3367,12 +3364,8 @@
                 <div class="paragraph">
                   This feature is intended to be used by mouse-users since mouse
                   drivers typically do not include momentum-scrolling features.
-                </div>
-                <div class="paragraph">
-                  However, it will conflict with some pointing devices, such as
-                  trackpads, that provide their own driver-based momentum
-                  scrolling implementations. In these cases, one of the momentum
-                  scrolling systems should be disabled.
+                  It may conflict with trackpads that provide momentum-scrolling
+                  features.
                 </div>
                 <div class="media-container">
                   <div class="video-progress-bars-container">
@@ -3467,8 +3460,8 @@
                   will generate momentum scrolls.
                 </div>
                 <div class="paragraph">
-                  Below is a demonstration momentum scroller container along
-                  with controls for adjusting the number of axes, the
+                  Below is a demonstration of a momentum scroller container
+                  along with controls for adjusting the number of axes, the
                   deceleration level, and the bounciness level.
                 </div>
                 <div class="paragraph">
@@ -3620,9 +3613,10 @@
                         <div class="ripple"></div></div></span></a
                   >. After deceleration is set, the only missing variable needed
                   to calculate scroll duration, distance, and direction is
-                  pointer velocity. Momentum accumulation is accomplished by
-                  adjusting a velocity multiplier up or down depending on the
-                  direction and timing criteria between scrolls.
+                  pointer velocity. The momentum accumulation feature is
+                  accomplished by adjusting a velocity multiplier up or down
+                  depending on the direction and timing criteria between
+                  scrolls.
                 </div>
                 <div class="paragraph">
                   Scrolling will stop if scroll duration has elapsed, or if one
@@ -3632,9 +3626,12 @@
                   event on the scroll container.
                 </div>
                 <div class="paragraph">
-                  The reason this feature is a system is because it necessitates
-                  changes to the default behaviors that other interactive
-                  elements have in response to pointer events.
+                  Notably, MomentumScroller is a system that works well with
+                  other scrollers and elements that depend on "pointerdown"
+                  events. By default, it works well with commonly used elements
+                  such as anchors, buttons, and text boxes, but it can easily be
+                  customized to work with any element that needs to use
+                  "pointerdown" events.
                 </div>
                 <div class="paragraph">
                   For example, there are interactive elements on this site, such
@@ -3642,7 +3639,9 @@
                   main momentum scroller, but which also need to respond to
                   pointer events. The logic created to resolve these pointer
                   event conflicts was designed to be as inconspicuous and as
-                  intuitive as possible.
+                  intuitive as possible. There are also nested scrollers, and
+                  they also know how to work together to create an intuitive
+                  experience.
                 </div>
                 <div class="paragraph">
                   The momentum scrolling system is enabled by default on
