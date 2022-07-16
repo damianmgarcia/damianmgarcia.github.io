@@ -556,7 +556,7 @@ export class MetaViewportWidthPreserver {
 }
 
 export class ScrollContainerTools {
-  static getScrollerPositionProperties(scrollContainer) {
+  static getEdgeStatus(scrollContainer) {
     validateArgument("scrollContainer", scrollContainer, {
       allowedPrototypes: [Element],
     });
@@ -579,6 +579,22 @@ export class ScrollContainerTools {
       atRightEdge: atRightEdge,
       atTopEdge: atTopEdge,
       atBottomEdge: atBottomEdge,
+    };
+  }
+
+  static getScrollableAxes(scrollContainer) {
+    validateArgument("scrollContainer", scrollContainer, {
+      allowedPrototypes: [Element],
+    });
+
+    const xAxisIsScrollable =
+      scrollContainer.scrollWidth > scrollContainer.clientWidth;
+    const yAxisIsScrollable =
+      scrollContainer.scrollHeight > scrollContainer.clientHeight;
+
+    return {
+      xAxisIsScrollable: xAxisIsScrollable,
+      yAxisIsScrollable: yAxisIsScrollable,
     };
   }
 }
@@ -647,7 +663,7 @@ export function validateArgument(
   {
     allowedTypes = [],
     allowedPrototypes = [],
-    allowedValues = [],
+    allowedValues = null,
     allowedMin = NaN,
     allowedMinIsInclusive = true,
     allowedMax = NaN,
@@ -666,8 +682,8 @@ export function validateArgument(
     throw new TypeError("allowedTypes must be an Array");
   if (!Array.isArray(allowedPrototypes))
     throw new TypeError("allowedPrototypes must be an Array");
-  if (!Array.isArray(allowedValues))
-    throw new TypeError("allowedValues must be an Array");
+  if (allowedValues !== null && !Array.isArray(allowedValues))
+    throw new TypeError("allowedValues must be null or an Array");
   if (typeof allowedMin !== "number")
     throw new TypeError("allowedMin must be a Number");
   if (typeof allowedMax !== "number")
@@ -889,7 +905,7 @@ export function validateArgument(
   }
 
   // allowedValues
-  if (allowedValues.length > 0) {
+  if (Array.isArray(allowedValues)) {
     const argumentIsNotAnAllowedValue = !allowedValues.includes(argument);
 
     if (argumentIsNotAnAllowedValue) {
