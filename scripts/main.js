@@ -16,20 +16,7 @@ import { SmoothScroller } from "./modules/smooth-scroller.js";
 addEventListener(
   "load",
   async () => {
-    startOpeningAnimationSequenceAndKittehIntroduction();
-
-    document
-      .querySelector("#overflow-button")
-      .style.setProperty("pointer-events", "auto");
-
-    const loadingScreen = document.querySelector("#loading-screen");
-    await loadingScreen.animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration: 800,
-      easing: "ease",
-      fill: "forwards",
-    }).finished;
-
-    async function startOpeningAnimationSequenceAndKittehIntroduction() {
+    const startOpeningAnimationSequenceAndKittehIntroduction = async () => {
       await openingAnimationSequence();
       loadingScreen.remove();
       document
@@ -42,7 +29,20 @@ addEventListener(
       kittehMessageLibrary.submitMessagesToKittehMessages({
         preferHoliday: true,
       });
-    }
+    };
+
+    startOpeningAnimationSequenceAndKittehIntroduction();
+
+    document
+      .querySelector("#overflow-button")
+      .style.setProperty("pointer-events", "auto");
+
+    const loadingScreen = document.querySelector("#loading-screen");
+    await loadingScreen.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 800,
+      easing: "ease",
+      fill: "forwards",
+    }).finished;
   },
   { once: true }
 );
@@ -62,80 +62,70 @@ const snowGlobeAnimation = {
     this.playing = true;
     this.requestToStop = false;
 
-    document.querySelectorAll(".foreground-snow *").forEach((element) => {
-      generateSnowAnimation();
+    const generateSnowAnimation = async ({
+      element,
+      xPosition,
+      radius,
+      opacity,
+      delay,
+      duration,
+      easing,
+      keyframes,
+    }) => {
+      element.style.setProperty("cx", `${xPosition}`);
+      element.style.setProperty("r", `${radius}`);
+      element.style.setProperty("opacity", `${opacity}`);
 
-      async function generateSnowAnimation() {
-        const xPosition = getRandomNumber({ min: -150, max: 325 });
-        element.style.setProperty("cx", `${xPosition}`);
+      const timing = {
+        delay: delay,
+        duration: duration,
+        easing: easing,
+      };
 
-        const radius = getRandomNumber({ min: 15, max: 30 });
-        element.style.setProperty("r", `${radius}`);
-
-        const opacity = 0.00333333 * radius + 0.9;
-        element.style.setProperty("opacity", `${opacity}`);
-
-        const delay = getRandomNumber({ min: 0, max: 20000 });
-        const duration = -1000 * radius + 35000; // 5000, 20000
-
-        const easing = "ease";
-        const keyframes = [{ cy: "-70" }, { cy: "500" }];
-        const timing = {
-          delay: delay,
-          duration: duration,
-          easing: easing,
-        };
-
-        try {
-          await element.animate(keyframes, timing).finished;
-
-          if (snowGlobeAnimation.requestToStop) {
-            return;
-          } else if (!snowGlobeAnimation.requestToStop) {
-            generateSnowAnimation();
-          }
-        } catch (error) {
-          null;
-        }
+      try {
+        await element.animate(keyframes, timing).finished;
+        if (snowGlobeAnimation.requestToStop) return;
+        generateSnowAnimation({
+          element,
+          xPosition,
+          radius,
+          opacity,
+          delay,
+          duration,
+          easing,
+          keyframes,
+        });
+      } catch (error) {
+        null;
       }
+    };
+
+    document.querySelectorAll(".foreground-snow *").forEach((element) => {
+      const radius = getRandomNumber({ min: 15, max: 30 });
+      generateSnowAnimation({
+        element: element,
+        xPosition: getRandomNumber({ min: -150, max: 325 }),
+        radius: radius,
+        opacity: (1 / 300) * radius + 0.9,
+        delay: getRandomNumber({ min: 0, max: 20000 }),
+        duration: -1000 * radius + 35000,
+        easing: "ease",
+        keyframes: [{ cy: "-70" }, { cy: "500" }],
+      });
     });
 
     document.querySelectorAll(".background-snow *").forEach((element) => {
-      generateSnowAnimation();
-
-      async function generateSnowAnimation() {
-        const xPosition = getRandomNumber({ min: -250, max: 425 });
-        element.style.setProperty("cx", `${xPosition}`);
-
-        const radius = getRandomNumber({ min: 7.5, max: 15 });
-        element.style.setProperty("r", `${radius}`);
-
-        const opacity = 0.00666667 * radius + 0.85;
-        element.style.setProperty("opacity", `${opacity}`);
-
-        const delay = getRandomNumber({ min: 0, max: 45000 });
-        const duration = ((40000 - 20000) / (7.5 - 15)) * radius + 60000; // 20000, 45000
-
-        const easing = "ease";
-        const keyframes = [{ cy: "-70" }, { cy: "500" }];
-        const timing = {
-          delay: delay,
-          duration: duration,
-          easing: easing,
-        };
-
-        try {
-          await element.animate(keyframes, timing).finished;
-
-          if (snowGlobeAnimation.requestToStop) {
-            return;
-          } else if (!snowGlobeAnimation.requestToStop) {
-            generateSnowAnimation();
-          }
-        } catch (error) {
-          null;
-        }
-      }
+      const radius = getRandomNumber({ min: 7.5, max: 15 });
+      generateSnowAnimation({
+        element: element,
+        xPosition: getRandomNumber({ min: -250, max: 425 }),
+        radius: radius,
+        opacity: (1 / 150) * radius + 0.85,
+        delay: getRandomNumber({ min: 0, max: 45000 }),
+        duration: ((40000 - 20000) / (7.5 - 15)) * radius + 60000,
+        easing: "ease",
+        keyframes: [{ cy: "-70" }, { cy: "500" }],
+      });
     });
   },
 
@@ -559,9 +549,10 @@ document.addEventListener("momentumScrollerScrollStop", (event) => {
       return enableOrDisableDemoMomentumScrollerSelectors("enable");
 
     if (
-      event.detail.momentumScroller.isActive &&
-      !event.detail.momentumScroller.pointerIsDown &&
-      !event.detail.interruptedBy
+      !(
+        event.detail.interruptedBy === "Momentum scroller deactivation" ||
+        event.detail.interruptedBy === "Pointer down on scroll container"
+      )
     ) {
       enableOrDisableDemoMomentumScrollerSelectors("enable");
       const demoContainer = scrollContainer.closest(".demo-container");
@@ -591,15 +582,6 @@ document.addEventListener("momentumScrollerScrollStop", (event) => {
   }
 });
 
-const mainMomentumScroller = !deviceHeuristics.isTouchScreen
-  ? new MomentumScroller(document.querySelector("main"))
-      .setGrabCursor("var(--kitteh-grab-cursor)")
-      .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
-      .setPreventScrollingOn(["header", ".selector"])
-      .setPauseScrollingUntilEitherThreshold([".button", ".link-container"])
-      .setPauseScrollingUntilVerticalThreshold([".video-gallery"])
-  : null;
-
 lightDarkAppearanceSwitcher.updateOnApplyAppearanceHandler(() => {
   document
     .querySelector(":root")
@@ -615,14 +597,6 @@ lightDarkAppearanceSwitcher.updateOnApplyAppearanceHandler(() => {
       `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
     );
 });
-
-const demoMomentumScroller = !deviceHeuristics.isTouchScreen
-  ? new MomentumScroller(
-      document.querySelector("#momentum-scroller-demo-container")
-    )
-      .setGrabCursor("var(--kitteh-grab-cursor)")
-      .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
-  : null;
 
 async function openingAnimationSequence() {
   const backgroundAnimation = document
@@ -1547,27 +1521,33 @@ const insideMainViewport = new IntersectionObserver(
   async (entries) => {
     const incoming = entries.find((entry) => entry.isIntersecting);
 
-    if (incoming && incoming.target.matches("video")) {
-      const smoothScrollerIsScrolling = SmoothScroller.scrollerMap.get(
-        incoming.target.closest(".video-gallery")
+    const incomingTargetIsAVideo = incoming && incoming.target.matches("video");
+    const incomingTargetIsTheCharmCursor =
+      incoming && incoming.target.matches("#charm-cursor");
+    const incomingTargetIsTheCalendar =
+      incoming &&
+      incoming.target.matches("#overlap-gallery-calendar-container");
+
+    if (incomingTargetIsAVideo) {
+      const incomingVideo = incoming.target;
+      const videoGalleryIsScrollingToTheNextVideo = SmoothScroller.getScroller(
+        incomingVideo.closest(".video-gallery")
       )?.isScrolling;
 
       if (
-        incoming.target.paused &&
+        incomingVideo.paused &&
         !VideoGalleryObservers.aVideoGalleryIsActive &&
-        !smoothScrollerIsScrolling
+        !videoGalleryIsScrollingToTheNextVideo
       ) {
         try {
-          await incoming.target.play();
+          await incomingVideo.play();
         } catch (error) {
           console.log(error);
         }
       }
-    } else if (incoming?.target.matches("#charm-cursor")) {
+    } else if (incomingTargetIsTheCharmCursor) {
       if (!charmCursorDemo.requestToLoop) charmCursorDemo.play({ loop: true });
-    } else if (
-      incoming?.target.matches("#overlap-gallery-calendar-container")
-    ) {
+    } else if (incomingTargetIsTheCalendar) {
       if (!themedLogoAnimationDemo.requestToLoop)
         themedLogoAnimationDemo.play({ loop: true });
     }
@@ -2194,7 +2174,7 @@ class InputEventDelegator {
                     .getBoundingClientRect().top -
                     main.getBoundingClientRect().top +
                     main.scrollTop +
-                    5 // To account for small differences in UA calculations
+                    5 // The +5 is to account for small differences in user agent calculations
                 )
               : 0;
           }
@@ -2240,12 +2220,18 @@ class InputEventDelegator {
             ).dataset.scrollerType =
               scrollerTypeSelectorObserver.incoming.dataset.scrollerType;
           } else if (isDecelerationSelector) {
+            const demoMomentumScroller = MomentumScroller.getScroller(
+              document.querySelector("#momentum-scroller-demo-container")
+            );
             await smoothScrollerPromise;
             demoMomentumScroller.setDecelerationLevel(
               decelerationSelectorObserver.incoming.dataset.deceleration
             );
           } else if (isElasticScrollBouncinessSelector) {
             await smoothScrollerPromise;
+            const demoMomentumScroller = MomentumScroller.getScroller(
+              document.querySelector("#momentum-scroller-demo-container")
+            );
             demoMomentumScroller.setBorderBouncinessLevel(
               elasticScrollBouncinessSelectorObserver.incoming.dataset
                 .bounciness
@@ -2516,7 +2502,7 @@ class InputEventDelegator {
           } else if (targetsMatch && target.matches("#overflow-button")) {
             await switchOverflowMenu();
           } else if (targetsMatch && target.matches("#touch-app-button")) {
-            MomentumScroller.scrollerMap.forEach((momentumScroller) =>
+            MomentumScroller.getAllScrollers().forEach((momentumScroller) =>
               momentumScroller.toggleOnOff()
             );
           } else if (targetsMatch && target.matches("#message-submit-button")) {
@@ -2818,14 +2804,6 @@ document
     });
   });
 
-!deviceHeuristics.isTouchScreen
-  ? new MomentumScroller(
-      document.querySelector("#smooth-scroller-demo-container")
-    )
-      .setGrabCursor("var(--kitteh-grab-cursor)")
-      .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
-  : null;
-
 function createTouchAppButton(toggleButtonState) {
   const button = document.createElement("div");
   button.setAttribute("aria-label", "Touch App Toggle");
@@ -2856,9 +2834,30 @@ function createTouchAppButton(toggleButtonState) {
     .insertAdjacentElement("afterend", button);
 }
 
+const createMomentumScrollers = (activate) => {
+  [
+    document.querySelector("main"),
+    document.querySelector("#momentum-scroller-demo-container"),
+    document.querySelector("#smooth-scroller-demo-container"),
+  ].forEach((element) =>
+    MomentumScroller.createScroller(element, activate)
+      .setGrabCursor("var(--kitteh-grab-cursor)")
+      .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
+      .setSelectorsOfDescendantsTheScrollerShouldIgnore(["header", ".selector"])
+      .setSelectorsOfDescendantsThatReactToClicks([
+        ".button",
+        ".link-container",
+      ])
+      .setSelectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling([
+        ".video-gallery",
+      ])
+  );
+};
+
 const momentumScrollerPreference = localStorage.getItem(
   "momentumScrollerPreference"
 );
+
 if (
   !deviceHeuristics.isTouchScreen &&
   (!momentumScrollerPreference || momentumScrollerPreference === "on")
@@ -2868,17 +2867,13 @@ if (
     document.querySelector("#touch-app-button"),
     { duration: 0 }
   );
-  MomentumScroller.scrollerMap.forEach((momentumScroller) =>
-    momentumScroller.activate()
-  );
+  createMomentumScrollers(true);
 } else if (
   !deviceHeuristics.isTouchScreen &&
   momentumScrollerPreference === "off"
 ) {
   createTouchAppButton("off");
-  MomentumScroller.scrollerMap.forEach((momentumScroller) =>
-    momentumScroller.deactivate()
-  );
+  createMomentumScrollers(false);
 }
 
 document.addEventListener("smoothScrollerScroll", (event) => {
@@ -3347,7 +3342,7 @@ class TypeAndTalk {
     const mediaElement =
       this.#messageSoundButton.dataset.userInteraction === "false"
         ? document.createElement("video")
-        : document.createElement("audio"); // Muted autoplay works with video, not audio
+        : document.createElement("audio"); // Muted autoplay works with video, but not with audio
     mediaElement.setAttribute("src", audioSource);
     mediaElement.volume =
       this.#messageSoundButton.dataset.toggleButtonState === "on" ? 0.25 : 0;
