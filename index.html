@@ -3630,18 +3630,16 @@
                   other scrollers and elements that depend on "pointerdown"
                   events. By default, it works well with commonly used elements
                   such as anchors, buttons, and text boxes, but it can easily be
-                  customized to work with any element that needs to use
-                  "pointerdown" events.
+                  customized to work with any element that it needs to share
+                  "pointerdown" events with.
                 </div>
                 <div class="paragraph">
                   For example, there are interactive elements on this site, such
-                  as links and video galleries, that are within the scope of the
-                  main momentum scroller, but which also need to respond to
-                  pointer events. The logic created to resolve these pointer
-                  event conflicts was designed to be as inconspicuous and as
-                  intuitive as possible. There are also nested scrollers, and
-                  they also know how to work together to create an intuitive
-                  experience.
+                  as links and video galleries, that are descendants of the main
+                  momentum scroller and which also need to respond to pointer
+                  events. Logic was created to resolve these pointer event
+                  conflicts so that the user experience is intuitive. Nested
+                  MomentumScrollers also work perfectly well together.
                 </div>
                 <div class="paragraph">
                   The momentum scrolling system is enabled by default on
