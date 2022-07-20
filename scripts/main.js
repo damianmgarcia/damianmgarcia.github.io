@@ -1304,9 +1304,9 @@ const themedLogoAnimationDemo = {
         ];
 
         const timing = {
-          delay: delay,
-          duration: duration,
-          easing: easing,
+          delay,
+          duration,
+          easing,
           fill: "forwards",
         };
 
@@ -1333,9 +1333,9 @@ const themedLogoAnimationDemo = {
     ];
 
     const timing = {
-      delay: delay,
-      duration: duration,
-      easing: easing,
+      delay,
+      duration,
+      easing,
       fill: "forwards",
       iterations: 6,
     };
@@ -1780,6 +1780,8 @@ class InputEventDelegator {
     document.addEventListener("pointercancel", (event) => this.delegate(event));
     document.addEventListener("keydown", (event) => this.delegate(event));
     document.addEventListener("keyup", (event) => this.delegate(event));
+    document.addEventListener("contextmenu", (event) => this.delegate(event));
+    document.addEventListener("dragstart", (event) => event.preventDefault());
   }
 
   #isAlreadyHandlingInput = false;
@@ -1820,19 +1822,20 @@ class InputEventDelegator {
     } else if (inputState === "activated") {
       this.#isAlreadyHandlingInput = false;
       this.#handlers.inputUpHandler({
-        event: event,
+        event,
         target: this.#inputDownEvent.target,
         targetsMatch: true,
       });
       this.reset();
     } else if (inputState === "canceled") {
+      this.#inputDownEvent.target.releasePointerCapture(event.pointerId);
       const pointerCancelEvent = new PointerEvent("pointercancel", {
         bubbles: true,
       });
       this.#inputDownEvent.target.dispatchEvent(pointerCancelEvent);
 
       this.#handlers.inputUpHandler({
-        event: event,
+        event,
         target: this.#inputDownEvent.target,
         targetsMatch: false,
       });
@@ -1868,7 +1871,8 @@ class InputEventDelegator {
       this.#inputDownEvent &&
       (event.type === "pointerup" ||
         event.type === "pointercancel" ||
-        (event.type === "keydown" && event.key === "Escape"))
+        (event.type === "keydown" && event.key === "Escape") ||
+        event.type === "contextmenu")
     ) {
       return "canceled";
     }
@@ -1885,7 +1889,7 @@ class InputEventDelegator {
   forceInputUpHandler(event) {
     if (!this.#handlers) return;
     this.#handlers.inputUpHandler({
-      event: event,
+      event,
       target: this.#inputDownEvent.target,
       targetsMatch: false,
     });
@@ -1945,7 +1949,7 @@ class InputEventDelegator {
         ],
 
         {
-          duration: duration,
+          duration,
           easing: "ease",
           fill: "forwards",
         }
@@ -2503,7 +2507,7 @@ class InputEventDelegator {
             await switchOverflowMenu();
           } else if (targetsMatch && target.matches("#touch-app-button")) {
             MomentumScroller.getAllScrollers().forEach((momentumScroller) =>
-              momentumScroller.toggleOnOff()
+              momentumScroller.toggleActivation()
             );
           } else if (targetsMatch && target.matches("#message-submit-button")) {
             const message = document.querySelector("#message-input").value;
@@ -2793,24 +2797,12 @@ if (browserHeuristics.isChromium)
     event.preventDefault();
   });
 
-document
-  .querySelectorAll(".selector, .button, #logo, .link-container")
-  .forEach((element) => {
-    element.addEventListener("contextmenu", (event) => {
-      event.preventDefault();
-    });
-    element.addEventListener("dragstart", (event) => {
-      event.preventDefault();
-    });
-  });
-
 function createTouchAppButton(toggleButtonState) {
   const button = document.createElement("div");
   button.setAttribute("aria-label", "Touch App Toggle");
   button.setAttribute("class", "button");
   button.setAttribute("data-ripple-animate", "true");
   button.setAttribute("data-toggle-button-state", toggleButtonState);
-  button.setAttribute("draggable", "false");
   button.setAttribute("id", "touch-app-button");
   button.setAttribute("role", "button");
   button.setAttribute("tabindex", "-1");
@@ -2835,23 +2827,24 @@ function createTouchAppButton(toggleButtonState) {
 }
 
 const createMomentumScrollers = (activate) => {
-  [
-    document.querySelector("main"),
-    document.querySelector("#momentum-scroller-demo-container"),
-    document.querySelector("#smooth-scroller-demo-container"),
-  ].forEach((element) =>
-    MomentumScroller.createScroller(element, activate)
-      .setGrabCursor("var(--kitteh-grab-cursor)")
-      .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
-      .setSelectorsOfDescendantsTheScrollerShouldIgnore(["header", ".selector"])
-      .setSelectorsOfDescendantsThatReactToClicks([
-        ".button",
-        ".link-container",
-      ])
-      .setSelectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling([
-        ".video-gallery",
-      ])
-  );
+  MomentumScroller.autoCreateScrollers({ activate })
+    .getAllScrollers()
+    .forEach((scroller) =>
+      scroller
+        .setGrabCursor("var(--kitteh-grab-cursor)")
+        .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
+        .setSelectorsOfDescendantsTheScrollerShouldIgnore([
+          "header",
+          ".selector",
+        ])
+        .setSelectorsOfDescendantsThatReactToClicks([
+          ".button",
+          ".link-container",
+        ])
+        .setSelectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling([
+          ".video-gallery",
+        ])
+    );
 };
 
 const momentumScrollerPreference = localStorage.getItem(
@@ -3245,11 +3238,11 @@ class TypeAndTalk {
         : delayBetweenChars;
 
     const messagePackage = {
-      message: message,
-      audioSource: audioSource,
-      delayStart: delayStart,
-      delayEnd: delayEnd,
-      delayBetweenChars: delayBetweenChars,
+      message,
+      audioSource,
+      delayStart,
+      delayEnd,
+      delayBetweenChars,
       dateSubmitted: new Date(),
       id: this.generator.next().value,
       status: "untyped",
