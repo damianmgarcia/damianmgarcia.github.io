@@ -526,6 +526,20 @@ document.addEventListener("momentumScrollerPointerDown", (event) => {
   }
 });
 
+document.addEventListener("momentumScrollerPointerUp", (event) => {
+  const scrollContainer = event.detail.scrollContainer;
+  if (
+    scrollContainer ==
+    document.querySelector("#momentum-scroller-demo-container")
+  ) {
+    enableOrDisableDemoMomentumScrollerSelectors("enable");
+    const dataLabels = scrollContainer
+      .closest(".demo-container")
+      .querySelectorAll("[data-label]");
+    dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
+  }
+});
+
 document.addEventListener("momentumScrollerScrollStart", (event) => {
   const scrollContainer = event.detail.scrollContainer;
   if (
