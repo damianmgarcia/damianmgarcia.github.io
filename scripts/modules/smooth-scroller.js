@@ -60,7 +60,7 @@ class SmoothScroller {
     validateArgument("key", key, {
       allowedValues: [scrollerCreationKey],
       customErrorMessage:
-        "PLease use SmoothScroller.createScroller() to create scrollers, or you may scroll with SmoothScroller.scroll()",
+        "Please use the SmoothScroller.scroll static method to scroll or the SmoothScroller.createScroller static method to create scrollers",
     });
 
     this.#scrollContainer = scrollContainer;
@@ -70,7 +70,7 @@ class SmoothScroller {
     this.#scrollContainer.addEventListener("pointerdown", (event) => {
       event.target.setPointerCapture(event.pointerId);
       if (this.#stopScrollingOnPointerDown && this.#scrollResolve)
-        this.stopScroll({
+        this.#stopScroll({
           interruptedBy: "Pointer down on scroll container",
         });
 
@@ -79,7 +79,7 @@ class SmoothScroller {
         {
           bubbles: true,
           cancelable: true,
-          detail: this.getEventData(),
+          detail: this.#getEventData(),
         }
       );
       this.#scrollContainer.dispatchEvent(smoothScrollerPointerDownEvent);
@@ -91,7 +91,7 @@ class SmoothScroller {
         {
           bubbles: true,
           cancelable: true,
-          detail: this.getEventData(),
+          detail: this.#getEventData(),
         }
       );
       this.#scrollContainer.dispatchEvent(smoothScrollerPointerUpEvent);
@@ -103,7 +103,7 @@ class SmoothScroller {
         {
           bubbles: true,
           cancelable: true,
-          detail: this.getEventData(),
+          detail: this.#getEventData(),
         }
       );
       this.#scrollContainer.dispatchEvent(smoothScrollerPointerUpEvent);
@@ -114,7 +114,6 @@ class SmoothScroller {
   get isScrolling() {
     return this.#isScrolling;
   }
-
   #cubicBezierSolver;
   #stopScrollingOnPointerDown;
   #scrollDistanceX;
@@ -174,7 +173,7 @@ class SmoothScroller {
       }
 
       if (this.#scrollResolve)
-        this.stopScroll({ interruptedBy: "New smooth scroll" });
+        this.#stopScroll({ interruptedBy: "New smooth scroll" });
 
       if (browserHeuristics.isIOsSafari)
         this.#scrollContainer.style.setProperty("overflow", "hidden"); // Stops Safari's momentum scrolling to prevent scroll interference
@@ -203,7 +202,7 @@ class SmoothScroller {
       if (absoluteScrollDistanceX < 1 && absoluteScrollDistanceY < 1) {
         return new Promise((resolve) => {
           this.#scrollResolve = resolve;
-          return this.stopScroll();
+          return this.#stopScroll();
         });
       } else if (absoluteScrollDistanceX >= 1 || absoluteScrollDistanceY >= 1) {
         this.#scrollDuration = duration;
@@ -212,7 +211,7 @@ class SmoothScroller {
           this.#scrollContainer.scrollTo(limitCorrectedX, limitCorrectedY);
           return new Promise((resolve) => {
             this.#scrollResolve = resolve;
-            return this.stopScroll();
+            return this.#stopScroll();
           });
         } else if (this.#scrollDuration > 0) {
           return new Promise((resolve) => {
@@ -235,7 +234,7 @@ class SmoothScroller {
         {
           bubbles: true,
           cancelable: true,
-          detail: this.getEventData(),
+          detail: this.#getEventData(),
         }
       );
       this.#scrollContainer.dispatchEvent(smoothScrollerScrollStartEvent);
@@ -246,7 +245,7 @@ class SmoothScroller {
     const smoothScrollerScrollEvent = new CustomEvent("smoothScrollerScroll", {
       bubbles: true,
       cancelable: true,
-      detail: this.getEventData(),
+      detail: this.#getEventData(),
     });
     this.#scrollContainer.dispatchEvent(smoothScrollerScrollEvent);
 
@@ -287,19 +286,21 @@ class SmoothScroller {
         });
       });
     } else if (elapsedTimeRatio >= 1) {
-      return this.stopScroll();
+      return this.#stopScroll();
     }
   }
 
-  stopScroll(extraData = {}) {
-    if (this.#scrollResolve) this.#scrollResolve(this.getEventData(extraData));
+  #stopScroll(extraData = {}) {
+    const eventData = this.#getEventData(extraData);
+
+    if (this.#scrollResolve) this.#scrollResolve(eventData);
 
     const smoothScrollerScrollStopEvent = new CustomEvent(
       "smoothScrollerScrollStop",
       {
         bubbles: true,
         cancelable: true,
-        detail: this.getEventData(extraData),
+        detail: eventData,
       }
     );
     this.#scrollContainer.dispatchEvent(smoothScrollerScrollStopEvent);
@@ -320,7 +321,7 @@ class SmoothScroller {
     this.#scrollStartTime = null;
   }
 
-  getEventData(extraData) {
+  #getEventData(extraData) {
     const eventData = {
       interruptedBy: null,
       startPoint: [this.#scrollStartingPointX, this.#scrollStartingPointY],
