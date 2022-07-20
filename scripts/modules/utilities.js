@@ -493,7 +493,7 @@ export function isPrimaryInput(event) {
   validateArgument("event", event, {
     allowedPrototypes: [Event],
   });
-  if (event instanceof PointerEvent) {
+  if (event instanceof MouseEvent || event instanceof PointerEvent) {
     if (event.type === "contextmenu") return true;
     const isPrimaryPointer = event.isPrimary;
     const isPrimaryButton = event.button === 0 || event.button === -1;
