@@ -711,7 +711,7 @@ class MomentumScroller {
 
     this.#scrollContainer.addEventListener(
       "contextmenu",
-      () => this.#undoPointerDownChanges(),
+      (event) => this.#undoPointerDownChanges(event.pointerId),
       { signal: this.#pointerMoveUpCancelAbortController.signal }
     );
 
@@ -893,9 +893,7 @@ class MomentumScroller {
     );
   }
 
-  #undoPointerDownChanges() {
-    this.#pointerMoveUpCancelAbortController.abort();
-
+  #undoPointerDownChanges(pointerId) {
     const momentumScrollerPointerUpEvent = new CustomEvent(
       "momentumScrollerPointerUp",
       {
@@ -905,6 +903,10 @@ class MomentumScroller {
       }
     );
     this.#scrollContainer.dispatchEvent(momentumScrollerPointerUpEvent);
+
+    this.#pointerMoveUpCancelAbortController.abort();
+
+    if (pointerId) this.#scrollContainer.releasePointerCapture(pointerId);
 
     this.#pointerIsDown = false;
 
