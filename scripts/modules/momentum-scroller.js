@@ -481,7 +481,7 @@ class MomentumScroller {
       this.stopMonitoring();
       this.otherElement.#unpause();
       this.scrollerInCharge.#pause();
-      this.scrollerInCharge.undoPointerDownChanges();
+      this.scrollerInCharge.#undoPointerDownChanges();
     },
     unpauseScrollerInCharge() {
       this.scrollerInCharge.#unpause();
