@@ -424,9 +424,9 @@ export function getBrowserHeuristics() {
     (navigator?.standalone === true || navigator?.standalone === false);
 
   const browserHeuristics = {
-    isChromium: isChromium,
-    isSafari: isSafari,
-    isIOsSafari: isIOsSafari,
+    isChromium,
+    isSafari,
+    isIOsSafari,
   };
 
   return browserHeuristics;
@@ -436,7 +436,7 @@ export function getDeviceHeuristics() {
   const isTouchScreen = matchMedia("(any-pointer: coarse)").matches;
 
   const deviceHeuristics = {
-    isTouchScreen: isTouchScreen,
+    isTouchScreen,
   };
 
   return deviceHeuristics;
@@ -493,11 +493,12 @@ export function isPrimaryInput(event) {
   validateArgument("event", event, {
     allowedPrototypes: [Event],
   });
-  if (event.type.includes("pointer")) {
+  if (event instanceof PointerEvent) {
+    if (event.type === "contextmenu") return true;
     const isPrimaryPointer = event.isPrimary;
     const isPrimaryButton = event.button === 0 || event.button === -1;
     return isPrimaryPointer && isPrimaryButton;
-  } else if (event.type.includes("key")) {
+  } else if (event instanceof KeyboardEvent) {
     const isEnterOrEscapeKey = event.key === "Enter" || event.key === "Escape";
     return isEnterOrEscapeKey;
   }
@@ -575,10 +576,10 @@ export class ScrollContainerTools {
       1;
 
     return {
-      atLeftEdge: atLeftEdge,
-      atRightEdge: atRightEdge,
-      atTopEdge: atTopEdge,
-      atBottomEdge: atBottomEdge,
+      atLeftEdge,
+      atRightEdge,
+      atTopEdge,
+      atBottomEdge,
     };
   }
 
@@ -587,9 +588,17 @@ export class ScrollContainerTools {
       allowedPrototypes: [Element],
     });
 
+    const scrollableOverflows = ["auto", "overlay", "scroll"];
+    const scrollContainerOverflowX =
+      getComputedStyle(scrollContainer).overflowX;
+    const scrollContainerOverflowY =
+      getComputedStyle(scrollContainer).overflowY;
+
     const xAxisIsScrollable =
+      scrollableOverflows.includes(scrollContainerOverflowX) &&
       scrollContainer.scrollWidth > scrollContainer.clientWidth;
     const yAxisIsScrollable =
+      scrollableOverflows.includes(scrollContainerOverflowY) &&
       scrollContainer.scrollHeight > scrollContainer.clientHeight;
 
     return {
