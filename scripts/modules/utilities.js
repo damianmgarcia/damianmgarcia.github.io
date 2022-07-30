@@ -557,23 +557,17 @@ export class MetaViewportWidthPreserver {
 }
 
 export class ScrollContainerTools {
-  static getEdgeStatus(scrollContainer) {
-    validateArgument("scrollContainer", scrollContainer, {
+  static getEdgeStatus(element) {
+    validateArgument("element", element, {
       allowedPrototypes: [Element],
     });
 
-    const atLeftEdge = scrollContainer.scrollLeft === 0;
+    const atLeftEdge = element.scrollLeft === 0;
     const atRightEdge =
-      scrollContainer.scrollWidth -
-        scrollContainer.scrollLeft -
-        scrollContainer.clientWidth <=
-      1;
-    const atTopEdge = scrollContainer.scrollTop === 0;
+      element.scrollWidth - element.scrollLeft - element.clientWidth <= 1;
+    const atTopEdge = element.scrollTop === 0;
     const atBottomEdge =
-      scrollContainer.scrollHeight -
-        scrollContainer.scrollTop -
-        scrollContainer.clientHeight <=
-      1;
+      element.scrollHeight - element.scrollTop - element.clientHeight <= 1;
 
     return {
       atLeftEdge,
@@ -583,27 +577,49 @@ export class ScrollContainerTools {
     };
   }
 
-  static getScrollableAxes(scrollContainer) {
-    validateArgument("scrollContainer", scrollContainer, {
+  static getScrollableAxes(
+    element,
+    { ignoreElementsWithOverflowHidden = true } = {}
+  ) {
+    validateArgument("element", element, {
       allowedPrototypes: [Element],
     });
+    validateArgument(
+      "ignoreElementsWithOverflowHidden",
+      ignoreElementsWithOverflowHidden,
+      {
+        allowedTypes: ["boolean"],
+      }
+    );
 
-    const scrollableOverflows = ["auto", "overlay", "scroll"];
-    const scrollContainerOverflowX =
-      getComputedStyle(scrollContainer).overflowX;
-    const scrollContainerOverflowY =
-      getComputedStyle(scrollContainer).overflowY;
+    const allowedOverflowValues = ["auto", "overlay", "scroll"];
+    if (!ignoreElementsWithOverflowHidden) allowedOverflowValues.push("hidden");
+    const computedStyle = getComputedStyle(element);
+    const overflowX = computedStyle.overflowX;
+    const overflowY = computedStyle.overflowY;
+    const xHasScrollableArea = element.scrollWidth > element.clientWidth;
+    const yHasScrollableArea = element.scrollHeight > element.clientHeight;
+
+    const isDocumentRoot = element === document.querySelector(":root");
+    const documentRootExceptionX =
+      isDocumentRoot &&
+      xHasScrollableArea &&
+      [...allowedOverflowValues, "visible"].includes(overflowX);
+    const documentRootExceptionY =
+      isDocumentRoot &&
+      yHasScrollableArea &&
+      [...allowedOverflowValues, "visible"].includes(overflowY);
 
     const xAxisIsScrollable =
-      scrollableOverflows.includes(scrollContainerOverflowX) &&
-      scrollContainer.scrollWidth > scrollContainer.clientWidth;
+      documentRootExceptionX ||
+      (xHasScrollableArea && allowedOverflowValues.includes(overflowX));
     const yAxisIsScrollable =
-      scrollableOverflows.includes(scrollContainerOverflowY) &&
-      scrollContainer.scrollHeight > scrollContainer.clientHeight;
+      documentRootExceptionY ||
+      (yHasScrollableArea && allowedOverflowValues.includes(overflowY));
 
     return {
-      xAxisIsScrollable: xAxisIsScrollable,
-      yAxisIsScrollable: yAxisIsScrollable,
+      xAxisIsScrollable,
+      yAxisIsScrollable,
     };
   }
 }
