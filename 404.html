@@ -150,7 +150,7 @@
             },
           ];
 
-          const value = appearance == "dark" ? "valueDark" : "valueLight";
+          const value = appearance === "dark" ? "valueDark" : "valueLight";
           const cssStylesToSet = cssStyleDictionary.map((style) => {
             return {
               property: style.property,
@@ -189,9 +189,9 @@
         }
 
         switchAppearance() {
-          if (this.#currentAppearance == "dark") {
+          if (this.#currentAppearance === "dark") {
             this.applyAppearance("light");
-          } else if (this.#currentAppearance == "light") {
+          } else if (this.#currentAppearance === "light") {
             this.applyAppearance("dark");
           }
         }
