@@ -32,6 +32,9 @@ class MomentumScroller {
     document
       .querySelectorAll(`${rootSelector}, ${rootSelector} *`)
       .forEach((element) => {
+        const isAnElement = element instanceof Element;
+        if (!isAnElement) return;
+
         const scrollerAlreadyExists = this.#scrollerMap.has(element);
         if (scrollerAlreadyExists) return;
 
