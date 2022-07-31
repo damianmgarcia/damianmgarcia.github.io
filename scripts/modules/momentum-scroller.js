@@ -7,12 +7,28 @@ import {
 } from "./utilities.js";
 
 const deviceHeuristics = getDeviceHeuristics();
-const scrollerCreationKey = Symbol("scrollerCreationKey");
+const momentumScrollerKey = Symbol("momentumScrollerKey");
 
 class MomentumScroller {
   static #scrollerMap = new Map();
 
-  static autoCreateScrollers({ rootSelector = ":root", activate = true } = {}) {
+  static autoCreateScrollers({
+    rootSelector = ":root",
+    autoActivate = true,
+    convertBodyToScroller = true,
+  } = {}) {
+    validateArgument("rootSelector", rootSelector, {
+      allowedTypes: ["string"],
+    });
+    validateArgument("rootSelector", !!document.querySelector(rootSelector), {
+      allowedValues: [true],
+      customErrorMessage: "rootSelector does not exist",
+    });
+    validateArgument("convertBodyToScroller", convertBodyToScroller, {
+      allowedTypes: ["boolean"],
+    });
+
+    const documentRoot = document.querySelector(":root");
     document
       .querySelectorAll(`${rootSelector}, ${rootSelector} *`)
       .forEach((element) => {
@@ -22,14 +38,27 @@ class MomentumScroller {
         const { xAxisIsScrollable, yAxisIsScrollable } =
           ScrollContainerTools.getScrollableAxes(element);
 
-        if (xAxisIsScrollable || yAxisIsScrollable)
-          this.createScroller(element, activate);
+        if (!xAxisIsScrollable && !yAxisIsScrollable) return;
+
+        if (element !== documentRoot)
+          return this.createScroller(element, autoActivate);
+
+        if (!convertBodyToScroller) return;
+
+        const root = document.querySelector(":root");
+        root.style.setProperty("overflow", "hidden");
+        const body = document.querySelector("body");
+        body.style.setProperty("overflow", "auto");
+        body.style.setProperty("margin", "0");
+        if (xAxisIsScrollable) body.style.setProperty("width", "100vw");
+        if (yAxisIsScrollable) body.style.setProperty("height", "100vh");
+        this.createScroller(body, autoActivate);
       });
 
     return this;
   }
 
-  static createScroller(scrollContainer, activate = true) {
+  static createScroller(scrollContainer, autoActivate = true) {
     if (deviceHeuristics.isTouchScreen)
       throw new Error(
         "MomentumScroller instantiation blocked. Due to conflicts between native momentum scrolling systems and MomentumScroller.js, touch screen devices, such as this one, are not supported."
@@ -38,15 +67,20 @@ class MomentumScroller {
     validateArgument("scrollContainer", scrollContainer, {
       allowedPrototypes: [Element],
     });
+    validateArgument("autoActivate", autoActivate, {
+      allowedTypes: ["boolean"],
+    });
 
     if (this.#scrollerMap.has(scrollContainer))
       throw new Error(
         "A MomentumScroller instance for this scrollContainer already exists"
       );
 
-    const scroller = new this(scrollContainer, scrollerCreationKey);
+    if (!this.#pointerDownRouterActivated) this.#activatePointerDownRouter();
 
-    if (activate) scroller.activate();
+    const scroller = new this(scrollContainer, momentumScrollerKey);
+
+    if (autoActivate) scroller.activate();
 
     this.#scrollerMap.set(scrollContainer, scroller);
 
@@ -61,14 +95,16 @@ class MomentumScroller {
     return Array.from(this.#scrollerMap.values());
   }
 
-  #scrollContainer;
-  #decelerationLevel = "medium";
-  #borderBouncinessLevel = "medium";
-  #grabCursor = "grab";
-  #grabbingCursor = "grabbing";
-  #allowHorizontalScrolling = true;
-  #allowVerticalScrolling = true;
-  #selectorsOfDescendantsTheScrollerShouldIgnore = [
+  static #pointerDownRouterActivated = false;
+
+  static #activatePointerDownRouter() {
+    document.addEventListener("pointerdown", (event) =>
+      this.#pointerDownRouter(event)
+    );
+    this.#pointerDownRouterActivated = true;
+  }
+
+  static #selectorsOfElementsScrollerShouldIgnore = [
     "input[type=email]",
     "input[type=number]",
     "input[type=password]",
@@ -79,7 +115,8 @@ class MomentumScroller {
     "input[type=url]",
     "textarea",
   ];
-  #selectorsOfDescendantsThatReactToClicks = [
+
+  static #selectorsOfClickableElements = [
     "a",
     "button",
     "details",
@@ -98,8 +135,345 @@ class MomentumScroller {
     "input[type=week]",
     "summary",
   ];
-  #selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling = [];
-  #selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling = [];
+
+  static #selectorsOfOtherTouchScrollers = [];
+
+  static verifySelectors(setterName, selectors) {
+    validateArgument(setterName, selectors, {
+      allowedTypes: ["array"],
+    });
+
+    selectors.forEach((selector) => {
+      validateArgument(`${setterName} selectors`, selector, {
+        allowedTypes: ["string"],
+      });
+      validateArgument(`${setterName} selectors`, selector.length, {
+        allowedMin: 1,
+        customErrorMessage: `${setterName} cannot be empty strings`,
+      });
+    });
+  }
+
+  static setSelectorsOfElementsScrollerShouldIgnore(
+    selectors = [],
+    keepCurrentSelectors = true
+  ) {
+    this.verifySelectors("selectorsOfElementsScrollerShouldIgnore", selectors);
+
+    const currentSelector = this.#selectorsOfElementsScrollerShouldIgnore;
+
+    selectors = keepCurrentSelectors
+      ? [...new Set([...selectors, ...currentSelector])]
+      : selectors;
+
+    this.#selectorsOfElementsScrollerShouldIgnore = selectors;
+    return this;
+  }
+
+  static setSelectorsOfClickableElements(
+    selectors = [],
+    keepCurrentSelectors = true
+  ) {
+    this.verifySelectors("selectorsOfClickableElements", selectors);
+
+    const currentSelector = this.#selectorsOfClickableElements;
+
+    selectors = keepCurrentSelectors
+      ? [...new Set([...selectors, ...currentSelector])]
+      : selectors;
+
+    this.#selectorsOfClickableElements = selectors;
+    return this;
+  }
+
+  static setSelectorsOfOtherTouchScrollers(
+    selectors = [],
+    keepCurrentSelectors = true
+  ) {
+    this.verifySelectors("selectorsOfOtherTouchScrollers", selectors);
+
+    const currentSelector = this.#selectorsOfOtherTouchScrollers;
+
+    selectors = keepCurrentSelectors
+      ? [...new Set([...selectors, ...currentSelector])]
+      : selectors;
+
+    this.#selectorsOfOtherTouchScrollers = selectors;
+    return this;
+  }
+
+  static async #pointerDownRouter(event) {
+    const inputButtonIsPrimary = isPrimaryInput(event);
+    if (!inputButtonIsPrimary) return;
+
+    const targetOrAncestorIsOnIgnoreList =
+      this.#selectorsOfElementsScrollerShouldIgnore.length &&
+      this.#selectorsOfElementsScrollerShouldIgnore.some((selector) =>
+        event.target.closest(selector)
+      );
+    if (targetOrAncestorIsOnIgnoreList) return;
+
+    const eventTargets = event.composedPath();
+    const topMomentumScrollerEventTarget = eventTargets.find(
+      (eventTarget) =>
+        eventTarget instanceof Element &&
+        eventTarget.matches(".momentum-scroller")
+    );
+
+    if (!topMomentumScrollerEventTarget) return;
+
+    const relevantEventTargetsAndProperties = eventTargets
+      .map((eventTarget) => {
+        const isAnElement = eventTarget instanceof Element;
+        if (!isAnElement) return;
+
+        const compileEventTargetProperties = (properties = {}) =>
+          Object.assign({ eventTarget }, properties);
+        const safeMatches = (selectors) =>
+          selectors.length ? eventTarget.matches(selectors) : false;
+
+        const isNonScroller = safeMatches(this.#selectorsOfClickableElements);
+        if (isNonScroller)
+          return compileEventTargetProperties({ isNonScroller });
+
+        const isScrollerMomentum = eventTarget.matches(".momentum-scroller");
+        if (isScrollerMomentum) {
+          const { scrollableAxes } =
+            this.getScroller(eventTarget).getScrollerData();
+          return compileEventTargetProperties({
+            isScrollerMomentum,
+            scrollableAxes,
+          });
+        }
+
+        const isScrollerNonMomentum = safeMatches(
+          this.#selectorsOfOtherTouchScrollers
+        );
+        if (isScrollerNonMomentum) {
+          const { xAxisIsScrollable, yAxisIsScrollable } =
+            ScrollContainerTools.getScrollableAxes(eventTarget, {
+              ignoreElementsWithOverflowHidden: false,
+            });
+
+          const scrollableAxes =
+            xAxisIsScrollable && yAxisIsScrollable
+              ? "horizontal-and-vertical"
+              : xAxisIsScrollable && !yAxisIsScrollable
+              ? "horizontal-only"
+              : !xAxisIsScrollable && yAxisIsScrollable
+              ? "vertical-only"
+              : "none";
+
+          if (scrollableAxes === "none")
+            return compileEventTargetProperties({ isNonScroller: true });
+
+          return compileEventTargetProperties({
+            isScrollerNonMomentum,
+            scrollableAxes,
+          });
+        }
+      })
+      .filter((eventTargetProperties) => eventTargetProperties);
+
+    const moreThanOneRelevantEventTarget =
+      relevantEventTargetsAndProperties.length > 1;
+
+    const topEventTarget = eventTargets[0];
+
+    const dispatchMomentumScrollerRouteEvent = (detail = {}) =>
+      topEventTarget.dispatchEvent(
+        new CustomEvent("momentumScrollerRoute", {
+          bubbles: true,
+          cancelable: true,
+          detail: Object.assign(detail, { key: momentumScrollerKey }),
+        })
+      );
+
+    if (!moreThanOneRelevantEventTarget)
+      return dispatchMomentumScrollerRouteEvent({
+        routedEvent: event,
+        routeTarget: topMomentumScrollerEventTarget,
+      });
+
+    const thresholdTest = () =>
+      new Promise((resolve) => {
+        const pointerStartingPointX = event.screenX;
+        const pointerStartingPointY = event.screenY;
+        const thresholdTestAbortController = new AbortController();
+        const abortAndResolve = (resolveData) => {
+          thresholdTestAbortController.abort();
+          resolve(resolveData);
+        };
+        document.addEventListener(
+          "pointermove",
+          (event) => {
+            const getPointerCrossedThreshold = (
+              originalPosition,
+              newPosition,
+              threshold = 10
+            ) => Math.abs(originalPosition - newPosition) > threshold;
+
+            const pointerCrossedHorizontalThreshold =
+              getPointerCrossedThreshold(pointerStartingPointX, event.screenX);
+            if (pointerCrossedHorizontalThreshold)
+              return abortAndResolve({ event, thresholdCrossed: "horizontal" });
+
+            const pointerCrossedVerticalThreshold = getPointerCrossedThreshold(
+              pointerStartingPointY,
+              event.screenY
+            );
+            if (pointerCrossedVerticalThreshold)
+              return abortAndResolve({ event, thresholdCrossed: "vertical" });
+          },
+          { signal: thresholdTestAbortController.signal }
+        );
+
+        ["pointerup", "pointercancel", "keydown"].forEach((eventType) =>
+          document.addEventListener(
+            eventType,
+            () => abortAndResolve({ thresholdCrossed: null }),
+            { signal: thresholdTestAbortController.signal }
+          )
+        );
+      });
+
+    const findCompatibleScroller = ({
+      scrollersToIgnore = [],
+      allowNonMomentumScrollers = false,
+      allowedScrollableAxes = [],
+    }) =>
+      relevantEventTargetsAndProperties.find(
+        (relevantEventTargetProperties) =>
+          !scrollersToIgnore.includes(
+            relevantEventTargetProperties.eventTarget
+          ) &&
+          (relevantEventTargetProperties.isScrollerMomentum ||
+            (relevantEventTargetProperties.isScrollerNonMomentum &&
+              allowNonMomentumScrollers)) &&
+          allowedScrollableAxes.includes(
+            relevantEventTargetProperties.scrollableAxes
+          )
+      );
+
+    const topRelevantEventTargetProperties =
+      relevantEventTargetsAndProperties[0];
+
+    dispatchMomentumScrollerRouteEvent({
+      routedEvent: event,
+      routeTarget: topRelevantEventTargetProperties.eventTarget,
+    });
+
+    if (
+      topRelevantEventTargetProperties.isScrollerMomentum ||
+      topRelevantEventTargetProperties.isScrollerNonMomentum
+    ) {
+      const topScrollerAlreadyUsesBothAxes =
+        topRelevantEventTargetProperties.scrollableAxes ===
+        "horizontal-and-vertical";
+      if (topScrollerAlreadyUsesBothAxes) return;
+
+      const scrollableAxesThatHaveMissingAxis =
+        topRelevantEventTargetProperties.scrollableAxes === "horizontal-only"
+          ? ["horizontal-and-vertical", "vertical-only"]
+          : ["horizontal-and-vertical", "horizontal-only"];
+
+      const nextCompatibleScroller = findCompatibleScroller({
+        scrollersToIgnore: [topRelevantEventTargetProperties.eventTarget],
+        allowNonMomentumScrollers:
+          topRelevantEventTargetProperties.isScrollerMomentum ? true : false,
+        allowedScrollableAxes: scrollableAxesThatHaveMissingAxis,
+      });
+
+      if (!nextCompatibleScroller) return;
+
+      const thresholdTestResults = await thresholdTest();
+
+      const noThresholdsWereCrossed = !thresholdTestResults.thresholdCrossed;
+      const horizontalThresholdWasCrossedAndTopScrollerIsHorizontalOnly =
+        thresholdTestResults.thresholdCrossed === "horizontal" &&
+        topRelevantEventTargetProperties.scrollableAxes === "horizontal-only";
+      const verticalThresholdWasCrossedAndTopScrollerIsVerticalOnly =
+        thresholdTestResults.thresholdCrossed === "vertical" &&
+        topRelevantEventTargetProperties.scrollableAxes === "vertical-only";
+
+      if (
+        noThresholdsWereCrossed ||
+        horizontalThresholdWasCrossedAndTopScrollerIsHorizontalOnly ||
+        verticalThresholdWasCrossedAndTopScrollerIsVerticalOnly
+      )
+        return;
+
+      dispatchMomentumScrollerRouteEvent({
+        routedEvent: thresholdTestResults.event,
+        routeTarget: nextCompatibleScroller.eventTarget,
+      });
+    } else if (topRelevantEventTargetProperties.isNonScroller) {
+      const scrollableAxesThatHaveMissingAxis = [
+        "horizontal-and-vertical",
+        "horizontal-only",
+        "vertical-only",
+      ];
+      const firstCompatibleScroller = findCompatibleScroller({
+        allowedScrollableAxes: scrollableAxesThatHaveMissingAxis,
+      });
+
+      const secondCompatibleScroller = findCompatibleScroller({
+        scrollersToIgnore: [firstCompatibleScroller.eventTarget],
+        allowedScrollableAxes: scrollableAxesThatHaveMissingAxis,
+      });
+
+      const thresholdTestResults = await thresholdTest();
+
+      const noThresholdsWereCrossed = !thresholdTestResults.thresholdCrossed;
+      if (noThresholdsWereCrossed) return;
+
+      const routeToScroller = (routeTarget) =>
+        dispatchMomentumScrollerRouteEvent({
+          routedEvent: thresholdTestResults.event,
+          routeTarget,
+        });
+
+      const scrollerIncludesCrossedThresholdAxis = (scrollableAxes) => {
+        if (thresholdTestResults.thresholdCrossed === "horizontal") {
+          return ["horizontal-only", "horizontal-and-vertical"].includes(
+            scrollableAxes
+          );
+        } else if (thresholdTestResults.thresholdCrossed === "vertical") {
+          return ["vertical-only", "horizontal-and-vertical"].includes(
+            scrollableAxes
+          );
+        }
+      };
+
+      const firstCompatibleScrollerIncludesCrossedThresholdAxis =
+        scrollerIncludesCrossedThresholdAxis(
+          firstCompatibleScroller.scrollableAxes
+        );
+
+      if (firstCompatibleScrollerIncludesCrossedThresholdAxis)
+        return routeToScroller(firstCompatibleScroller.eventTarget);
+
+      if (!secondCompatibleScroller)
+        return routeToScroller(firstCompatibleScroller.eventTarget);
+
+      const secondCompatibleScrollerIncludesCrossedThresholdAxis =
+        scrollerIncludesCrossedThresholdAxis(
+          secondCompatibleScroller.scrollableAxes
+        );
+      if (secondCompatibleScrollerIncludesCrossedThresholdAxis)
+        return routeToScroller(secondCompatibleScroller.eventTarget);
+
+      return routeToScroller(firstCompatibleScroller.eventTarget);
+    }
+  }
+
+  #scrollContainer;
+  #decelerationLevel = "medium";
+  #borderBouncinessLevel = "medium";
+  #grabCursor = "grab";
+  #grabbingCursor = "grabbing";
+  #allowHorizontalScrolling = true;
+  #allowVerticalScrolling = true;
   #decelerationLevelToQuantityMap = new Map([
     ["none", 0],
     ["minimum", 0.00004],
@@ -119,7 +493,7 @@ class MomentumScroller {
 
   constructor(scrollContainer, key) {
     validateArgument("key", key, {
-      allowedValues: [scrollerCreationKey],
+      allowedValues: [momentumScrollerKey],
       customErrorMessage:
         "Please use the MomentumScroller.autoCreateScrollers static method or the MomentumScroller.createScroller static method to create scrollers",
     });
@@ -128,9 +502,17 @@ class MomentumScroller {
 
     this.#scrollContainer.classList.add("momentum-scroller");
 
-    this.#scrollContainer.addEventListener("pointerdown", (event) =>
-      this.#pointerDownHandler(event)
-    );
+    this.#scrollContainer.addEventListener("momentumScrollerRoute", (event) => {
+      const key = event.detail.key;
+      validateArgument("key", key, {
+        allowedValues: [momentumScrollerKey],
+        customErrorMessage:
+          "This momentumScrollerRoute event is invalid because it was not dispatched by the MomentumScroller module",
+      });
+      const { routedEvent, routeTarget } = event.detail;
+      if (this.#scrollContainer === routeTarget)
+        this.#pointerDownHandler(routedEvent);
+    });
 
     this.#scrollContainer.addEventListener("smoothScrollerScrollStart", () => {
       if (this.#scrollResolve)
@@ -144,6 +526,15 @@ class MomentumScroller {
         if (this.#active) event.preventDefault();
       })
     );
+  }
+
+  getScrollerData() {
+    return {
+      active: this.#active,
+      scrollContainer: this.#scrollContainer,
+      scrollableAxes: this.#getUpdatedScrollableAxes(),
+      scrolling: this.#scrolling,
+    };
   }
 
   setDecelerationLevel(decelerationLevel = "medium") {
@@ -212,186 +603,18 @@ class MomentumScroller {
     return this;
   }
 
-  setSelectorsOfDescendantsTheScrollerShouldIgnore(
-    selectors = [],
-    keepCurrentSelectors = true
-  ) {
-    validateArgument(
-      "selectorsOfDescendantsTheScrollerShouldIgnore selectors",
-      selectors,
-      {
-        allowedTypes: ["array"],
-      }
-    );
-
-    selectors.forEach((selector) => {
-      validateArgument(
-        "selectorsOfDescendantsTheScrollerShouldIgnore selectors",
-        selector,
-        {
-          allowedTypes: ["string"],
-        }
-      );
-      validateArgument(
-        "selectorsOfDescendantsTheScrollerShouldIgnore selectors",
-        selector.length,
-        {
-          allowedMin: 1,
-          customErrorMessage:
-            "Empty strings not allowed in selectorsOfDescendantsTheScrollerShouldIgnore selectors",
-        }
-      );
-    });
-
-    const currentSlectors = this.#selectorsOfDescendantsTheScrollerShouldIgnore;
-
-    selectors = keepCurrentSelectors
-      ? [...new Set([...selectors, ...currentSlectors])]
-      : selectors;
-
-    this.#selectorsOfDescendantsTheScrollerShouldIgnore = selectors;
-    return this;
-  }
-
-  setSelectorsOfDescendantsThatReactToClicks(
-    selectors = [],
-    keepCurrentSelectors = true
-  ) {
-    validateArgument(
-      "selectorsOfDescendantsThatReactToClicks selectors",
-      selectors,
-      {
-        allowedTypes: ["array"],
-      }
-    );
-
-    selectors.forEach((selector) => {
-      validateArgument(
-        "selectorsOfDescendantsThatReactToClicks selectors",
-        selector,
-        {
-          allowedTypes: ["string"],
-        }
-      );
-      validateArgument(
-        "selectorsOfDescendantsThatReactToClicks selectors",
-        selector.length,
-        {
-          allowedMin: 1,
-          customErrorMessage:
-            "Empty strings not allowed in selectorsOfDescendantsThatReactToClicks selectors",
-        }
-      );
-    });
-
-    const currentSlectors = this.#selectorsOfDescendantsThatReactToClicks;
-
-    selectors = keepCurrentSelectors
-      ? [...new Set([...selectors, ...currentSlectors])]
-      : selectors;
-
-    this.#selectorsOfDescendantsThatReactToClicks = selectors;
-    return this;
-  }
-
-  setSelectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling(
-    selectors = [],
-    keepCurrentSelectors = true
-  ) {
-    validateArgument(
-      "selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling selectors",
-      selectors,
-      {
-        allowedTypes: ["array"],
-      }
-    );
-
-    selectors.forEach((selector) => {
-      validateArgument(
-        "selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling selectors",
-        selector,
-        {
-          allowedTypes: ["string"],
-        }
-      );
-      validateArgument(
-        "selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling selectors",
-        selector.length,
-        {
-          allowedMin: 1,
-          customErrorMessage:
-            "Empty strings not allowed in selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling selectors",
-        }
-      );
-    });
-
-    const currentSlectors =
-      this.#selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling;
-
-    selectors = keepCurrentSelectors
-      ? [...new Set([...selectors, ...currentSlectors])]
-      : selectors;
-
-    this.#selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling = selectors;
-    return this;
-  }
-
-  setSelectorsOfDescendantsThatUseVerticalOnlyTouchScrolling(
-    selectors = [],
-    keepCurrentSelectors = true
-  ) {
-    validateArgument(
-      "selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling selectors",
-      selectors,
-      {
-        allowedTypes: ["array"],
-      }
-    );
-
-    selectors.forEach((selector) => {
-      validateArgument(
-        "selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling selectors",
-        selector,
-        {
-          allowedTypes: ["string"],
-        }
-      );
-      validateArgument(
-        "selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling selectors",
-        selector.length,
-        {
-          allowedMin: 1,
-          customErrorMessage:
-            "Empty strings not allowed in selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling selectors",
-        }
-      );
-    });
-
-    const currentSlectors =
-      this.#selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling;
-
-    selectors = keepCurrentSelectors
-      ? [...new Set([...selectors, ...currentSlectors])]
-      : selectors;
-
-    this.#selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling = selectors;
-    return this;
-  }
-
   #active = false;
 
   activate() {
     if (this.#active) return;
 
-    const momentumScrollerActivateEvent = new CustomEvent(
-      "momentumScrollerActivate",
-      {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerActivate", {
         bubbles: true,
         cancelable: true,
         detail: this.#getEventData(),
-      }
+      })
     );
-    this.#scrollContainer.dispatchEvent(momentumScrollerActivateEvent);
 
     this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
     this.#scrollContainer.style.setProperty("-webkit-user-select", "none");
@@ -405,15 +628,13 @@ class MomentumScroller {
   deactivate() {
     if (!this.#active) return;
 
-    const momentumScrollerDeactivateEvent = new CustomEvent(
-      "momentumScrollerDeactivate",
-      {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerDeactivate", {
         bubbles: true,
         cancelable: true,
         detail: this.#getEventData(),
-      }
+      })
     );
-    this.#scrollContainer.dispatchEvent(momentumScrollerDeactivateEvent);
 
     if (this.#scrollResolve)
       this.#stopScroll({
@@ -439,95 +660,17 @@ class MomentumScroller {
     }
   }
 
-  #paused = false;
-
-  #pause() {
-    this.#paused = true;
-  }
-
-  #unpause() {
-    this.#paused = false;
-  }
-
   #xAxisIsScrollable;
   #yAxisIsScrollable;
-  #scrollerType;
-  get scrollerType() {
-    return this.#scrollerType;
-  }
+  #scrollableAxes;
   #pointerMoveUpCancelAbortController = new AbortController();
   #pointerMoveLog = [];
+  #pointerId;
   #pointerIsDown;
   #xAlreadyBounced;
   #yAlreadyBounced;
-  #scrollPausing = {
-    continueMonitoring: true,
-    scrollerInCharge: null,
-    scrollerInChargeOriginalScreenX: null,
-    scrollerInChargeOriginalScreenY: null,
-    otherElement: null,
-    otherElementIsMomentumScroller: null,
-    otherElementScrollerType: null,
-    otherElementReactsToClicks: null,
-    otherElementUsesHorizontalOnlyTouchScrolling: null,
-    otherElementUsesVerticalOnlyTouchScrolling: null,
-    stopMonitoring() {
-      this.continueMonitoring = false;
-    },
-    dontPauseForOtherScroller() {
-      this.stopMonitoring();
-    },
-    pauseForOtherScroller() {
-      this.stopMonitoring();
-      this.otherElement.#unpause();
-      this.scrollerInCharge.#pause();
-      this.scrollerInCharge.#undoPointerDownChanges();
-    },
-    unpauseScrollerInCharge() {
-      this.scrollerInCharge.#unpause();
-    },
-    dispatchScrollPausingStopEvent(eventData = {}) {
-      this.stopMonitoring();
-      const momentumScrollerScrollPausingStopEvent = new CustomEvent(
-        "momentumScrollerScrollPausingStop",
-        {
-          bubbles: true,
-          cancelable: true,
-          detail: eventData,
-        }
-      );
-      this.otherElement.dispatchEvent(momentumScrollerScrollPausingStopEvent);
-    },
-    reset() {
-      if (this.scrollerInCharge) this.unpauseScrollerInCharge();
-      if (this.otherElementIsMomentumScroller) this.otherElement.#unpause();
-      this.continueMonitoring = true;
-      this.scrollerInCharge = null;
-      this.scrollerInChargeOriginalScreenX = null;
-      this.scrollerInChargeOriginalScreenY = null;
-      this.otherElement = null;
-      this.otherElementIsMomentumScroller = null;
-      this.otherElementScrollerType = null;
-      this.otherElementReactsToClicks = null;
-      this.otherElementUsesHorizontalOnlyTouchScrolling = null;
-      this.otherElementUsesVerticalOnlyTouchScrolling = null;
-    },
-  };
 
-  async #pointerDownHandler(event) {
-    if (!this.#active) return;
-
-    if (
-      this.#selectorsOfDescendantsTheScrollerShouldIgnore.length &&
-      this.#selectorsOfDescendantsTheScrollerShouldIgnore.some((selector) =>
-        event.target.closest(selector)
-      )
-    )
-      return;
-
-    const inputButtonIsPrimary = isPrimaryInput(event);
-    if (!inputButtonIsPrimary) return;
-
+  #getUpdatedScrollableAxes() {
     const { xAxisIsScrollable, yAxisIsScrollable } =
       ScrollContainerTools.getScrollableAxes(this.#scrollContainer);
 
@@ -535,7 +678,7 @@ class MomentumScroller {
       this.#allowHorizontalScrolling && xAxisIsScrollable;
     this.#yAxisIsScrollable = this.#allowVerticalScrolling && yAxisIsScrollable;
 
-    this.#scrollerType =
+    this.#scrollableAxes =
       this.#xAxisIsScrollable && this.#yAxisIsScrollable
         ? "horizontal-and-vertical"
         : this.#xAxisIsScrollable && !this.#yAxisIsScrollable
@@ -544,123 +687,23 @@ class MomentumScroller {
         ? "vertical-only"
         : "none";
 
-    if (this.#scrollerType === "none") return;
+    return this.#scrollableAxes;
+  }
 
-    const scrollPausingElements = event
-      .composedPath()
-      .map((object) => {
-        const isAnElement = object instanceof Element;
-        if (!isAnElement) return;
-
-        const elementIsMomentumScroller = object.matches(".momentum-scroller");
-        const elementReactsToClicks = this
-          .#selectorsOfDescendantsThatReactToClicks.length
-          ? object.matches(this.#selectorsOfDescendantsThatReactToClicks)
-          : false;
-        const elementUsesHorizontalOnlyTouchScrolling = this
-          .#selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling.length
-          ? object.matches(
-              this.#selectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling
-            )
-          : false;
-        const elementUsesVerticalOnlyTouchScrolling = this
-          .#selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling.length
-          ? object.matches(
-              this.#selectorsOfDescendantsThatUseVerticalOnlyTouchScrolling
-            )
-          : false;
-
-        if (
-          elementIsMomentumScroller ||
-          elementReactsToClicks ||
-          elementUsesHorizontalOnlyTouchScrolling ||
-          elementUsesVerticalOnlyTouchScrolling
-        )
-          return {
-            element: object,
-            elementIsMomentumScroller,
-            elementReactsToClicks,
-            elementUsesHorizontalOnlyTouchScrolling,
-            elementUsesVerticalOnlyTouchScrolling,
-          };
-      })
-      .filter((elementData) => elementData);
-
-    const multipleScrollPausingElements = scrollPausingElements
-      ? scrollPausingElements.length > 1
-      : null;
-    if (multipleScrollPausingElements) {
-      const scrollContainerOfScrollerInCharge = scrollPausingElements.find(
-        (elementData) => elementData.elementIsMomentumScroller
-      ).element;
-
-      const scrollerInCharge = MomentumScroller.#scrollerMap.get(
-        scrollContainerOfScrollerInCharge
-      );
-
-      const otherElementData = scrollPausingElements.find(
-        (elementData) =>
-          elementData.element !== scrollContainerOfScrollerInCharge
-      );
-
-      const otherElementIsMomentumScroller =
-        otherElementData.elementIsMomentumScroller;
-
-      if (
-        otherElementIsMomentumScroller &&
-        this === MomentumScroller.#scrollerMap.get(otherElementData.element)
-      )
-        this.#pause();
-
-      const otherScrollers = scrollPausingElements.filter(
-        (elementData) =>
-          elementData.elementIsMomentumScroller &&
-          elementData.element !== scrollContainerOfScrollerInCharge &&
-          elementData.element !== otherElementData.element
-      );
-
-      if (
-        otherScrollers.find(
-          (elementData) => elementData.element === this.#scrollContainer
-        )
-      )
-        return;
-
-      if (this === scrollerInCharge) {
-        this.#scrollPausing.scrollerInCharge = scrollerInCharge;
-        this.#scrollPausing.scrollerInChargeOriginalScreenX = event.screenX;
-        this.#scrollPausing.scrollerInChargeOriginalScreenY = event.screenY;
-        this.#scrollPausing.otherElement = otherElementIsMomentumScroller
-          ? MomentumScroller.#scrollerMap.get(otherElementData.element)
-          : otherElementData.element;
-        this.#scrollPausing.otherElementIsMomentumScroller =
-          otherElementIsMomentumScroller;
-        this.#scrollPausing.otherElementScrollerType =
-          otherElementIsMomentumScroller
-            ? this.#scrollPausing.otherElement.scrollerType
-            : null;
-        this.#scrollPausing.otherElementReactsToClicks =
-          otherElementData.elementReactsToClicks;
-        this.#scrollPausing.otherElementUsesHorizontalOnlyTouchScrolling =
-          otherElementData.elementUsesHorizontalOnlyTouchScrolling;
-        this.#scrollPausing.otherElementUsesVerticalOnlyTouchScrolling =
-          otherElementData.elementUsesVerticalOnlyTouchScrolling;
-
-        if (!otherElementIsMomentumScroller) this.#pause();
-      }
-    }
+  #pointerDownHandler(event) {
+    if (!this.#active) return;
 
     this.#pointerIsDown = true;
+    this.#pointerId = event.pointerId;
+    this.#scrollContainer.setPointerCapture(event.pointerId);
 
-    const momentumScrollerPointerDownEvent = new CustomEvent(
-      "momentumScrollerPointerDown",
-      {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerPointerDown", {
         bubbles: true,
         cancelable: true,
         detail: this.#getEventData(),
-      }
+      })
     );
-    this.#scrollContainer.dispatchEvent(momentumScrollerPointerDownEvent);
 
     if (this.#scrollResolve)
       this.#stopScroll({
@@ -678,7 +721,6 @@ class MomentumScroller {
     let previousScreenX = event.screenX; // Safari returns undefined for event.movementX
     let movementY = 0;
     let previousScreenY = event.screenY; // Safari returns undefined for event.movementY
-
     let currentTranslateX;
     let currentTranslateY;
     let bounciness;
@@ -710,9 +752,35 @@ class MomentumScroller {
     this.#pointerMoveUpCancelAbortController = new AbortController();
 
     this.#scrollContainer.addEventListener(
-      "contextmenu",
-      (event) => this.#undoPointerDownChanges(event.pointerId),
+      "momentumScrollerRoute",
+      (event) => {
+        const key = event.detail.key;
+        validateArgument("key", key, {
+          allowedValues: [momentumScrollerKey],
+          customErrorMessage:
+            "This momentumScrollerRoute event is invalid because it was not dispatched by the MomentumScroller module",
+        });
+        const { routeTarget } = event.detail;
+        if (this.#scrollContainer !== routeTarget)
+          this.#undoPointerDownChanges();
+      },
       { signal: this.#pointerMoveUpCancelAbortController.signal }
+    );
+
+    ["contextmenu", "keydown"].forEach((eventType) =>
+      document.addEventListener(
+        eventType,
+        () => this.#undoPointerDownChanges(),
+        { signal: this.#pointerMoveUpCancelAbortController.signal }
+      )
+    );
+
+    ["pointerup", "pointercancel"].forEach((eventType) =>
+      this.#scrollContainer.addEventListener(
+        eventType,
+        (event) => this.#pointerUpHandler(event),
+        { signal: this.#pointerMoveUpCancelAbortController.signal }
+      )
     );
 
     this.#scrollContainer.addEventListener(
@@ -727,88 +795,6 @@ class MomentumScroller {
           movementY = event.screenY - previousScreenY;
           previousScreenY = event.screenY;
         }
-
-        if (
-          multipleScrollPausingElements &&
-          this === this.#scrollPausing.scrollerInCharge &&
-          this.#scrollPausing.continueMonitoring
-        ) {
-          const getPointerCrossedThreshold = (
-            originalPosition,
-            newPosition,
-            threshold = 10
-          ) => Math.abs(originalPosition - newPosition) > threshold;
-
-          const pointerCrossedHorizontalThreshold = getPointerCrossedThreshold(
-            this.#scrollPausing.scrollerInChargeOriginalScreenX,
-            event.screenX
-          );
-          const pointerCrossedVerticalThreshold = getPointerCrossedThreshold(
-            this.#scrollPausing.scrollerInChargeOriginalScreenY,
-            event.screenY
-          );
-
-          if (
-            pointerCrossedHorizontalThreshold ||
-            pointerCrossedVerticalThreshold
-          ) {
-            if (this.#scrollPausing.otherElementIsMomentumScroller) {
-              if (this.#scrollerType === "horizontal-only") {
-                const otherScrollerIsAHorizontalOnlyScroller =
-                  this.#scrollPausing.otherElementScrollerType ===
-                  "horizontal-only";
-                if (
-                  otherScrollerIsAHorizontalOnlyScroller ||
-                  pointerCrossedHorizontalThreshold
-                ) {
-                  this.#scrollPausing.dontPauseForOtherScroller();
-                } else if (pointerCrossedVerticalThreshold) {
-                  return this.#scrollPausing.pauseForOtherScroller();
-                }
-              } else if (this.#scrollerType === "vertical-only") {
-                const otherScrollerIsAVerticalOnlyScroller =
-                  this.#scrollPausing.otherElementScrollerType ===
-                  "vertical-only";
-                if (
-                  otherScrollerIsAVerticalOnlyScroller ||
-                  pointerCrossedVerticalThreshold
-                ) {
-                  this.#scrollPausing.dontPauseForOtherScroller();
-                } else if (pointerCrossedHorizontalThreshold) {
-                  return this.#scrollPausing.pauseForOtherScroller();
-                }
-              } else if (this.#scrollerType === "horizontal-and-vertical") {
-                this.#scrollPausing.dontPauseForOtherScroller();
-              }
-            } else if (!this.#scrollPausing.otherElementIsMomentumScroller) {
-              const scrollerInChargeShouldBeUnpaused =
-                this.#scrollPausing.otherElementReactsToClicks ||
-                (this.#scrollPausing
-                  .otherElementUsesHorizontalOnlyTouchScrolling &&
-                  this.#scrollerType === "vertical-only" &&
-                  pointerCrossedVerticalThreshold) ||
-                (this.#scrollPausing
-                  .otherElementUsesVerticalOnlyTouchScrolling &&
-                  this.#scrollerType === "horizontal-only" &&
-                  pointerCrossedHorizontalThreshold);
-
-              const eventData = {
-                scrollerInCharge: this.#scrollPausing.scrollerInCharge,
-                pointerCrossedHorizontalThreshold,
-                pointerCrossedVerticalThreshold,
-                scrollerInChargeWasUnpaused: scrollerInChargeShouldBeUnpaused,
-              };
-              this.#scrollPausing.dispatchScrollPausingStopEvent(eventData);
-
-              if (scrollerInChargeShouldBeUnpaused)
-                this.#scrollPausing.unpauseScrollerInCharge();
-            }
-          }
-        }
-
-        if (this.#paused) return;
-
-        this.#scrollContainer.setPointerCapture(event.pointerId);
 
         const updateScrollLeft = () =>
           (this.#scrollContainer.scrollLeft -= movementX);
@@ -828,27 +814,33 @@ class MomentumScroller {
             (atBottomEdge && currentTranslateY + movementY < 0) ||
             (atTopEdge && currentTranslateY + movementY > 0);
 
+          const getCurrentTranslate = (currentTranslate, movement) =>
+            currentTranslate +
+            movement *
+              (1 /
+                (bounciness *
+                  Math.abs(Math.pow(currentTranslate + movement, 2)) +
+                  1));
+          const updateCurrentTranslateX = () =>
+            (currentTranslateX = getCurrentTranslate(
+              currentTranslateX,
+              movementX
+            ));
+          const updateCurrentTranslateY = () =>
+            (currentTranslateY = getCurrentTranslate(
+              currentTranslateY,
+              movementY
+            ));
+
           if (tryingToScrollBeyondHorizontalEdge) {
-            currentTranslateX =
-              currentTranslateX +
-              movementX *
-                (1 /
-                  (bounciness *
-                    Math.abs(Math.pow(currentTranslateX + movementX, 2)) +
-                    1));
+            updateCurrentTranslateX();
           } else if (!tryingToScrollBeyondHorizontalEdge) {
             resetTranslateX();
             updateScrollLeft();
           }
 
           if (tryingToScrollBeyondVerticalEdge) {
-            currentTranslateY =
-              currentTranslateY +
-              movementY *
-                (1 /
-                  (bounciness *
-                    Math.abs(Math.pow(currentTranslateY + movementY, 2)) +
-                    1));
+            updateCurrentTranslateY();
           } else if (!tryingToScrollBeyondVerticalEdge) {
             resetTranslateY();
             updateScrollTop();
@@ -873,42 +865,24 @@ class MomentumScroller {
       },
       { signal: this.#pointerMoveUpCancelAbortController.signal }
     );
-
-    this.#scrollContainer.addEventListener(
-      "pointerup",
-      (event) => this.#pointerUpHandler(event),
-      {
-        once: true,
-        signal: this.#pointerMoveUpCancelAbortController.signal,
-      }
-    );
-
-    this.#scrollContainer.addEventListener(
-      "pointercancel",
-      (event) => this.#pointerUpHandler(event),
-      {
-        once: true,
-        signal: this.#pointerMoveUpCancelAbortController.signal,
-      }
-    );
   }
 
-  #undoPointerDownChanges(pointerId) {
-    const momentumScrollerPointerUpEvent = new CustomEvent(
-      "momentumScrollerPointerUp",
-      {
+  #undoPointerDownChanges() {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerPointerUp", {
         bubbles: true,
         cancelable: true,
         detail: this.#getEventData(),
-      }
+      })
     );
-    this.#scrollContainer.dispatchEvent(momentumScrollerPointerUpEvent);
 
     this.#pointerMoveUpCancelAbortController.abort();
 
-    if (pointerId) this.#scrollContainer.releasePointerCapture(pointerId);
+    if (this.#pointerId)
+      this.#scrollContainer.releasePointerCapture(this.#pointerId);
 
     this.#pointerIsDown = false;
+    this.#pointerId = null;
 
     this.#scrollContainer.style.setProperty("cursor", this.#grabCursor);
 
@@ -921,12 +895,9 @@ class MomentumScroller {
       currentTransformProperties.translateY;
 
     if (onBorder) this.#bounce();
-
-    this.#scrollPausing.reset();
   }
 
   #pointerUpHandler(event) {
-    if (this.#paused) return this.#undoPointerDownChanges();
     this.#undoPointerDownChanges();
 
     const endTime = event.timeStamp;
@@ -997,9 +968,9 @@ class MomentumScroller {
     this.#pointerMoveLog = [];
   }
 
-  #isScrolling = false;
-  get isScrolling() {
-    return this.#isScrolling;
+  #scrolling = false;
+  get scrolling() {
+    return this.#scrolling;
   }
   #previousScrollDirectionX;
   #previousScrollDirectionY;
@@ -1061,18 +1032,17 @@ class MomentumScroller {
         edge2,
         initialVelocityMultiplier
       ) => {
-        if (scrollDirection !== 0) {
-          const scrollDirectionXMatchesPreviousScrollDirectionX =
-            scrollDirection === previousScrollDirection;
-          const scrollMeetsMultiplierPositionCriteria = !edge1 && !edge2;
-          const allMultiplierCriteriaMet =
-            scrollMeetsMultiplierPositionCriteria &&
-            scrollDirectionXMatchesPreviousScrollDirectionX &&
-            scrollMeetsMultiplierTimingCriteria;
-          return allMultiplierCriteriaMet ? initialVelocityMultiplier + 1 : 1;
-        } else if (scrollDirection === 0) {
-          return 1;
-        }
+        if (scrollDirection === 0) return 1;
+
+        const scrollDirectionXMatchesPreviousScrollDirectionX =
+          scrollDirection === previousScrollDirection;
+        const scrollMeetsMultiplierPositionCriteria = !edge1 && !edge2;
+        const allMultiplierCriteriaMet =
+          scrollMeetsMultiplierPositionCriteria &&
+          scrollDirectionXMatchesPreviousScrollDirectionX &&
+          scrollMeetsMultiplierTimingCriteria;
+
+        return allMultiplierCriteriaMet ? initialVelocityMultiplier + 1 : 1;
       };
 
       const scrollDirectionX = Math.sign(scrollInitialVelocityX);
@@ -1136,9 +1106,10 @@ class MomentumScroller {
       if (
         (this.#scrollInitialVelocityX === 0 &&
           this.#scrollInitialVelocityY === 0) ||
-        (this.#scrollerType === "horizontal-only" && scrollDistanceXTooSmall) ||
-        (this.#scrollerType === "vertical-only" && scrollDistanceYTooSmall) ||
-        (this.#scrollerType === "horizontal-and-vertical" &&
+        (this.#scrollableAxes === "horizontal-only" &&
+          scrollDistanceXTooSmall) ||
+        (this.#scrollableAxes === "vertical-only" && scrollDistanceYTooSmall) ||
+        (this.#scrollableAxes === "horizontal-and-vertical" &&
           scrollDistanceXTooSmall &&
           scrollDistanceYTooSmall)
       ) {
@@ -1163,29 +1134,24 @@ class MomentumScroller {
 
     if (!this.#scrollStartTime) {
       this.#scrollStartTime = currentTime;
+      this.#scrolling = true;
 
-      const momentumScrollerScrollStartEvent = new CustomEvent(
-        "momentumScrollerScrollStart",
-        {
+      this.#scrollContainer.dispatchEvent(
+        new CustomEvent("momentumScrollerScrollStart", {
           bubbles: true,
           cancelable: true,
           detail: this.#getEventData(),
-        }
+        })
       );
-      this.#scrollContainer.dispatchEvent(momentumScrollerScrollStartEvent);
-
-      this.#isScrolling = true;
     }
 
-    const momentumScrollerScrollEvent = new CustomEvent(
-      "momentumScrollerScroll",
-      {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerScroll", {
         bubbles: true,
         cancelable: true,
         detail: this.#getEventData(),
-      }
+      })
     );
-    this.#scrollContainer.dispatchEvent(momentumScrollerScrollEvent);
 
     this.#scrollElapsedTime = currentTime - this.#scrollStartTime;
     const elapsedTimeRatio = Math.min(
@@ -1216,21 +1182,17 @@ class MomentumScroller {
           (Math.abs(initialVelocity) / this.#scrollVelocityHypotenuse) *
           Math.pow(this.#scrollElapsedTime, 2));
 
-    if (this.#xAxisIsScrollable) {
-      const nextScrollLeft = getNextScrollPosition(
+    if (this.#xAxisIsScrollable)
+      this.#scrollContainer.scrollLeft = getNextScrollPosition(
         this.#scrollStartingPointX,
         this.#scrollInitialVelocityX
       );
-      this.#scrollContainer.scrollLeft = nextScrollLeft;
-    }
 
-    if (this.#yAxisIsScrollable) {
-      const nextScrollTop = getNextScrollPosition(
+    if (this.#yAxisIsScrollable)
+      this.#scrollContainer.scrollTop = getNextScrollPosition(
         this.#scrollStartingPointY,
         this.#scrollInitialVelocityY
       );
-      this.#scrollContainer.scrollTop = nextScrollTop;
-    }
 
     if (this.#borderBouncinessLevel !== "none") {
       const tryingToScrollBeyondHorizontalEdge =
@@ -1251,10 +1213,10 @@ class MomentumScroller {
     }
 
     const atEdgeOfVerticalOnlyScroller =
-      this.#scrollerType === "vertical-only" && (atTopEdge || atBottomEdge);
+      this.#scrollableAxes === "vertical-only" && (atTopEdge || atBottomEdge);
 
     const atEdgeOfHorizontalOnlyScroller =
-      this.#scrollerType === "horizontal-only" && (atLeftEdge || atRightEdge);
+      this.#scrollableAxes === "horizontal-only" && (atLeftEdge || atRightEdge);
 
     const atEdgeOfOneDimensionalScroller =
       atEdgeOfVerticalOnlyScroller || atEdgeOfHorizontalOnlyScroller;
@@ -1270,7 +1232,7 @@ class MomentumScroller {
       (atLeftEdge || atRightEdge) && !this.#scrollInitialVelocityY;
 
     const atVertexOfTwoDimensionalScroller =
-      this.#scrollerType === "horizontal-and-vertical" &&
+      this.#scrollableAxes === "horizontal-and-vertical" &&
       (atTopLeftVertex ||
         atTopRightVertex ||
         atBottomRightVertex ||
@@ -1311,21 +1273,19 @@ class MomentumScroller {
   #stopScroll(extraData = {}) {
     const eventData = this.#getEventData(extraData);
 
-    if (this.#scrollResolve) this.#scrollResolve(eventData);
+    this.#scrollResolve(eventData);
 
-    const momentumScrollerScrollStopEvent = new CustomEvent(
-      "momentumScrollerScrollStop",
-      {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerScrollStop", {
         bubbles: true,
         cancelable: true,
         detail: eventData,
-      }
+      })
     );
-    this.#scrollContainer.dispatchEvent(momentumScrollerScrollStopEvent);
 
     this.#previousScrollStopTimestamp = Date.now();
     cancelAnimationFrame(this.#scrollRafId);
-    this.#isScrolling = false;
+    this.#scrolling = false;
     this.#scrollDeceleration = null;
     this.#scrollDuration = null;
     this.#scrollElapsedTime = null;
@@ -1379,8 +1339,8 @@ class MomentumScroller {
   #bounceTimeAtMaximumDisplacment;
   #bounceXFallingOnly;
   #bounceYFallingOnly;
-  #bounceXIsBouncing;
-  #bounceYIsBouncing;
+  #bounceXBouncing;
+  #bounceYBouncing;
 
   #getCurrentPositionX() {
     return getTransformProperties(this.#scrollContainer).translateX;
@@ -1437,7 +1397,7 @@ class MomentumScroller {
             -1 * this.#bounceDamping * this.#bounceTimeAtMaximumDisplacment
           ));
 
-      if (!this.#bounceXIsBouncing) {
+      if (!this.#bounceXBouncing) {
         if (this.#bounceXFallingOnly) {
           initialVelocityX = getInitialVelocity(currentPositionX);
           this.#bounceInitialVelocityX = initialVelocityX / Math.E;
@@ -1447,10 +1407,10 @@ class MomentumScroller {
           this.#bounceInitialVelocityX = initialVelocityX * 0.1;
           this.#bounceInitialPositionX = 0;
         }
-        if (this.#bounceInitialVelocityX) this.#bounceXIsBouncing = true;
+        if (this.#bounceInitialVelocityX) this.#bounceXBouncing = true;
       }
 
-      if (!this.#bounceYIsBouncing) {
+      if (!this.#bounceYBouncing) {
         if (this.#bounceYFallingOnly) {
           initialVelocityY = getInitialVelocity(currentPositionY);
           this.#bounceInitialVelocityY = initialVelocityY / Math.E;
@@ -1460,12 +1420,12 @@ class MomentumScroller {
           this.#bounceInitialVelocityY = initialVelocityY * 0.1;
           this.#bounceInitialPositionY = 0;
         }
-        if (this.#bounceInitialVelocityY) this.#bounceYIsBouncing = true;
+        if (this.#bounceInitialVelocityY) this.#bounceYBouncing = true;
       }
 
       if (
-        this.#bounceXIsBouncing &&
-        this.#bounceYIsBouncing &&
+        this.#bounceXBouncing &&
+        this.#bounceYBouncing &&
         !(this.#bounceXFallingOnly && this.#bounceYFallingOnly)
       )
         return;
@@ -1480,31 +1440,23 @@ class MomentumScroller {
       });
     }
 
-    if (this.#bounceInitialVelocityX && !this.#bounceStartTimeX) {
-      this.#bounceStartTimeX = currentTime;
-
-      const momentumScrollerBounceStartEvent = new CustomEvent(
-        "momentumScrollerBounceStart",
-        {
+    const dispatchMomentumScrollerBounceEvent = (detail) => {
+      this.#scrollContainer.dispatchEvent(
+        new CustomEvent("momentumScrollerBounceStart", {
           bubbles: true,
           cancelable: true,
-          detail: { axis: "x" },
-        }
+          detail,
+        })
       );
-      this.#scrollContainer.dispatchEvent(momentumScrollerBounceStartEvent);
+    };
+
+    if (this.#bounceInitialVelocityX && !this.#bounceStartTimeX) {
+      this.#bounceStartTimeX = currentTime;
+      dispatchMomentumScrollerBounceEvent({ axis: "x" });
     }
     if (this.#bounceInitialVelocityY && !this.#bounceStartTimeY) {
       this.#bounceStartTimeY = currentTime;
-
-      const momentumScrollerBounceStartEvent = new CustomEvent(
-        "momentumScrollerBounceStart",
-        {
-          bubbles: true,
-          cancelable: true,
-          detail: { axis: "y" },
-        }
-      );
-      this.#scrollContainer.dispatchEvent(momentumScrollerBounceStartEvent);
+      dispatchMomentumScrollerBounceEvent({ axis: "y" });
     }
 
     if (this.#bounceStartTimeX)
@@ -1532,19 +1484,19 @@ class MomentumScroller {
       `translateX(${translateX}px) translateY(${translateY}px)`
     );
 
-    const getIsAtEquilibrium = (isBouncing, elapsedTime, translate) =>
-      !isBouncing ||
-      (isBouncing &&
+    const getIsAtEquilibrium = (scrolling, elapsedTime, translate) =>
+      !scrolling ||
+      (scrolling &&
         elapsedTime > this.#bounceTimeAtMaximumDisplacment &&
         Math.abs(translate) < 1 / (devicePixelRatio * 10));
 
     const xIsAtEquilibrium = getIsAtEquilibrium(
-      this.#bounceXIsBouncing,
+      this.#bounceXBouncing,
       this.#bounceElapsedTimeX,
       translateX
     );
     const yIsAtEquilibrium = getIsAtEquilibrium(
-      this.#bounceYIsBouncing,
+      this.#bounceYBouncing,
       this.#bounceElapsedTimeY,
       translateY
     );
@@ -1566,24 +1518,22 @@ class MomentumScroller {
   }
 
   #stopBounce(extraData = {}) {
-    if (this.#bounceResolve) this.#bounceResolve(extraData);
+    this.#bounceResolve(extraData);
 
-    const momentumScrollerBounceStopEvent = new CustomEvent(
-      "momentumScrollerBounceStop",
-      {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerBounceStop", {
         bubbles: true,
         cancelable: true,
         detail: extraData,
-      }
+      })
     );
-    this.#scrollContainer.dispatchEvent(momentumScrollerBounceStopEvent);
 
     cancelAnimationFrame(this.#bounceRafId);
     this.#bounceDamping = null;
     this.#bounceInitialVelocityX = 0;
     this.#bounceInitialVelocityY = 0;
-    this.#bounceXIsBouncing = false;
-    this.#bounceYIsBouncing = false;
+    this.#bounceXBouncing = false;
+    this.#bounceYBouncing = false;
     this.#bounceStartTimeX = null;
     this.#bounceStartTimeY = null;
     this.#bounceElapsedTimeX = null;
