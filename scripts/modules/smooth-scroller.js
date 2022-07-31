@@ -1,7 +1,7 @@
 import { getBrowserHeuristics, validateArgument } from "./utilities.js";
 
 const browserHeuristics = getBrowserHeuristics();
-const scrollerCreationKey = Symbol("scrollerCreationKey");
+const smoothScrollerKey = Symbol("smoothScrollerKey");
 
 class SmoothScroller {
   static #scrollerMap = new Map();
@@ -39,7 +39,7 @@ class SmoothScroller {
         "A SmoothScroller instance for this scrollContainer already exists"
       );
 
-    const scroller = new this(scrollContainer, scrollerCreationKey);
+    const scroller = new this(scrollContainer, smoothScrollerKey);
 
     this.#scrollerMap.set(scrollContainer, scroller);
 
@@ -58,7 +58,7 @@ class SmoothScroller {
 
   constructor(scrollContainer, key) {
     validateArgument("key", key, {
-      allowedValues: [scrollerCreationKey],
+      allowedValues: [smoothScrollerKey],
       customErrorMessage:
         "Please use the SmoothScroller.scroll static method to scroll or the SmoothScroller.createScroller static method to create scrollers",
     });
@@ -67,53 +67,22 @@ class SmoothScroller {
 
     this.#scrollContainer.classList.add("smooth-scroller");
 
-    this.#scrollContainer.addEventListener("pointerdown", (event) => {
-      event.target.setPointerCapture(event.pointerId);
-      if (this.#stopScrollingOnPointerDown && this.#scrollResolve)
+    this.#scrollContainer.addEventListener("pointerdown", () => {
+      if (this.#scrollResolve && this.#stopScrollingOnPointerDown)
         this.#stopScroll({
           interruptedBy: "Pointer down on scroll container",
         });
-
-      const smoothScrollerPointerDownEvent = new CustomEvent(
-        "smoothScrollerPointerDown",
-        {
-          bubbles: true,
-          cancelable: true,
-          detail: this.#getEventData(),
-        }
-      );
-      this.#scrollContainer.dispatchEvent(smoothScrollerPointerDownEvent);
-    });
-
-    this.#scrollContainer.addEventListener("pointerup", () => {
-      const smoothScrollerPointerUpEvent = new CustomEvent(
-        "smoothScrollerPointerUp",
-        {
-          bubbles: true,
-          cancelable: true,
-          detail: this.#getEventData(),
-        }
-      );
-      this.#scrollContainer.dispatchEvent(smoothScrollerPointerUpEvent);
-    });
-
-    this.#scrollContainer.addEventListener("pointercancel", () => {
-      const smoothScrollerPointerUpEvent = new CustomEvent(
-        "smoothScrollerPointerUp",
-        {
-          bubbles: true,
-          cancelable: true,
-          detail: this.#getEventData(),
-        }
-      );
-      this.#scrollContainer.dispatchEvent(smoothScrollerPointerUpEvent);
     });
   }
 
-  #isScrolling = false;
-  get isScrolling() {
-    return this.#isScrolling;
+  getScrollerData() {
+    return {
+      scrollContainer: this.#scrollContainer,
+      scrolling: this.#scrolling,
+    };
   }
+
+  #scrolling = false;
   #cubicBezierSolver;
   #stopScrollingOnPointerDown;
   #scrollDistanceX;
@@ -228,26 +197,24 @@ class SmoothScroller {
 
     if (!this.#scrollStartTime) {
       this.#scrollStartTime = currentTime;
+      this.#scrolling = true;
 
-      const smoothScrollerScrollStartEvent = new CustomEvent(
-        "smoothScrollerScrollStart",
-        {
+      this.#scrollContainer.dispatchEvent(
+        new CustomEvent("smoothScrollerScrollStart", {
           bubbles: true,
           cancelable: true,
           detail: this.#getEventData(),
-        }
+        })
       );
-      this.#scrollContainer.dispatchEvent(smoothScrollerScrollStartEvent);
-
-      this.#isScrolling = true;
     }
 
-    const smoothScrollerScrollEvent = new CustomEvent("smoothScrollerScroll", {
-      bubbles: true,
-      cancelable: true,
-      detail: this.#getEventData(),
-    });
-    this.#scrollContainer.dispatchEvent(smoothScrollerScrollEvent);
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("smoothScrollerScroll", {
+        bubbles: true,
+        cancelable: true,
+        detail: this.#getEventData(),
+      })
+    );
 
     this.#scrollElapsedTime = currentTime - this.#scrollStartTime;
     const elapsedTimeRatio = Math.min(
@@ -293,24 +260,21 @@ class SmoothScroller {
   #stopScroll(extraData = {}) {
     const eventData = this.#getEventData(extraData);
 
-    if (this.#scrollResolve) this.#scrollResolve(eventData);
+    this.#scrollResolve(eventData);
 
-    const smoothScrollerScrollStopEvent = new CustomEvent(
-      "smoothScrollerScrollStop",
-      {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("smoothScrollerScrollStop", {
         bubbles: true,
         cancelable: true,
         detail: eventData,
-      }
+      })
     );
-    this.#scrollContainer.dispatchEvent(smoothScrollerScrollStopEvent);
 
-    if (browserHeuristics.isIOsSafari) {
+    if (browserHeuristics.isIOsSafari)
       this.#scrollContainer.style.removeProperty("overflow");
-    }
 
     cancelAnimationFrame(this.#scrollRafId);
-    this.#isScrolling = false;
+    this.#scrolling = false;
     this.#scrollDistanceX = null;
     this.#scrollDistanceY = null;
     this.#scrollDuration = null;
