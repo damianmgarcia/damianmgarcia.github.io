@@ -1546,7 +1546,7 @@ const insideMainViewport = new IntersectionObserver(
       const incomingVideo = incoming.target;
       const videoGalleryIsScrollingToTheNextVideo = SmoothScroller.getScroller(
         incomingVideo.closest(".video-gallery")
-      )?.isScrolling;
+      )?.getScrollerData().scrolling;
 
       if (
         incomingVideo.paused &&
@@ -1843,10 +1843,11 @@ class InputEventDelegator {
       this.reset();
     } else if (inputState === "canceled") {
       this.#inputDownEvent.target.releasePointerCapture(event.pointerId);
-      const pointerCancelEvent = new PointerEvent("pointercancel", {
-        bubbles: true,
-      });
-      this.#inputDownEvent.target.dispatchEvent(pointerCancelEvent);
+      this.#inputDownEvent.target.dispatchEvent(
+        new PointerEvent("pointercancel", {
+          bubbles: true,
+        })
+      );
 
       this.#handlers.inputUpHandler({
         event,
@@ -2286,13 +2287,12 @@ class InputEventDelegator {
           event.target.setPointerCapture(event.pointerId);
 
           target.addEventListener(
-            "momentumScrollerScrollPausingStop",
+            "momentumScrollerRoute",
             (event) => {
-              if (event.detail.pointerCrossedVerticalThreshold) {
-                const pointerCancelEvent = new PointerEvent("pointercancel");
-                target.dispatchEvent(pointerCancelEvent);
-                inputEventDelegator.forceInputUpHandler(event);
-              }
+              const { routeTarget } = event.detail;
+              if (target === routeTarget) return;
+              target.dispatchEvent(new PointerEvent("pointercancel"));
+              inputEventDelegator.forceInputUpHandler(event);
             },
             {
               signal:
@@ -2392,8 +2392,12 @@ class InputEventDelegator {
           }
 
           target.addEventListener(
-            "momentumScrollerScrollPausingStop",
-            () => inputEventDelegator.forceInputUpHandler(event),
+            "momentumScrollerRoute",
+            (event) => {
+              const { routeTarget } = event.detail;
+              if (target === routeTarget) return;
+              inputEventDelegator.forceInputUpHandler(event);
+            },
             {
               signal:
                 this.pointerMoveReleasePointerCaptureCriteriaAbortController
@@ -2460,8 +2464,12 @@ class InputEventDelegator {
 
           if (target.closest("main") && event.type === "pointerdown") {
             target.addEventListener(
-              "momentumScrollerScrollPausingStop",
-              () => inputEventDelegator.forceInputUpHandler(event),
+              "momentumScrollerRoute",
+              (event) => {
+                const { routeTarget } = event.detail;
+                if (target === routeTarget) return;
+                inputEventDelegator.forceInputUpHandler(event);
+              },
               {
                 signal:
                   this.pointerMoveReleasePointerCaptureCriteriaAbortController
@@ -2840,24 +2848,16 @@ function createTouchAppButton(toggleButtonState) {
     .insertAdjacentElement("afterend", button);
 }
 
-const createMomentumScrollers = (activate) => {
-  MomentumScroller.autoCreateScrollers({ activate })
+const createMomentumScrollers = (autoActivate) => {
+  MomentumScroller.autoCreateScrollers({ autoActivate })
+    .setSelectorsOfElementsScrollerShouldIgnore(["header", ".selector"])
+    .setSelectorsOfClickableElements([".button", ".link-container"])
+    .setSelectorsOfOtherTouchScrollers([".video-gallery"])
     .getAllScrollers()
     .forEach((scroller) =>
       scroller
         .setGrabCursor("var(--kitteh-grab-cursor)")
         .setGrabbingCursor("var(--kitteh-grabbing-cursor)")
-        .setSelectorsOfDescendantsTheScrollerShouldIgnore([
-          "header",
-          ".selector",
-        ])
-        .setSelectorsOfDescendantsThatReactToClicks([
-          ".button",
-          ".link-container",
-        ])
-        .setSelectorsOfDescendantsThatUseHorizontalOnlyTouchScrolling([
-          ".video-gallery",
-        ])
     );
 };
 
