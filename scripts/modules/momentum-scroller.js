@@ -963,7 +963,7 @@ class MomentumScroller {
       scrollInitialVelocityY = getVelocity("y", endPositionY);
     }
 
-    this.scroll({
+    this.#scroll({
       scrollInitialVelocityX,
       scrollInitialVelocityY,
     });
@@ -996,7 +996,7 @@ class MomentumScroller {
   #scrollStartTime;
   #scrollVelocityHypotenuse;
 
-  scroll({
+  #scroll({
     scrollInitialVelocityX = 0,
     scrollInitialVelocityY = 0,
     currentTime = NaN,
@@ -1128,7 +1128,7 @@ class MomentumScroller {
       return new Promise((resolve) => {
         this.#scrollResolve = resolve;
         this.#scrollRafId = requestAnimationFrame((currentTime) => {
-          this.scroll({
+          this.#scroll({
             currentTime,
           });
         });
@@ -1249,7 +1249,7 @@ class MomentumScroller {
       !atVertexOfTwoDimensionalScroller
     ) {
       this.#scrollRafId = requestAnimationFrame((currentTime) => {
-        this.scroll({
+        this.#scroll({
           currentTime,
         });
       });
