@@ -534,8 +534,8 @@ class MomentumScroller {
   getScrollerData() {
     return {
       active: this.#active,
-      scrollContainer: this.#scrollContainer,
       scrollableAxes: this.#getUpdatedScrollableAxes(),
+      scrollContainer: this.#scrollContainer,
       scrolling: this.#scrolling,
     };
   }
@@ -972,9 +972,6 @@ class MomentumScroller {
   }
 
   #scrolling = false;
-  get scrolling() {
-    return this.#scrolling;
-  }
   #previousScrollDirectionX;
   #previousScrollDirectionY;
   #previousScrollDuration;
