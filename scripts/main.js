@@ -3917,10 +3917,3 @@ document.addEventListener("keydown", (event) => {
     }
   }
 });
-
-[
-  "momentumScrollerBounceStart",
-  "momentumScrollerBounceStop",
-].forEach((eventType) =>
-  document.addEventListener(eventType, (event) => console.log(event))
-);
