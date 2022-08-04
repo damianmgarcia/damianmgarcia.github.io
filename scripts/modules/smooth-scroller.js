@@ -21,11 +21,6 @@ class SmoothScroller {
         allowedPrototypes: [Element],
       });
 
-      if (this.#scrollerMap.has(scrollContainer))
-        throw new Error(
-          "A SmoothScroller instance for this scrollContainer already exists"
-        );
-
       const scroller = new this(scrollContainer, smoothScrollerKey);
 
       this.#scrollerMap.set(scrollContainer, scroller);
