@@ -82,18 +82,20 @@ class SmoothScroller {
     };
   }
 
-  #scrolling = false;
   #cubicBezierSolver;
+  #scrolling = false;
   #stopScrollingOnPointerDown;
-  #scrollDistanceX;
-  #scrollDistanceY;
-  #scrollDuration;
-  #scrollElapsedTime;
+  #scrollDistanceX = NaN;
+  #scrollDistanceY = NaN;
+  #scrollDuration = NaN;
+  #scrollElapsedTime = NaN;
+  #scrollEndingPointX = NaN;
+  #scrollEndingPointY = NaN;
   #scrollRafId;
   #scrollResolve;
-  #scrollStartingPointX;
-  #scrollStartingPointY;
-  #scrollStartTime;
+  #scrollStartingPointX = NaN;
+  #scrollStartingPointY = NaN;
+  #scrollStartTime = NaN;
 
   async scroll({
     x = this.#scrollContainer.scrollLeft,
@@ -203,7 +205,7 @@ class SmoothScroller {
         new CustomEvent("smoothScrollerScrollStart", {
           bubbles: true,
           cancelable: true,
-          detail: this.#getEventData(),
+          detail: this.#getScrollEventData(),
         })
       );
     }
@@ -212,7 +214,7 @@ class SmoothScroller {
       new CustomEvent("smoothScrollerScroll", {
         bubbles: true,
         cancelable: true,
-        detail: this.#getEventData(),
+        detail: this.#getScrollEventData(),
       })
     );
 
@@ -246,6 +248,9 @@ class SmoothScroller {
       this.#scrollContainer.scrollTop = nextScrollTop;
     }
 
+    this.#scrollEndingPointX = this.#scrollContainer.scrollLeft;
+    this.#scrollEndingPointY = this.#scrollContainer.scrollTop;
+
     if (elapsedTimeRatio < 1) {
       this.#scrollRafId = requestAnimationFrame((currentTime) => {
         this.scroll({
@@ -258,7 +263,7 @@ class SmoothScroller {
   }
 
   #stopScroll(extraData = {}) {
-    const eventData = this.#getEventData(extraData);
+    const eventData = this.#getScrollEventData(extraData);
 
     this.#scrollResolve(eventData);
 
@@ -275,32 +280,30 @@ class SmoothScroller {
 
     cancelAnimationFrame(this.#scrollRafId);
     this.#scrolling = false;
-    this.#scrollDistanceX = null;
-    this.#scrollDistanceY = null;
-    this.#scrollDuration = null;
-    this.#scrollElapsedTime = null;
+    this.#scrollDistanceX = NaN;
+    this.#scrollDistanceY = NaN;
+    this.#scrollDuration = NaN;
+    this.#scrollElapsedTime = NaN;
+    this.#scrollEndingPointX = NaN;
+    this.#scrollEndingPointY = NaN;
     this.#scrollResolve = null;
-    this.#scrollStartingPointX = null;
-    this.#scrollStartingPointY = null;
-    this.#scrollStartTime = null;
+    this.#scrollStartingPointX = NaN;
+    this.#scrollStartingPointY = NaN;
+    this.#scrollStartTime = NaN;
   }
 
-  #getEventData(extraData) {
+  #getScrollEventData(extraData) {
     const eventData = {
-      interruptedBy: null,
+      scrollContainer: this.#scrollContainer,
       startPoint: [this.#scrollStartingPointX, this.#scrollStartingPointY],
-      endPoint: [
-        this.#scrollContainer.scrollLeft,
-        this.#scrollContainer.scrollTop,
-      ],
+      endPoint: [this.#scrollEndingPointX, this.#scrollEndingPointY],
       distance: Math.hypot(
-        Math.abs(this.#scrollStartingPointX - this.#scrollContainer.scrollLeft),
-        Math.abs(this.#scrollStartingPointY - this.#scrollContainer.scrollTop)
+        Math.abs(this.#scrollStartingPointX - this.#scrollEndingPointX),
+        Math.abs(this.#scrollStartingPointY - this.#scrollEndingPointY)
       ),
       duration: this.#scrollDuration,
       elapsedTime: this.#scrollElapsedTime,
-      scrollContainer: this.#scrollContainer,
-      smoothScroller: this,
+      interruptedBy: null,
     };
 
     if (extraData && typeof extraData === "object")
