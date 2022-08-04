@@ -512,34 +512,6 @@ document.addEventListener("momentumScrollerDeactivate", (event) => {
   }
 });
 
-document.addEventListener("momentumScrollerPointerDown", (event) => {
-  const scrollContainer = event.detail.scrollContainer;
-  if (
-    scrollContainer ==
-    document.querySelector("#momentum-scroller-demo-container")
-  ) {
-    enableOrDisableDemoMomentumScrollerSelectors("disable");
-    const dataLabels = scrollContainer
-      .closest(".demo-container")
-      .querySelectorAll("[data-label]");
-    dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
-  }
-});
-
-document.addEventListener("momentumScrollerPointerUp", (event) => {
-  const scrollContainer = event.detail.scrollContainer;
-  if (
-    scrollContainer ==
-    document.querySelector("#momentum-scroller-demo-container")
-  ) {
-    enableOrDisableDemoMomentumScrollerSelectors("enable");
-    const dataLabels = scrollContainer
-      .closest(".demo-container")
-      .querySelectorAll("[data-label]");
-    dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
-  }
-});
-
 document.addEventListener("momentumScrollerScrollStart", (event) => {
   const scrollContainer = event.detail.scrollContainer;
   if (
@@ -2848,8 +2820,8 @@ function createTouchAppButton(toggleButtonState) {
     .insertAdjacentElement("afterend", button);
 }
 
-const createMomentumScrollers = (autoActivate) => {
-  MomentumScroller.autoCreateScrollers({ autoActivate })
+const createMomentumScrollers = ({ activateImmediately = false } = {}) => {
+  MomentumScroller.autoCreateScrollers({ activateImmediately })
     .setSelectorsOfElementsScrollerShouldIgnore(["header", ".selector"])
     .setSelectorsOfClickableElements([".button", ".link-container"])
     .setSelectorsOfOtherTouchScrollers([".video-gallery"])
@@ -2874,14 +2846,33 @@ if (
     document.querySelector("#touch-app-button"),
     { duration: 0 }
   );
-  createMomentumScrollers(true);
+  createMomentumScrollers({ activateImmediately: true });
 } else if (
   !deviceHeuristics.isTouchScreen &&
   momentumScrollerPreference === "off"
 ) {
   createTouchAppButton("off");
-  createMomentumScrollers(false);
+  createMomentumScrollers();
 }
+
+const momentumScrollerDemoContainer = document.querySelector(
+  "#momentum-scroller-demo-container"
+);
+momentumScrollerDemoContainer.addEventListener("pointerdown", () => {
+  enableOrDisableDemoMomentumScrollerSelectors("disable");
+  const dataLabels = momentumScrollerDemoContainer
+    .closest(".demo-container")
+    .querySelectorAll("[data-label]");
+  dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
+});
+
+momentumScrollerDemoContainer.addEventListener("pointerup", () => {
+  enableOrDisableDemoMomentumScrollerSelectors("enable");
+  const dataLabels = momentumScrollerDemoContainer
+    .closest(".demo-container")
+    .querySelectorAll("[data-label]");
+  dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
+});
 
 document.addEventListener("smoothScrollerScroll", (event) => {
   if (
@@ -3926,3 +3917,10 @@ document.addEventListener("keydown", (event) => {
     }
   }
 });
+
+[
+  "momentumScrollerBounceStart",
+  "momentumScrollerBounceStop",
+].forEach((eventType) =>
+  document.addEventListener(eventType, (event) => console.log(event))
+);
