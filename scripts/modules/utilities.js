@@ -469,7 +469,7 @@ export function getRandomNumber({
   return randomNumber;
 }
 
-export function getTransformProperties(element) {
+export function getComputedTransformProperties(element) {
   validateArgument("element", element, {
     allowedPrototypes: [Element],
   });
