@@ -579,21 +579,21 @@ export class ScrollContainerTools {
 
   static getScrollableAxes(
     element,
-    { ignoreElementsWithOverflowHidden = true } = {}
+    { considerOverflowHiddenAxesNonScrollable = true } = {}
   ) {
     validateArgument("element", element, {
       allowedPrototypes: [Element],
     });
     validateArgument(
-      "ignoreElementsWithOverflowHidden",
-      ignoreElementsWithOverflowHidden,
+      "considerOverflowHiddenAxesNonScrollable",
+      considerOverflowHiddenAxesNonScrollable,
       {
         allowedTypes: ["boolean"],
       }
     );
 
     const allowedOverflowValues = ["auto", "overlay", "scroll"];
-    if (!ignoreElementsWithOverflowHidden) allowedOverflowValues.push("hidden");
+    if (!considerOverflowHiddenAxesNonScrollable) allowedOverflowValues.push("hidden");
     const computedStyle = getComputedStyle(element);
     const overflowX = computedStyle.overflowX;
     const overflowY = computedStyle.overflowY;
