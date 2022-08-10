@@ -748,6 +748,14 @@ class MomentumScroller {
   #pointerDownHandler(event) {
     if (!this.#active) return;
 
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerPointerHandlingStart", {
+        bubbles: true,
+        cancelable: true,
+        detail: this.#getScrollEventData(),
+      })
+    );
+
     this.#isCurrentlyHandlingPointer = true;
     this.#pointerId = event.pointerId;
     this.#scrollContainer.setPointerCapture(event.pointerId);
@@ -881,6 +889,14 @@ class MomentumScroller {
   }
 
   #undoPointerDownChanges() {
+    this.#scrollContainer.dispatchEvent(
+      new CustomEvent("momentumScrollerPointerHandlingStop", {
+        bubbles: true,
+        cancelable: true,
+        detail: this.#getScrollEventData(),
+      })
+    );
+
     this.#pointerMoveUpCancelAbortController.abort();
 
     if (this.#pointerId)

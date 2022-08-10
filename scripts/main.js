@@ -2858,21 +2858,27 @@ if (
 const momentumScrollerDemoContainer = document.querySelector(
   "#momentum-scroller-demo-container"
 );
-momentumScrollerDemoContainer.addEventListener("pointerdown", () => {
-  enableOrDisableDemoMomentumScrollerSelectors("disable");
-  const dataLabels = momentumScrollerDemoContainer
-    .closest(".demo-container")
-    .querySelectorAll("[data-label]");
-  dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
-});
+momentumScrollerDemoContainer.addEventListener(
+  "momentumScrollerPointerHandlingStart",
+  () => {
+    enableOrDisableDemoMomentumScrollerSelectors("disable");
+    const dataLabels = momentumScrollerDemoContainer
+      .closest(".demo-container")
+      .querySelectorAll("[data-label]");
+    dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
+  }
+);
 
-momentumScrollerDemoContainer.addEventListener("pointerup", () => {
-  enableOrDisableDemoMomentumScrollerSelectors("enable");
-  const dataLabels = momentumScrollerDemoContainer
-    .closest(".demo-container")
-    .querySelectorAll("[data-label]");
-  dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
-});
+momentumScrollerDemoContainer.addEventListener(
+  "momentumScrollerPointerHandlingStop",
+  () => {
+    enableOrDisableDemoMomentumScrollerSelectors("enable");
+    const dataLabels = momentumScrollerDemoContainer
+      .closest(".demo-container")
+      .querySelectorAll("[data-label]");
+    dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
+  }
+);
 
 document.addEventListener("smoothScrollerScroll", (event) => {
   if (
