@@ -652,17 +652,6 @@ export class ScrollContainerTools {
       documentRootExceptionY ||
       (yHasScrollableOverflow && allowedOverflowValues.includes(yAxisOverflow));
 
-    if (element === document.querySelector("main")) {
-      console.log({
-        xAxisIsScrollable,
-        xHasScrollableOverflow,
-        xAxisOverflow,
-        yAxisIsScrollable,
-        yHasScrollableOverflow,
-        yAxisOverflow,
-      });
-    }
-
     return {
       xAxisIsScrollable,
       xHasScrollableOverflow,
