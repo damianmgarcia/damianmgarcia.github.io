@@ -354,19 +354,15 @@ const kittehAppointerAndThemer = {
 
     this.appointedKittehElement.style.setProperty("visibility", "visible");
 
-    document
-      .querySelector(":root")
-      .style.setProperty(
-        "--kitteh-grab-cursor",
-        `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-      );
+    document.documentElement.style.setProperty(
+      "--kitteh-grab-cursor",
+      `url(${getCursorDataUri("grab")}) 16 9.6, grab`
+    );
 
-    document
-      .querySelector(":root")
-      .style.setProperty(
-        "--kitteh-grabbing-cursor",
-        `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-      );
+    document.documentElement.style.setProperty(
+      "--kitteh-grabbing-cursor",
+      `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
+    );
 
     if (this.onChangeKitteh) this.onChangeKitteh();
   },
@@ -569,19 +565,15 @@ document.addEventListener("momentumScrollerScrollStop", (event) => {
 });
 
 lightDarkAppearanceSwitcher.updateOnApplyAppearanceHandler(() => {
-  document
-    .querySelector(":root")
-    .style.setProperty(
-      "--kitteh-grab-cursor",
-      `url(${getCursorDataUri("grab")}) 16 9.6, grab`
-    );
+  document.documentElement.style.setProperty(
+    "--kitteh-grab-cursor",
+    `url(${getCursorDataUri("grab")}) 16 9.6, grab`
+  );
 
-  document
-    .querySelector(":root")
-    .style.setProperty(
-      "--kitteh-grabbing-cursor",
-      `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
-    );
+  document.documentElement.style.setProperty(
+    "--kitteh-grabbing-cursor",
+    `url(${getCursorDataUri("grabbing")}) 16 9.6, grabbing`
+  );
 });
 
 async function openingAnimationSequence() {
@@ -1814,7 +1806,9 @@ class InputEventDelegator {
       });
       this.reset();
     } else if (inputState === "canceled") {
-      this.#inputDownEvent.target.releasePointerCapture(event.pointerId);
+      this.#inputDownEvent.target.releasePointerCapture(
+        this.#inputDownEvent.pointerId
+      );
       this.#inputDownEvent.target.dispatchEvent(
         new PointerEvent("pointercancel", {
           bubbles: true,
@@ -2259,10 +2253,10 @@ class InputEventDelegator {
           event.target.setPointerCapture(event.pointerId);
 
           target.addEventListener(
-            "momentumScrollerRoute",
+            "momentumScrollerPointerRoute",
             (event) => {
-              const { routeTarget } = event.detail;
-              if (target === routeTarget) return;
+              const { routeTo } = event.detail;
+              if (target === routeTo) return;
               target.dispatchEvent(new PointerEvent("pointercancel"));
               inputEventDelegator.forceInputUpHandler(event);
             },
@@ -2364,10 +2358,10 @@ class InputEventDelegator {
           }
 
           target.addEventListener(
-            "momentumScrollerRoute",
+            "momentumScrollerPointerRoute",
             (event) => {
-              const { routeTarget } = event.detail;
-              if (target === routeTarget) return;
+              const { routeTo } = event.detail;
+              if (target === routeTo) return;
               inputEventDelegator.forceInputUpHandler(event);
             },
             {
@@ -2436,10 +2430,10 @@ class InputEventDelegator {
 
           if (target.closest("main") && event.type === "pointerdown") {
             target.addEventListener(
-              "momentumScrollerRoute",
+              "momentumScrollerPointerRoute",
               (event) => {
-                const { routeTarget } = event.detail;
-                if (target === routeTarget) return;
+                const { routeTo } = event.detail;
+                if (target === routeTo) return;
                 inputEventDelegator.forceInputUpHandler(event);
               },
               {
@@ -2821,7 +2815,10 @@ function createTouchAppButton(toggleButtonState) {
 }
 
 const createMomentumScrollers = ({ activateImmediately = false } = {}) => {
-  MomentumScroller.autoCreateScrollers({ activateImmediately })
+  MomentumScroller.autoCreateScrollers({
+    activateImmediately,
+    selectorsToIgnore: [":root", "body"],
+  })
     .setSelectorsOfElementsScrollerShouldIgnore(["header", ".selector"])
     .setSelectorsOfClickableElements([".button", ".link-container"])
     .setSelectorsOfOtherTouchScrollers([".video-gallery"])
