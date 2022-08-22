@@ -49,6 +49,22 @@ export function cancelAllElementAnimations(element) {
   }
 }
 
+export function containElement(elementToBeContained, container) {
+  validateArgument("elementToBeContained", elementToBeContained, {
+    allowedPrototypes: [Element],
+  });
+  validateArgument("elementToBeContained", elementToBeContained.parentElement, {
+    allowedPrototypes: [Element],
+    customErrorMessage: "elementToBeContained must have a parent element",
+  });
+  validateArgument("container", container, {
+    allowedPrototypes: [Element],
+  });
+
+  elementToBeContained.insertAdjacentElement("beforebegin", container);
+  container.insertAdjacentElement("afterbegin", elementToBeContained);
+}
+
 export class DateTools {
   static millisecondConversionMap = new Map([
     ["year", 1000 * 60 * 60 * 24 * 30.436875 * 12],
@@ -557,69 +573,103 @@ export class MetaViewportWidthPreserver {
 }
 
 export class ScrollContainerTools {
-  static getEdgeStatus(element) {
+  static getEdgeStatus(element, { cachedPageProgression } = {}) {
     validateArgument("element", element, {
       allowedPrototypes: [Element],
     });
+    validateArgument("cachedPageProgression", cachedPageProgression, {
+      allowedValues: ["left-to-right", "right-to-left"],
+    });
 
-    const atLeftEdge = element.scrollLeft === 0;
-    const atRightEdge =
-      element.scrollWidth - element.scrollLeft - element.clientWidth <= 1;
-    const atTopEdge = element.scrollTop === 0;
-    const atBottomEdge =
+    const pageProgression =
+      cachedPageProgression || this.getPageProgression(element);
+
+    const edgeStatus = {};
+
+    if (pageProgression === "left-to-right") {
+      edgeStatus.atLeftEdge = element.scrollLeft === 0;
+      edgeStatus.atRightEdge =
+        element.scrollWidth - element.scrollLeft - element.clientWidth <= 1;
+    } else if (pageProgression === "right-to-left") {
+      edgeStatus.atLeftEdge =
+        element.scrollWidth + element.scrollLeft - element.clientWidth <= 1;
+      edgeStatus.atRightEdge = element.scrollLeft === 0;
+    }
+
+    edgeStatus.atTopEdge = element.scrollTop === 0;
+    edgeStatus.atBottomEdge =
       element.scrollHeight - element.scrollTop - element.clientHeight <= 1;
 
-    return {
-      atLeftEdge,
-      atRightEdge,
-      atTopEdge,
-      atBottomEdge,
-    };
+    return edgeStatus;
   }
 
-  static getScrollableAxes(
-    element,
-    { considerOverflowHiddenAxesNonScrollable = true } = {}
-  ) {
+  static getPageProgression(element) {
     validateArgument("element", element, {
       allowedPrototypes: [Element],
     });
-    validateArgument(
-      "considerOverflowHiddenAxesNonScrollable",
-      considerOverflowHiddenAxesNonScrollable,
-      {
-        allowedTypes: ["boolean"],
+
+    const { direction, writingMode } = getComputedStyle(element);
+
+    if (writingMode === "horizontal-tb") {
+      if (direction === "ltr") {
+        return "left-to-right";
+      } else if (direction === "rtl") {
+        return "right-to-left";
       }
-    );
+    } else if (writingMode === "vertical-rl" || writingMode === "sideways-rl") {
+      return "right-to-left";
+    } else if (writingMode === "vertical-lr" || writingMode === "sideways-lr") {
+      return "left-to-right";
+    }
+  }
 
-    const allowedOverflowValues = ["auto", "overlay", "scroll"];
-    if (!considerOverflowHiddenAxesNonScrollable) allowedOverflowValues.push("hidden");
+  static getAxisOverflowProperties(element) {
+    validateArgument("element", element, {
+      allowedPrototypes: [Element],
+    });
+
+    const allowedOverflowValues = ["auto", "hidden", "overlay", "scroll"];
     const computedStyle = getComputedStyle(element);
-    const overflowX = computedStyle.overflowX;
-    const overflowY = computedStyle.overflowY;
-    const xHasScrollableArea = element.scrollWidth > element.clientWidth;
-    const yHasScrollableArea = element.scrollHeight > element.clientHeight;
+    const xAxisOverflow = computedStyle.overflowX;
+    const yAxisOverflow = computedStyle.overflowY;
+    const xHasScrollableOverflow = element.scrollWidth > element.clientWidth;
+    const yHasScrollableOverflow = element.scrollHeight > element.clientHeight;
 
-    const isDocumentRoot = element === document.querySelector(":root");
+    const isDocumentRoot = element === document.documentElement;
     const documentRootExceptionX =
       isDocumentRoot &&
-      xHasScrollableArea &&
-      [...allowedOverflowValues, "visible"].includes(overflowX);
+      xHasScrollableOverflow &&
+      [...allowedOverflowValues, "visible"].includes(xAxisOverflow);
     const documentRootExceptionY =
       isDocumentRoot &&
-      yHasScrollableArea &&
-      [...allowedOverflowValues, "visible"].includes(overflowY);
+      yHasScrollableOverflow &&
+      [...allowedOverflowValues, "visible"].includes(yAxisOverflow);
 
     const xAxisIsScrollable =
       documentRootExceptionX ||
-      (xHasScrollableArea && allowedOverflowValues.includes(overflowX));
+      (xHasScrollableOverflow && allowedOverflowValues.includes(xAxisOverflow));
     const yAxisIsScrollable =
       documentRootExceptionY ||
-      (yHasScrollableArea && allowedOverflowValues.includes(overflowY));
+      (yHasScrollableOverflow && allowedOverflowValues.includes(yAxisOverflow));
+
+    if (element === document.querySelector("main")) {
+      console.log({
+        xAxisIsScrollable,
+        xHasScrollableOverflow,
+        xAxisOverflow,
+        yAxisIsScrollable,
+        yHasScrollableOverflow,
+        yAxisOverflow,
+      });
+    }
 
     return {
       xAxisIsScrollable,
+      xHasScrollableOverflow,
+      xAxisOverflow,
       yAxisIsScrollable,
+      yHasScrollableOverflow,
+      yAxisOverflow,
     };
   }
 }
@@ -632,7 +682,7 @@ export function showCaughtErrorsOnScreen() {
       "background: white; color: red; display: grid; font-size: 24px; height: 100vh; left: 0; padding: 5%; place-content: center; position: fixed; top: 0; width: 100vw; z-index: 10000;"
     );
     errorScreen.textContent = event.message;
-    document.querySelector(":root").append(errorScreen);
+    document.documentElement.append(errorScreen);
   });
 }
 
