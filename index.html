@@ -109,7 +109,7 @@
         #onApplyAppearance;
 
         constructor({
-          parentElement = document.querySelector(":root"),
+          parentElement = document.documentElement,
           onApplyAppearance,
         } = {}) {
           if (!(parentElement instanceof Element))
@@ -196,7 +196,7 @@
 
       const metaViewportWidthPreserver = new MetaViewportWidthPreserver(750);
       const lightDarkAppearanceSwitcher = new LightDarkAppearanceSwitcher({
-        parentElement: document.querySelector(":root"),
+        parentElement: document.documentElement,
       });
 
       metaViewportWidthPreserver.updateMetaViewportWidth();
@@ -270,7 +270,7 @@
         height: 100%;
         line-height: 1.4;
         margin: 0;
-        overflow-y: hidden;
+        overflow: hidden;
         padding: 0;
         -webkit-tap-highlight-color: transparent;
         width: 100%;
@@ -327,7 +327,6 @@
         padding: 0;
         transition: background-color 400ms ease 0ms, color 400ms ease 0ms;
         width: 100%;
-        min-width: 750px;
       }
 
       a {
@@ -3611,12 +3610,13 @@
                   event on the scroll container.
                 </div>
                 <div class="paragraph">
-                  Notably, MomentumScroller is a system that works well with
-                  other scrollers and elements that depend on "pointerdown"
-                  events. By default, it works well with commonly used elements
-                  such as anchors, buttons, and text boxes, but it can easily be
-                  customized to work with any element that it needs to share
-                  "pointerdown" events with.
+                  Notably, MomentumScroller is a
+                  <span class="font-light-italic">system</span>. It works well
+                  with other touch-style-scrollers as well as elements that
+                  depend on click events. By default, it works well with
+                  commonly used elements such as anchors, buttons, and text
+                  boxes, but it can easily be customized to work with any
+                  element that it needs to share "pointerdown" events with.
                 </div>
                 <div class="paragraph">
                   For example, there are interactive elements on this site, such
@@ -3624,7 +3624,7 @@
                   momentum scroller and which also need to respond to pointer
                   events. Logic was created to resolve these pointer event
                   conflicts so that the user experience is intuitive. Nested
-                  MomentumScrollers also work perfectly well together.
+                  MomentumScrollers work perfectly well together.
                 </div>
                 <div class="paragraph">
                   The momentum scrolling system is enabled by default on
@@ -3665,13 +3665,12 @@
                         <div class="ripple"></div></div></span></a
                   >. It has its own repository and documentation. Briefly,
                   however, smooth scrolling may be accomplished by calling the
-                  static SmoothScroller.scroll() method or by calling an
-                  instance's scroll() method.
+                  scroll() static method.
                 </div>
                 <div class="paragraph">
                   Below is a demonstration smooth scroller container along with
-                  controls for adjusting the easing, duration, x-position, and
-                  y-position.
+                  controls for adjusting the easing, duration, x-destination,
+                  and y-destination.
                 </div>
                 <div class="paragraph">
                   Although the easing selector only includes five options, the
@@ -3885,6 +3884,19 @@
                   importantly&thinsp;&mdash;&thinsp;does not tell you if the
                   scroll made it to the intended destination (e.g. top: 200 in
                   the above example).
+                  <span class="font-light-italic">Update:</span> There is a
+                  <a
+                    class="link-container"
+                    href="https://wicg.github.io/overscroll-scrollend-events/"
+                    id="link-scrollend-draft"
+                    rel="noreferrer"
+                    target="_blank"
+                    ><span class="link-content"
+                      >draft
+                      <div class="ripple-container">
+                        <div class="ripple"></div></div></span
+                  ></a>
+                  that should fix this problem if it becomes standard.
                 </div>
                 <div class="paragraph">
                   Unlike an instant scroll, a smooth scroll can be interrupted.
@@ -4764,21 +4776,8 @@
                 >, are by Google.
               </div>
               <div class="paragraph">
-                Charm's Jobs is fully compatible with the Blink rendering
-                engine. Compatibility with the Gecko rendering engine is nearly
-                100%, but because
-                <a
-                  class="link-container"
-                  href="https://caniuse.com/css-backdrop-filter"
-                  id="link-gecko-compatibility"
-                  rel="noreferrer"
-                  target="_blank"
-                  ><span class="link-content font-light-italic"
-                    >Gecko does not support CSS backdrop-filter
-                    <div class="ripple-container">
-                      <div class="ripple"></div></div></span></a
-                >, parts of the Sardine theme do not look as intended. Work on
-                WebKit compatibility is ongoing.
+                Charm's Jobs is fully compatible with the Blink and Gecko
+                rendering engines. Work on WebKit compatibility is ongoing.
               </div>
               <div class="list-title">Features</div>
               <div class="list-item">
