@@ -3248,16 +3248,11 @@
                 learning resource.
               </div>
               <div class="paragraph">
-                Fast-forward several months later and I have a resume, a
-                portfolio with two projects, and logos based on my
-                cats&thinsp;&mdash;&thinsp;<span class="font-light-italic"
-                  >and they talk</span
-                >.
+                Several months later, I have a resume, a portfolio with two
+                projects, and cat logos that talk.
               </div>
               <div class="paragraph">
-                The Charm (black cat) and Shelby (brown cat) logos are based on
-                artwork by Charlotte Ma. I drew them with an SVG editing
-                program,
+                The cat logos, which I drew with
                 <a
                   class="link-container"
                   href="https://boxy-svg.com/"
@@ -3268,8 +3263,9 @@
                     >Boxy SVG
                     <div class="ripple-container">
                       <div class="ripple"></div></div></span></a
-                >. All the other SVG artwork, including the seasonal logo
-                artwork, associated animations, and paw cursors, is my own work.
+                >, are based on artwork by Charlotte Ma. All other SVG artwork,
+                including the seasonal logo artwork, associated animations, and
+                paw cursors, is my own work.
               </div>
               <div class="paragraph">
                 The fonts that I use,
@@ -3296,7 +3292,7 @@
                     <div class="ripple-container">
                       <div class="ripple"></div></div></span></a
                 >, are by Steve Matteson and Craig Rozynski, respectively. The
-                icons, except for the sun/moon icon, are
+                icons, except for the sun-moon transition icon, are
                 <a
                   class="link-container"
                   href="https://fonts.google.com/icons"
@@ -3342,17 +3338,34 @@
               <div class="list-title">Features</div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="font-normal-normal"
-                    >Momentum Scrolling System</span
-                  >&thinsp;&mdash;&thinsp;This momentum scrolling system for
-                  non-touch-screen devices simulates the touch-based scrolling
-                  systems found on smartphones and tablets.
+                  <span class="font-normal-normal">MomentaMouse</span
+                  >&thinsp;&mdash;&thinsp;MomentaMouse is a JavaScript module
+                  that enables mouse-users to use touch-style scrolling and
+                  flicking gestures to navigate websites.
                 </div>
                 <div class="paragraph">
-                  This feature is intended to be used by mouse-users since mouse
-                  drivers typically do not include momentum-scrolling features.
-                  It may conflict with trackpads that provide momentum-scrolling
-                  features.
+                  It has a
+                  <a
+                    class="link-container"
+                    href="https://github.com/damianmgarcia/MomentaMouse"
+                    id="link-momentum-scroller-repository"
+                    rel="noreferrer"
+                    target="_blank"
+                    ><span class="link-content"
+                      >repository
+                      <div class="ripple-container">
+                        <div class="ripple"></div></div></span
+                  ></a>
+                  and a
+                  <a
+                    class="link-container"
+                    href=""
+                    id="link-momentum-scroller-demo-page"
+                    ><span class="link-content"
+                      >demo page
+                      <div class="ripple-container">
+                        <div class="ripple"></div></div></span></a
+                  >.
                 </div>
                 <div class="media-container">
                   <div class="video-progress-bars-container">
@@ -3396,63 +3409,32 @@
                     ></video>
                   </div>
                   <div class="caption">
-                    A momentum scrolling system for mouse-users
+                    MomentaMouse: A momentum scrolling system for mouse-users
                   </div>
                 </div>
                 <div class="paragraph">
-                  The way it works is familiar: faster flicks produce more
-                  momentum, resulting in scrolls that travel farther and last
-                  longer. Slower flicks have the opposite effect. Flicking in
-                  the same direction in quick succession leads to momentum
-                  accumulation, i.e. faster scrolling.
+                  <span class="font-light-italic">Momentum:</span> Faster flicks
+                  produce more momentum, resulting in scrolls that travel
+                  farther and last longer. Slower flicks have the opposite
+                  effect. Flicking in the same direction in quick succession
+                  results accumulation of scrolling speed.
                 </div>
                 <div class="paragraph">
-                  When the border of a scroll container is hit by a momentum
-                  scroll, it responds by bouncing. Harder impacts produce larger
-                  bounces.
+                  <span class="font-light-italic">Overscroll:</span> If a user
+                  tries to scroll beyond a border, the scroll container will
+                  stretch in the direction of the pointer while the pointer is
+                  being held down, but will then rebound when the pointer is let
+                  go.
                 </div>
                 <div class="paragraph">
-                  If a user tries to scroll beyond a border, the scroll
-                  container will stretch in the direction of the pointer while
-                  the pointer is being held down, but will then rebound when the
-                  pointer is let go.
+                  <span class="font-light-italic">Bouncing:</span> When the
+                  border of a scroll container is hit by a momentum scroll, the
+                  border will bounce. Harder impacts produce larger bounces.
                 </div>
                 <div class="paragraph">
-                  One-dimensional and two-dimensional scroll containers are
-                  supported and both axes may be scrolled simultaneously.
-                </div>
-                <div class="paragraph">
-                  The system depends on a JavaScript module that I built, called
-                  <a
-                    class="link-container"
-                    href="https://github.com/damianmgarcia/MomentumScroller"
-                    id="link-momentum-scroller-repository"
-                    rel="noreferrer"
-                    target="_blank"
-                    ><span class="link-content"
-                      >MomentumScroller
-                      <div class="ripple-container">
-                        <div class="ripple"></div></div></span></a
-                  >. It has its own repository and documentation. Briefly,
-                  however, instantiation of a MomentumScroller simply requires a
-                  reference to the scroll container. Optionally, you may chain
-                  various setters, either during or after instantiation, to set
-                  custom grab and grabbing cursors, set the deceleration rate,
-                  and more.
-                </div>
-                <div class="paragraph">
-                  After instantiation, pointer flicks on the scroll container
-                  will generate momentum scrolls.
-                </div>
-                <div class="paragraph">
-                  Below is a demonstration of a momentum scroller container
-                  along with controls for adjusting the number of axes, the
-                  deceleration level, and the bounciness level.
-                </div>
-                <div class="paragraph">
-                  Note that this demonstration will be disabled on touch-screen
-                  devices since they provide their own native momentum scrolling
-                  systems.
+                  Below is a demonstration of a MomentaMouse scroller along with
+                  controls for adjusting the number of axes, deceleration, and
+                  bounciness.
                 </div>
                 <div class="paragraph">
                   <span class="font-light-italic">The Yowl</span>, by Charlotte
@@ -3464,9 +3446,9 @@
                   data-disabled-demo="true"
                   id="demo-container-for-momentum-scroller"
                 >
-                  <div class="demo-container-title">Momentum Scroller Demo</div>
+                  <div class="demo-container-title">MomentaMouse Demo</div>
                   <div class="demo-container-alert" data-active-alert="true">
-                    Momentum scrolling is disabled
+                    MomentaMouse is disabled
                   </div>
                   <div class="demo-container-contents">
                     <div class="space-around-container">
@@ -3610,7 +3592,7 @@
                   event on the scroll container.
                 </div>
                 <div class="paragraph">
-                  Notably, MomentumScroller is a
+                  Notably, MomentaMouse is a
                   <span class="font-light-italic">system</span>. It works well
                   with other touch-style-scrollers as well as elements that
                   depend on click events. By default, it works well with
@@ -3621,38 +3603,24 @@
                 <div class="paragraph">
                   For example, there are interactive elements on this site, such
                   as links and video galleries, that are descendants of the main
-                  momentum scroller and which also need to respond to pointer
-                  events. Logic was created to resolve these pointer event
-                  conflicts so that the user experience is intuitive. Nested
-                  MomentumScrollers work perfectly well together.
-                </div>
-                <div class="paragraph">
-                  The momentum scrolling system is enabled by default on
-                  non-touch-screen devices, but it may be disabled if desired.
-                  The preferred setting is remembered for future visits.
+                  MomentaMouse scroller and which also need to respond to
+                  pointer events. These pointer event conflicts are resolved
+                  using threshold tests with the goal of creating an intuitive
+                  experience for the user. Nested MomentaMouse Scrollers work
+                  perfectly well together.
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <span class="font-normal-normal"
-                    >Advanced Smooth Scrolling</span
-                  >&thinsp;&mdash;&thinsp;This smooth scrolling implementation
-                  provides advanced, easy-to-use smooth scrolling functionality.
-                  It allows you to customize smooth scrolling properties, such
-                  as duration and easing. Additionally, it includes advanced
-                  features such as scroll events and promises.
+                  <span class="font-normal-normal">SmoothScroller</span
+                  >&thinsp;&mdash;&thinsp;SmoothScroller provides advanced,
+                  easy-to-use smooth scrolling functionality. It allows you to
+                  customize smooth scrolling properties, such as duration and
+                  easing. Additionally, it includes advanced features such as
+                  scroll events and promises.
                 </div>
                 <div class="paragraph">
-                  Every smooth scroll on this site is accomplished with this
-                  implementation.
-                </div>
-                <div class="paragraph">
-                  One-dimensional and two-dimensional scroll containers are
-                  supported and both axes may be scrolled simultaneously.
-                </div>
-                <div class="paragraph">
-                  This implementation depends on a JavaScript module that I
-                  built, called
+                  It has a
                   <a
                     class="link-container"
                     href="https://github.com/damianmgarcia/SmoothScroller"
@@ -3660,22 +3628,24 @@
                     rel="noreferrer"
                     target="_blank"
                     ><span class="link-content"
-                      >SmoothScroller
+                      >repository
                       <div class="ripple-container">
                         <div class="ripple"></div></div></span></a
-                  >. It has its own repository and documentation. Briefly,
-                  however, smooth scrolling may be accomplished by calling the
-                  scroll() static method.
+                  >.
                 </div>
                 <div class="paragraph">
-                  Below is a demonstration smooth scroller container along with
-                  controls for adjusting the easing, duration, x-destination,
-                  and y-destination.
+                  Every smooth scroll on this site is accomplished with this
+                  implementation.
                 </div>
                 <div class="paragraph">
-                  Although the easing selector only includes five options, the
-                  scroll method's easing argument accepts any valid set of
-                  control points (e.g. [ P<sub>1</sub>x, P<sub>1</sub>y,
+                  Below is a demonstration of SmoothScroller along with controls
+                  for adjusting the easing, duration, x-destination, and
+                  y-destination.
+                </div>
+                <div class="paragraph">
+                  Although the easing selector in this demo only includes five
+                  options, the scroll method's easing argument accepts any valid
+                  set of control points (e.g. [ P<sub>1</sub>x, P<sub>1</sub>y,
                   P<sub>2</sub>x, P<sub>2</sub>y ]), along with the standard
                   keywords you may use when writing CSS transitions and
                   animations (e.g. "ease", "ease-in", "linear", etc.).
@@ -3685,10 +3655,9 @@
                   scroll has completed.
                 </div>
                 <div class="paragraph">
-                  Note that if momentum scrolling is enabled, this smooth
-                  scroller container will simultaneously function as a momentum
-                  scroller container, allowing you to test the interactions
-                  between the different scroller types.
+                  Note that if MomentaMouse is enabled, this SmoothScroller demo
+                  will simultaneously function as a MomentaMouse demo, allowing
+                  you to test their interactions.
                 </div>
                 <div class="paragraph">
                   The image used as the background in this demonstration is
@@ -3900,24 +3869,10 @@
                 </div>
                 <div class="paragraph">
                   Unlike an instant scroll, a smooth scroll can be interrupted.
-                  You cannot assume that the scroll made it. Some parts of my
-                  code depend on knowing the outcome of a smooth scroll, and
-                  this information is provided by the promise that is returned.
-                </div>
-                <div class="paragraph">
-                  <a
-                    class="link-container"
-                    href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver"
-                    id="link-intersection-observer-mdn"
-                    rel="noreferrer"
-                    target="_blank"
-                    ><span class="link-content"
-                      >Intersection Observers
-                      <div class="ripple-container">
-                        <div class="ripple"></div></div></span></a
-                  >, which I use on this site, may also work to solve this
-                  problem, but I prefer that the solution be built into the
-                  scrolling method itself.
+                  Your code cannot assume that a smooth scroll actually made it
+                  to the intended destination. Some parts of my code depend on
+                  knowing the outcome of a smooth scroll, and this information
+                  is provided by the promise that is returned.
                 </div>
               </div>
               <div class="list-item">
@@ -3943,8 +3898,8 @@
               <div class="list-item">
                 <div class="paragraph">
                   <span class="font-normal-normal">Original Logos</span
-                  >&thinsp;&mdash;&thinsp;Based on my two kittehs, Charm and
-                  Shelby, these original logos blink and talk when you tap them.
+                  >&thinsp;&mdash;&thinsp;Based on artwork by Charlotte Ma,
+                  these original logos blink and talk when you tap them.
                   Festive, seasonal logo themes automatically appear during
                   certain times of the year.
                 </div>
@@ -4364,9 +4319,9 @@
                   </div>
                 </div>
                 <div class="paragraph">
-                  I also created SVGs in the shape of Charm's and Shelby's paws
-                  that serve as the grab and grabbing cursors while the momentum
-                  scrolling system and selectors are in use.
+                  I also created SVGs in the shape of cat paws that serve as the
+                  grab and grabbing cursors while the momentum scrolling system
+                  and selectors are in use.
                 </div>
                 <div id="charm-cursor-container">
                   <div id="charm-cursor"></div>
@@ -4381,8 +4336,8 @@
                   <span class="font-normal-normal"
                     >Original Opening Animation Sequence</span
                   >&thinsp;&mdash;&thinsp;The logo, slogan, section scroller,
-                  and other elements have been carefully choreographed to create
-                  a delightful opening animation sequence.
+                  and other elements have been choreographed to create a
+                  delightful opening animation sequence.
                 </div>
                 <div class="media-container">
                   <div class="video-progress-bars-container">
@@ -4444,16 +4399,16 @@
                 </div>
                 <div class="paragraph">
                   Messages are typed, character-by-character, inside a bubble
-                  below the Charm or Shelby logo. If an audio source is
-                  provided, it will play as the message is typed. The syntax is:
+                  below the logo. If an audio source is provided, it will play
+                  as the message is typed. The syntax is:
                 </div>
                 <code>TypeAndTalk.submitMessage(message, options)</code>
                 <div class="paragraph">
                   The message parameter expects a string, which may also include
                   commands within the string. The {blink} and {longblink}
-                  commands make the Charm or Shelby logo do a normal or long
-                  blink, respectively. The {0&ndash;5000} command delays typing
-                  for the next 0&ndash;5000 milliseconds.
+                  commands make the logo do a normal or long blink,
+                  respectively. The {0&ndash;5000} command delays typing for the
+                  next 0&ndash;5000 milliseconds.
                 </div>
                 <div class="paragraph">
                   The options parameter, if supplied, allows setting the
@@ -5297,19 +5252,19 @@
                 <div class="paragraph">
                   <a
                     class="link-container"
-                    href="https://github.com/damianmgarcia/MomentumScroller"
+                    href="https://github.com/damianmgarcia/MomentaMouse"
                     id="link-momentum-scroller-repository-experience"
                     rel="noreferrer"
                     target="_blank"
                   >
                     <span class="link-content"
-                      >MomentumScroller
+                      >MomentaMouse
                       <div class="ripple-container">
                         <div class="ripple"></div>
                       </div> </span></a
-                  >&thinsp;&mdash;&thinsp;JavaScript module that gives
-                  mouse-users the ability to scroll through websites with the
-                  flick of a mouse
+                  >&thinsp;&mdash;&thinsp;JavaScript module that enables
+                  mouse-users to use touch-style scrolling and flicking gestures
+                  to navigate websites
                 </div>
               </div>
               <div class="list-item">
@@ -5927,7 +5882,8 @@
       </article>
       <footer>
         <small
-          >Copyright © <span id="copyright-year"></span> Damian M. Garcia</small
+          >Copyright &copy; <span id="copyright-year"></span> Damian M.
+          Garcia</small
         >
       </footer>
     </main>
