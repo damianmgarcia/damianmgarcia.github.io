@@ -6,11 +6,11 @@ import {
   getBrowserHeuristics,
   getDeviceHeuristics,
   getRandomNumber,
-  isPrimaryInput,
+  InputTools,
   SimpleDate,
   validateArgument,
 } from "./modules/utilities.js";
-import { MomentumScroller } from "./modules/momentum-scroller.js";
+import { MomentaMouse } from "./modules/momenta-mouse.js";
 import { SmoothScroller } from "./modules/smooth-scroller.js";
 
 addEventListener(
@@ -468,12 +468,15 @@ const kittehAppointerAndThemer = {
 kittehAppointerAndThemer.setInitialKitteh();
 kittehAppointerAndThemer.appointKitteh();
 
-document.addEventListener("momentumScrollerActivate", (event) => {
+document.addEventListener("momentaMouseScrollerActivate", (event) => {
   const scrollContainer = event.detail.scrollContainer;
   if (scrollContainer === document.querySelector("main")) {
-    localStorage.setItem("momentumScrollerPreference", "on");
-    document.querySelector("#touch-app-button").dataset.toggleButtonState =
-      "on";
+    const touchAppButton = document.querySelector("#touch-app-button");
+    touchAppButton.dataset.toggleButtonState = "on";
+    const { quickToggleActivation } = event.detail;
+    if (quickToggleActivation)
+      return inputEventDelegator.animationLibrary.ripple(touchAppButton);
+    localStorage.setItem("momentaMouseScrollerPreference", "on");
   } else if (
     scrollContainer ==
     document.querySelector("#momentum-scroller-demo-container")
@@ -484,16 +487,19 @@ document.addEventListener("momentumScrollerActivate", (event) => {
       ".demo-container-alert"
     );
     demoContainerAlert.dataset.activeAlert = "false";
-    enableOrDisableDemoMomentumScrollerSelectors("enable");
+    enableOrDisableDemoMomentaMouseScrollerSelectors("enable");
   }
 });
 
-document.addEventListener("momentumScrollerDeactivate", (event) => {
+document.addEventListener("momentaMouseScrollerDeactivate", (event) => {
   const scrollContainer = event.detail.scrollContainer;
   if (scrollContainer === document.querySelector("main")) {
-    localStorage.setItem("momentumScrollerPreference", "off");
-    document.querySelector("#touch-app-button").dataset.toggleButtonState =
-      "off";
+    const touchAppButton = document.querySelector("#touch-app-button");
+    touchAppButton.dataset.toggleButtonState = "off";
+    const { quickToggleDeactivation } = event.detail;
+    if (quickToggleDeactivation)
+      return inputEventDelegator.animationLibrary.deripple(touchAppButton);
+    localStorage.setItem("momentaMouseScrollerPreference", "off");
   } else if (
     scrollContainer ==
     document.querySelector("#momentum-scroller-demo-container")
@@ -504,21 +510,21 @@ document.addEventListener("momentumScrollerDeactivate", (event) => {
       ".demo-container-alert"
     );
     demoContainerAlert.dataset.activeAlert = "true";
-    enableOrDisableDemoMomentumScrollerSelectors("disable");
+    enableOrDisableDemoMomentaMouseScrollerSelectors("disable");
   }
 });
 
-document.addEventListener("momentumScrollerScrollStart", (event) => {
+document.addEventListener("momentaMouseScrollerScrollStart", (event) => {
   const scrollContainer = event.detail.scrollContainer;
   if (
     scrollContainer ==
     document.querySelector("#momentum-scroller-demo-container")
   ) {
-    enableOrDisableDemoMomentumScrollerSelectors("disable");
+    enableOrDisableDemoMomentaMouseScrollerSelectors("disable");
   }
 });
 
-document.addEventListener("momentumScrollerScrollStop", (event) => {
+document.addEventListener("momentaMouseScrollerScrollStop", (event) => {
   const scrollContainer = event.detail.scrollContainer;
   if (
     scrollContainer ==
@@ -528,15 +534,15 @@ document.addEventListener("momentumScrollerScrollStop", (event) => {
       event.detail.interruptedBy ==
       "Scroll distance is below minimum scrollable distance"
     )
-      return enableOrDisableDemoMomentumScrollerSelectors("enable");
+      return enableOrDisableDemoMomentaMouseScrollerSelectors("enable");
 
     if (
       !(
-        event.detail.interruptedBy === "Momentum scroller deactivation" ||
+        event.detail.interruptedBy === "MomentaMouse scroller deactivation" ||
         event.detail.interruptedBy === "Pointer down on scroll container"
       )
     ) {
-      enableOrDisableDemoMomentumScrollerSelectors("enable");
+      enableOrDisableDemoMomentaMouseScrollerSelectors("enable");
       const demoContainer = scrollContainer.closest(".demo-container");
 
       const distance = event.detail.distance.toFixed(1);
@@ -1774,7 +1780,7 @@ class InputEventDelegator {
 
   delegate(event) {
     if (event.repeat) return;
-    const inputIsAnAcceptableInput = isPrimaryInput(event);
+    const inputIsAnAcceptableInput = InputTools.isPrimaryInput(event);
     if (!inputIsAnAcceptableInput) return;
 
     const inputState = this.getInputState(event);
@@ -2205,19 +2211,19 @@ class InputEventDelegator {
             ).dataset.scrollerType =
               scrollerTypeSelectorObserver.incoming.dataset.scrollerType;
           } else if (isDecelerationSelector) {
-            const demoMomentumScroller = MomentumScroller.getScroller(
+            const demoMomentaMouseScroller = MomentaMouse.getScroller(
               document.querySelector("#momentum-scroller-demo-container")
             );
             await smoothScrollerPromise;
-            demoMomentumScroller.setDecelerationLevel(
+            demoMomentaMouseScroller.setDecelerationLevel(
               decelerationSelectorObserver.incoming.dataset.deceleration
             );
           } else if (isElasticScrollBouncinessSelector) {
             await smoothScrollerPromise;
-            const demoMomentumScroller = MomentumScroller.getScroller(
+            const demoMomentaMouseScroller = MomentaMouse.getScroller(
               document.querySelector("#momentum-scroller-demo-container")
             );
-            demoMomentumScroller.setBorderBouncinessLevel(
+            demoMomentaMouseScroller.setBorderBouncinessLevel(
               elasticScrollBouncinessSelectorObserver.incoming.dataset
                 .bounciness
             );
@@ -2253,7 +2259,7 @@ class InputEventDelegator {
           event.target.setPointerCapture(event.pointerId);
 
           target.addEventListener(
-            "momentumScrollerPointerRoute",
+            "momentaMouseScrollerPointerRoute",
             (event) => {
               const { routeTo } = event.detail;
               if (target === routeTo) return;
@@ -2358,7 +2364,7 @@ class InputEventDelegator {
           }
 
           target.addEventListener(
-            "momentumScrollerPointerRoute",
+            "momentaMouseScrollerPointerRoute",
             (event) => {
               const { routeTo } = event.detail;
               if (target === routeTo) return;
@@ -2430,7 +2436,7 @@ class InputEventDelegator {
 
           if (target.closest("main") && event.type === "pointerdown") {
             target.addEventListener(
-              "momentumScrollerPointerRoute",
+              "momentaMouseScrollerPointerRoute",
               (event) => {
                 const { routeTo } = event.detail;
                 if (target === routeTo) return;
@@ -2494,8 +2500,8 @@ class InputEventDelegator {
           } else if (targetsMatch && target.matches("#overflow-button")) {
             await switchOverflowMenu();
           } else if (targetsMatch && target.matches("#touch-app-button")) {
-            MomentumScroller.getAllScrollers().forEach((momentumScroller) =>
-              momentumScroller.toggleActivation()
+            MomentaMouse.getAllScrollers().forEach((scroller) =>
+              scroller.toggleActivation()
             );
           } else if (targetsMatch && target.matches("#message-submit-button")) {
             const message = document.querySelector("#message-input").value;
@@ -2814,8 +2820,8 @@ function createTouchAppButton(toggleButtonState) {
     .insertAdjacentElement("afterend", button);
 }
 
-const createMomentumScrollers = ({ activateImmediately = false } = {}) => {
-  MomentumScroller.autoCreateScrollers({
+const createMomentaMouseScrollers = ({ activateImmediately = false } = {}) => {
+  MomentaMouse.autoCreateScrollers({
     activateImmediately,
     selectorsToIgnore: [":root", "body"],
   })
@@ -2830,47 +2836,47 @@ const createMomentumScrollers = ({ activateImmediately = false } = {}) => {
     );
 };
 
-const momentumScrollerPreference = localStorage.getItem(
-  "momentumScrollerPreference"
+const momentaMouseScrollerPreference = localStorage.getItem(
+  "momentaMouseScrollerPreference"
 );
 
 if (
   !deviceHeuristics.isTouchScreen &&
-  (!momentumScrollerPreference || momentumScrollerPreference === "on")
+  (!momentaMouseScrollerPreference || momentaMouseScrollerPreference === "on")
 ) {
   createTouchAppButton("on");
   inputEventDelegator.animationLibrary.ripple(
     document.querySelector("#touch-app-button"),
     { duration: 0 }
   );
-  createMomentumScrollers({ activateImmediately: true });
+  createMomentaMouseScrollers({ activateImmediately: true });
 } else if (
   !deviceHeuristics.isTouchScreen &&
-  momentumScrollerPreference === "off"
+  momentaMouseScrollerPreference === "off"
 ) {
   createTouchAppButton("off");
-  createMomentumScrollers();
+  createMomentaMouseScrollers();
 }
 
-const momentumScrollerDemoContainer = document.querySelector(
+const momentaMouseScrollerDemoContainer = document.querySelector(
   "#momentum-scroller-demo-container"
 );
-momentumScrollerDemoContainer.addEventListener(
-  "momentumScrollerPointerHandlingStart",
+momentaMouseScrollerDemoContainer.addEventListener(
+  "momentaMouseScrollerPointerHandlingStart",
   () => {
-    enableOrDisableDemoMomentumScrollerSelectors("disable");
-    const dataLabels = momentumScrollerDemoContainer
+    enableOrDisableDemoMomentaMouseScrollerSelectors("disable");
+    const dataLabels = momentaMouseScrollerDemoContainer
       .closest(".demo-container")
       .querySelectorAll("[data-label]");
     dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
   }
 );
 
-momentumScrollerDemoContainer.addEventListener(
-  "momentumScrollerPointerHandlingStop",
+momentaMouseScrollerDemoContainer.addEventListener(
+  "momentaMouseScrollerPointerHandlingStop",
   () => {
-    enableOrDisableDemoMomentumScrollerSelectors("enable");
-    const dataLabels = momentumScrollerDemoContainer
+    enableOrDisableDemoMomentaMouseScrollerSelectors("enable");
+    const dataLabels = momentaMouseScrollerDemoContainer
       .closest(".demo-container")
       .querySelectorAll("[data-label]");
     dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
@@ -2913,7 +2919,7 @@ SmoothScroller.scroll({
   duration: 0,
 });
 
-function enableOrDisableDemoMomentumScrollerSelectors(request) {
+function enableOrDisableDemoMomentaMouseScrollerSelectors(request) {
   const selectors = document.querySelectorAll(
     "#demo-container-for-momentum-scroller .selector"
   );
@@ -2929,8 +2935,8 @@ function enableOrDisableDemoMomentumScrollerSelectors(request) {
   });
 }
 
-demoMomentumScrollerInitializer();
-function demoMomentumScrollerInitializer() {
+demoMomentaMouseScrollerInitializer();
+function demoMomentaMouseScrollerInitializer() {
   const scrollContainer = document.querySelector(
     "#momentum-scroller-demo-container"
   );
@@ -3168,7 +3174,7 @@ class TypeAndTalk {
     this.#messageText = messageText;
     this.#messageContainer.addEventListener("pointerdown", (event) => {
       if (event.target === this.#messageSoundButton) return;
-      const inputIsAnAcceptableInput = isPrimaryInput(event);
+      const inputIsAnAcceptableInput = InputTools.isPrimaryInput(event);
       if (!inputIsAnAcceptableInput) return;
       this.#messageContainer.setPointerCapture(event.pointerId);
       this.#pointerIsDown = true;
