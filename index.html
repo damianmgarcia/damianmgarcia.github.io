@@ -597,6 +597,14 @@
         width: 10000px;
       }
 
+      .ctrl-key {
+        background: hsl(0, 0%, 50%);
+        border: solid 1px hsl(0, 0%, 80%);
+        border-radius: 4px;
+        font-size: var(--font-size-small);
+        padding: 2px 8px 2px 4px;
+      }
+
       #smooth-scroller-demo-promise {
         font-size: var(--font-size-small);
       }
@@ -3430,6 +3438,23 @@
                   <span class="font-light-italic">Bouncing:</span> When the
                   border of a scroll container is hit by a momentum scroll, the
                   border will bounce. Harder impacts produce larger bounces.
+                </div>
+                <div class="paragraph">
+                  <span class="font-light-italic"
+                    >Highlighting and Dragging:</span
+                  >
+                  The touch-screen convention for text-highlighting is to
+                  perform a long-press on a word to highlight it, and then to
+                  drag selection handles, if necessary, to change the selection.
+                  This convention is not necessary with MomentaMouse because
+                  mouse-users are also keyboard-users. Instead, a "Quick Toggle
+                  Key," which is the
+                  <span class="ctrl-key">Ctrl</span> key, is held down to
+                  temporarily deactivate MomentaMouse. This allows you to use
+                  your mouse as you normally would to highlight, copy, or drag
+                  things like text, links, or images. MomentaMouse will
+                  reactivate once the <span class="ctrl-key">Ctrl</span> key is
+                  let go.
                 </div>
                 <div class="paragraph">
                   Below is a demonstration of a MomentaMouse scroller along with
