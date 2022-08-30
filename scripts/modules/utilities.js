@@ -505,21 +505,6 @@ export function getComputedTransformProperties(element) {
   };
 }
 
-export function isPrimaryInput(event) {
-  validateArgument("event", event, {
-    allowedPrototypes: [Event],
-  });
-  if (event instanceof MouseEvent || event instanceof PointerEvent) {
-    if (event.type === "contextmenu") return true;
-    const isPrimaryPointer = event.isPrimary;
-    const isPrimaryButton = event.button === 0 || event.button === -1;
-    return isPrimaryPointer && isPrimaryButton;
-  } else if (event instanceof KeyboardEvent) {
-    const isEnterOrEscapeKey = event.key === "Enter" || event.key === "Escape";
-    return isEnterOrEscapeKey;
-  }
-}
-
 export class MetaViewportWidthPreserver {
   #metaViewportElement;
   #width;
@@ -569,6 +554,41 @@ export class MetaViewportWidthPreserver {
         return (this.#metaViewportElement.content = `width=${availWidth}, shrink-to-fit=no`);
       }
     }
+  }
+}
+
+export class InputTools {
+  static isPrimaryInput(event) {
+    validateArgument("event", event, {
+      allowedPrototypes: [Event],
+    });
+    if (event instanceof MouseEvent || event instanceof PointerEvent) {
+      if (event.type === "contextmenu") return true;
+      const isPrimaryPointer = event.isPrimary;
+      const isPrimaryButton = event.button === 0 || event.button === -1;
+      return isPrimaryPointer && isPrimaryButton;
+    } else if (event instanceof KeyboardEvent) {
+      const isEnterOrEscapeKey =
+        event.key === "Enter" || event.key === "Escape";
+      return isEnterOrEscapeKey;
+    }
+  }
+
+  static isKeyThatScrolls(key = "") {
+    validateArgument("key", key, { allowedTypes: ["string"] });
+
+    return [
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      "PageUp",
+      "PageDown",
+      "Home",
+      "End",
+      " ",
+      "Tab",
+    ].includes(key);
   }
 }
 
