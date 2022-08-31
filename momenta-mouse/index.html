@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<head>
+  <script type="module" src="main.js"></script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap");
+
+    @media (pointer: fine) {
+      ::-webkit-scrollbar {
+        height: 10px;
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: hsl(0, 0%, 85%);
+        border-radius: 1vmin;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: hsl(0, 0%, 95%);
+      }
+
+      ::-webkit-scrollbar-corner {
+        background: transparent;
+      }
+    }
+
+    :root {
+      font-family: "Open Sans", sans-serif;
+      line-height: 1.4;
+      overflow: hidden auto;
+      scrollbar-color: hsl(0, 0%, 100%) transparent;
+      scrollbar-width: thin;
+    }
+
+    a {
+      background: hsl(50, 80%, 50%);
+      border-radius: 4px;
+      color: hsl(0, 0%, 0%);
+      padding: 0px 4px;
+      text-decoration: none;
+    }
+
+    a:hover {
+      filter: brightness(120%);
+    }
+
+    body {
+      background: hsl(0, 0%, 0%);
+      color: hsl(0, 0%, 100%);
+      margin: 30px 0;
+    }
+
+    .touch-screen-modal {
+      backdrop-filter: blur(100px) brightness(120%);
+      display: none;
+      height: 100%;
+      place-items: center;
+      position: fixed;
+      top: 0px;
+      touch-action: none;
+      width: 100%;
+      z-index: 2;
+    }
+
+    .touch-screen-modal-content {
+      background: hsl(0, 0%, 80%, 25%);
+      border-radius: 5vmin;
+      display: grid;
+      gap: 5vmin;
+      height: 95%;
+      place-content: center;
+      place-items: center;
+      touch-action: none;
+      width: 90%;
+    }
+
+    .touch-screen-modal-content a {
+      border-radius: 5vmin;
+      font-size: 5vmin;
+      padding: 5vmin;
+      text-align: center;
+    }
+
+    .touch-screen-modal-content p {
+      font-size: 4vmin;
+      margin: 0 100px;
+    }
+
+    main {
+      background: hsl(0, 0%, 0%);
+      clear: both;
+      display: grid;
+      gap: 5vmin;
+      grid-auto-flow: row;
+      margin: 5vmin auto;
+      place-items: center;
+    }
+
+    h1,
+    h2,
+    h3 {
+      text-align: center;
+    }
+
+    h3 {
+      backdrop-filter: brightness(75%);
+      border: hsl(0, 0%, 0%, 10%) 2px solid;
+      border-radius: 15px;
+      margin: 0;
+      padding: 15px;
+      z-index: 1;
+    }
+
+    ul {
+      padding: 0;
+    }
+
+    li + li {
+      margin-top: 1rem;
+    }
+
+    .ctrl-key {
+      background: hsl(0, 0%, 50%);
+      border: solid 1px hsl(0, 0%, 80%);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      padding: 2px 8px 2px 4px;
+    }
+
+    .grid-item {
+      display: grid;
+      place-items: center;
+      width: 100%;
+    }
+
+    .grid-item p,
+    .grid-item h3,
+    .grid-item ul {
+      width: 80%;
+    }
+
+    .options {
+      background: hsl(0, 0%, 30%);
+      border-radius: 30px;
+      display: grid;
+      gap: 30px;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      padding: 30px;
+      width: max-content;
+    }
+
+    .option {
+      background: hsl(0, 0%, 50%);
+      border-radius: 15px;
+      display: grid;
+      gap: 15px;
+      grid-template-rows: 1fr 1fr;
+      padding: 15px;
+      place-content: center;
+    }
+
+    .option:first-child {
+      grid-column: 1 / 3;
+    }
+
+    select {
+      margin: 0 auto;
+      width: 82px;
+    }
+
+    .carousel-container {
+      background: hsl(0, 0%, 30%);
+      border-radius: 30px;
+      height: 200px;
+      margin: 0 auto;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .carousel {
+      background: hsl(0, 0%, 30%);
+      border-radius: 30px;
+      display: grid;
+      gap: 30px;
+      grid-auto-flow: column;
+      height: 200px;
+      overflow: auto;
+      place-items: center;
+      scrollbar-color: hsl(0, 0%, 100%) transparent;
+      scrollbar-width: thin;
+      width: 100%;
+    }
+
+    .part-width {
+      width: 80%;
+    }
+
+    .uncontained {
+      background: transparent;
+    }
+
+    .rtl {
+      direction: rtl;
+    }
+
+    .carousel-item {
+      border-radius: 15px;
+      display: grid;
+      height: 140px;
+      place-items: center;
+      width: 103px;
+    }
+
+    .carousel-item:hover {
+      filter: brightness(120%);
+      transform: scale(1.2);
+    }
+
+    .carousel-item:first-child {
+      margin-left: 30px;
+    }
+
+    .carousel-item:last-child {
+      margin-right: 30px;
+    }
+
+    .carousel-item-number {
+      font-size: 50px;
+    }
+
+    .scroller-container {
+      border-radius: 2.5vmin;
+      height: 50vmin;
+      overflow: auto;
+      scrollbar-color: hsl(0, 0%, 100%) transparent;
+      scrollbar-width: thin;
+      width: 50vmin;
+    }
+
+    .scroller-container a {
+      float: left;
+      margin: 10vmin;
+    }
+
+    a.rtl {
+      float: right;
+    }
+
+    .scroller-content-horizontal-and-vertical {
+      background: hsl(300, 100%, 25%);
+      height: 500vw;
+      width: 500vw;
+    }
+
+    .scroller-content-horizontal-only {
+      background: hsl(0, 100%, 50%);
+      height: 100%;
+      width: 500vw;
+    }
+
+    .scroller-content-vertical-only {
+      background: hsl(240, 100%, 50%);
+      height: 500vw;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="touch-screen-modal">
+    <div class="touch-screen-modal-content">
+      <a href="https://github.com/damianmgarcia/MomentaMouse">MomentaMouse</a>
+      <p>
+        MomentaMouse is a JavaScript module that enables mouse-users to use
+        touch-style scrolling and flicking gestures to navigate websites.
+      </p>
+      <p>
+        Since MomentaMouse is not intended to be used with touch-screen devices,
+        it cannot be demonstrated on this device.
+      </p>
+      <p>
+        However, please return at a later time if you have a non-touch-screen
+        device with a mouse.
+      </p>
+    </div>
+  </div>
+  <h1>MomentaMouse</h1>
+  <main>
+    <div class="grid-item">
+      <h3>About</h3>
+      <p>
+        This is a demonstration of
+        <a href="https://github.com/damianmgarcia/MomentaMouse">MomentaMouse</a
+        >, a JavaScript module that enables mouse-users to use touch-style
+        scrolling and flicking gestures to navigate websites.
+      </p>
+      <p>
+        Simply hold down your mouse's primary button on this page, or on one of
+        the scrollers below, and then move the mouse around. The page, or
+        scroller, will follow the movement of the cursor. A flicking gesture
+        will result in a scroll with momentum in proportion to the speed of the
+        flick.
+      </p>
+      <h3>Some Things to Try</h3>
+      <ul>
+        <li>
+          <strong>Scrolling on Nested Scrollers:</strong> Scroll vertically on
+          one of the horizontal carousels below. Notice that the "main" scroller
+          takes control from the carousel. This is because a threshold test
+          decides which scroller gets control in cases of nested scrollers. This
+          also works with scrollers nested below other elements like links. For
+          example, click and hold the "Repository" link on the red
+          horizontal-only scroller below, and then scroll vertically to see
+          which scroller takes control. Next, try moving horizontally to see
+          which scroller takes control. Try the same tests with the other
+          scroller types (vertical-only, etc.).
+        </li>
+        <li>
+          <strong>Highlighting and Dragging:</strong> The touch-screen
+          convention for text-highlighting is to perform a long-press on a word
+          to highlight it, and then to drag selection handles, if necessary, to
+          change the selection. This convention is not necessary with
+          MomentaMouse because mouse-users are also keyboard-users. Instead, a
+          "Quick Toggle Key," which is the
+          <span class="ctrl-key">Ctrl</span> key, is held down to temporarily
+          deactivate MomentaMouse. This allows you to use your mouse as you
+          normally would to highlight, copy, or drag things like text, links, or
+          images. MomentaMouse will reactivate once the
+          <span class="ctrl-key">Ctrl</span> key is let go.
+        </li>
+        <li>
+          <strong>Overscroll and Bouncing:</strong> While at the top or bottom
+          of this page, or at one of the borders of any of the scrollers below,
+          try pulling away. MomentaMouse creates an overscroll effect to let you
+          know you have reached the end. Bouncing occurs when a momentum scroll
+          impacts one of the borders.
+        </li>
+      </ul>
+    </div>
+    <div class="grid-item">
+      <h3>Options</h3>
+      <div class="options">
+        <div class="option">
+          <label for="activation-state-select">MomentaMouse</label>
+          <select name="activation-state" id="activation-state-select">
+            <option value="on" selected>On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+        <div class="option">
+          <label for="deceleration-select">Deceleration</label>
+          <select name="deceleration" id="deceleration-select">
+            <option value="none">None</option>
+            <option value="minimum">Minimum</option>
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="maximum">Maximum</option>
+          </select>
+        </div>
+        <div class="option">
+          <label for="bounciness-select">Bounciness</label>
+          <select name="bounciness" id="bounciness-select">
+            <option value="none">None</option>
+            <option value="minimum">Minimum</option>
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="maximum">Maximum</option>
+          </select>
+        </div>
+        <div class="option">
+          <label for="reactive-cursor-select">Reactive Cursor</label>
+          <select name="reactive-cursor" id="reactive-cursor-select">
+            <option value="on" selected>On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+        <div class="option">
+          <label for="quick-toggle-key-select">Quick Toggle Key</label>
+          <select name="quick-toggle-key" id="quick-toggle-key-select">
+            <option value="on" selected>On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="grid-item">
+      <h3>Contained Carousel (Bouncy Inside)</h3>
+      <div class="carousel-container part-width">
+        <div class="carousel">
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-item">
+      <h3>Contained Carousel (Bouncy Outside)</h3>
+      <div class="carousel part-width">
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+      </div>
+    </div>
+    <div class="grid-item">
+      <h3>Uncontained Carousel</h3>
+      <div class="carousel uncontained">
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+        <div class="carousel-item"></div>
+      </div>
+    </div>
+    <div class="grid-item">
+      <h3>Horizontal and Vertical Scroller</h3>
+      <div class="scroller-container">
+        <div class="scroller-content-horizontal-and-vertical">
+          <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
+        </div>
+      </div>
+    </div>
+    <div class="grid-item">
+      <h3>Horizontal-Only Scroller</h3>
+      <div class="scroller-container">
+        <div class="scroller-content-horizontal-only">
+          <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
+        </div>
+      </div>
+    </div>
+    <div class="grid-item">
+      <h3>Vertical-Only Scroller</h3>
+      <div class="scroller-container">
+        <div class="scroller-content-vertical-only">
+          <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
+        </div>
+      </div>
+    </div>
+    <div class="grid-item">
+      <h3>Horizontal and Vertical Scroller (Right-to-Left)</h3>
+      <div class="scroller-container rtl">
+        <div class="scroller-content-horizontal-and-vertical rtl">
+          <a class="rtl" href="https://github.com/damianmgarcia/MomentaMouse"
+            >Repository</a
+          >
+        </div>
+      </div>
+    </div>
+    <small
+      >Copyright &copy; <span class="date-year"></span>
+      <a href="https://damianmgarcia.com">Damian M. Garcia</a></small
+    >
+  </main>
+</body>
