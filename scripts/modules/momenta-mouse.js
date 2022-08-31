@@ -141,7 +141,7 @@ class MomentaMouse {
         "style",
         `height: 1px; width: 1px; transform: translate3d(0px, 0px, 0px); float: ${counterBouncerFloatDirection};`
       );
-      counterBouncer.classList.add("momentum-scroller-counter-bouncer");
+      counterBouncer.classList.add("momenta-mouse-counter-bouncer");
       document.body.insertAdjacentElement("beforeend", counterBouncer);
     };
 
@@ -292,7 +292,7 @@ class MomentaMouse {
     const topMomentaMouseScrollerEventTarget = eventTargets.find(
       (eventTarget) =>
         eventTarget instanceof Element &&
-        eventTarget.matches(".momentum-scroller")
+        eventTarget.matches(".momenta-mouse-scroller")
     );
 
     if (!topMomentaMouseScrollerEventTarget) return;
@@ -311,7 +311,9 @@ class MomentaMouse {
         if (isNonScroller)
           return compileEventTargetProperties({ isNonScroller });
 
-        const isScrollerMomentum = eventTarget.matches(".momentum-scroller");
+        const isScrollerMomentum = eventTarget.matches(
+          ".momenta-mouse-scroller"
+        );
         if (isScrollerMomentum) {
           const { scrollableAxes } =
             this.getScroller(eventTarget).getScrollerData();
@@ -615,7 +617,7 @@ class MomentaMouse {
 
     this.#scrollContainer = scrollContainer;
 
-    this.#scrollContainer.classList.add("momentum-scroller");
+    this.#scrollContainer.classList.add("momenta-mouse-scroller");
     this.#scrollContainer.setAttribute("tabindex", "0");
 
     this.#scrollContainer.addEventListener(
@@ -1538,7 +1540,7 @@ class MomentaMouse {
 
     if (this.#scrollContainer === document.documentElement) {
       this.#scrollContainer
-        .querySelector(".momentum-scroller-counter-bouncer")
+        .querySelector(".momenta-mouse-counter-bouncer")
         .style.setProperty(
           "transform",
           `translate3d(${-1 * this.#bounceCurrentTranslateX}px, ${
