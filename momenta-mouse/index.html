@@ -79,13 +79,14 @@
     }
 
     .touch-screen-modal-content {
+      align-items: center;
       background: hsl(0, 0%, 80%, 25%);
       border-radius: 5vmin;
       display: grid;
       gap: 5vmin;
       height: 95%;
+      justify-items: start;
       place-content: center;
-      place-items: center;
       touch-action: none;
       width: 90%;
     }
@@ -93,8 +94,8 @@
     .touch-screen-modal-content a {
       border-radius: 5vmin;
       font-size: 5vmin;
+      justify-self: center;
       padding: 5vmin;
-      text-align: center;
     }
 
     .touch-screen-modal-content p {
@@ -287,16 +288,21 @@
     <div class="touch-screen-modal-content">
       <a href="https://github.com/damianmgarcia/MomentaMouse">MomentaMouse</a>
       <p>
-        MomentaMouse is a JavaScript module that enables mouse-users to use
-        touch-style scrolling and flicking gestures to navigate websites.
+        MomentaMouse enables mouse-users to use touch-style scrolling and
+        flicking gestures to navigate websites.
       </p>
       <p>
-        Since MomentaMouse is not intended to be used with touch-screen devices,
-        it cannot be demonstrated on this device.
+        Web developers interested in this functionality simply need to import
+        the module to begin automatically or manually creating MomentaMouse
+        scrollers.
       </p>
       <p>
-        However, please return at a later time if you have a non-touch-screen
-        device with a mouse.
+        However, since MomentaMouse is not intended to be used with touch-screen
+        devices, it cannot be demonstrated on this device.
+      </p>
+      <p>
+        Please return at a later time if you have a non-touch-screen device with
+        a mouse.
       </p>
     </div>
   </div>
@@ -305,31 +311,37 @@
     <div class="grid-item">
       <h3>About</h3>
       <p>
-        This is a demonstration of
-        <a href="https://github.com/damianmgarcia/MomentaMouse">MomentaMouse</a
-        >, a JavaScript module that enables mouse-users to use touch-style
-        scrolling and flicking gestures to navigate websites.
+        <a href="https://github.com/damianmgarcia/MomentaMouse">MomentaMouse</a>
+        enables mouse-users to use touch-style scrolling and flicking gestures
+        to navigate websites.
       </p>
       <p>
-        Simply hold down your mouse's primary button on this page, or on one of
-        the scrollers below, and then move the mouse around. The page, or
-        scroller, will follow the movement of the cursor. A flicking gesture
-        will result in a scroll with momentum in proportion to the speed of the
-        flick.
+        Web developers interested in this functionality simply need to import
+        the module to begin automatically or manually creating MomentaMouse
+        scrollers.
+      </p>
+      <p>
+        To get started, hold down your mouse's primary button on this page, or
+        on one of the scrollers below, and then move the mouse around. The page,
+        or scroller, will follow the movement of the cursor. If you do a
+        flicking gesture, it will result in a scroll with momentum in proportion
+        to the speed of your flick.
       </p>
       <h3>Some Things to Try</h3>
       <ul>
         <li>
-          <strong>Scrolling on Nested Scrollers:</strong> Scroll vertically on
-          one of the horizontal carousels below. Notice that the "main" scroller
-          takes control from the carousel. This is because a threshold test
-          decides which scroller gets control in cases of nested scrollers. This
-          also works with scrollers nested below other elements like links. For
-          example, click and hold the "Repository" link on the red
-          horizontal-only scroller below, and then scroll vertically to see
+          <strong>Scrolling on Nested Scrollers:</strong> Handling a single
+          MomentaMouse scroller is simple, but how do you handle scrolling when
+          there are nested scrollers or when a scroller is under another element
+          such as an anchor or a button? Let's find out. First, let's test
+          nested scrollers: Scroll vertically on one of the horizontal carousels
+          below. Notice that the "main" scroller takes control from the
+          horizontal carousel when you scroll vertically. Second, let's test a
+          scroller under an anchor: Click and hold the "Repository" link on the
+          red horizontal-only scroller below, and then scroll vertically to see
           which scroller takes control. Next, try moving horizontally to see
           which scroller takes control. Try the same tests with the other
-          scroller types (vertical-only, etc.).
+          scroller types (vertical-only, etc.) to see how they react.
         </li>
         <li>
           <strong>Highlighting and Dragging:</strong> The touch-screen
@@ -342,14 +354,19 @@
           deactivate MomentaMouse. This allows you to use your mouse as you
           normally would to highlight, copy, or drag things like text, links, or
           images. MomentaMouse will reactivate once the
-          <span class="ctrl-key">Ctrl</span> key is let go.
+          <span class="ctrl-key">Ctrl</span> key is let go. Try it out.
         </li>
         <li>
-          <strong>Overscroll and Bouncing:</strong> While at the top or bottom
-          of this page, or at one of the borders of any of the scrollers below,
-          try pulling away. MomentaMouse creates an overscroll effect to let you
-          know you have reached the end. Bouncing occurs when a momentum scroll
-          impacts one of the borders.
+          <strong>Overscroll and Bouncing:</strong> Overscroll and bouncing
+          effects are useful visual indicators that the end of a scroller has
+          been reached. Let's test them: While at the top or bottom of this
+          page, or at one of the borders of any of the scrollers below, try
+          pulling away. MomentaMouse will create an overscroll effect to let you
+          know you have reached the end. To see a bounce, perform flick gestures
+          with your mouse until the momentum scroll impacts a border. Try
+          hitting the borders with varying amounts of force to see how they
+          react. Notice that the intensity of the bounce is in proportion to the
+          force of impact.
         </li>
       </ul>
     </div>
