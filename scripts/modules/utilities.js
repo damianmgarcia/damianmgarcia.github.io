@@ -562,8 +562,10 @@ export class InputTools {
     validateArgument("event", event, {
       allowedPrototypes: [Event],
     });
+
+    if (event.type === "blur" || event.type === "contextmenu") return true;
+
     if (event instanceof MouseEvent || event instanceof PointerEvent) {
-      if (event.type === "contextmenu") return true;
       const isPrimaryPointer = event.isPrimary;
       const isPrimaryButton = event.button === 0 || event.button === -1;
       return isPrimaryPointer && isPrimaryButton;

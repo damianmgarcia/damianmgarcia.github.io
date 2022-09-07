@@ -1759,6 +1759,7 @@ document
 
 class InputEventDelegator {
   constructor() {
+    addEventListener("blur", (event) => this.delegate(event));
     document.addEventListener("pointerdown", (event) => this.delegate(event));
     document.addEventListener("pointerup", (event) => this.delegate(event));
     document.addEventListener("pointercancel", (event) => this.delegate(event));
@@ -1780,6 +1781,7 @@ class InputEventDelegator {
 
   delegate(event) {
     if (event.repeat) return;
+    
     const inputIsAnAcceptableInput = InputTools.isPrimaryInput(event);
     if (!inputIsAnAcceptableInput) return;
 
@@ -1856,7 +1858,8 @@ class InputEventDelegator {
       return "activated";
     } else if (
       this.#inputDownEvent &&
-      (event.type === "pointerup" ||
+      (event.type === "blur" ||
+        event.type === "pointerup" ||
         event.type === "pointercancel" ||
         (event.type === "keydown" && event.key === "Escape") ||
         event.type === "contextmenu")
@@ -2310,7 +2313,7 @@ class InputEventDelegator {
           ).getScrollerData().active;
 
           if (mainMomentaMouseScrollerIsActive) {
-            const { forcedByMomentaMouse } = event.detail;
+            const forcedByMomentaMouse = event?.detail?.forcedByMomentaMouse;
             if (forcedByMomentaMouse) {
               const cursorSwitchingAbortController = new AbortController();
               document.querySelector("main").addEventListener(
