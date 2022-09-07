@@ -2258,20 +2258,27 @@ class InputEventDelegator {
 
           event.target.setPointerCapture(event.pointerId);
 
-          target.addEventListener(
-            "momentaMouseScrollerPointerRoute",
-            (event) => {
-              const { routeTo } = event.detail;
-              if (target === routeTo) return;
-              target.dispatchEvent(new PointerEvent("pointercancel"));
-              inputEventDelegator.forceInputUpHandler(event);
-            },
-            {
-              signal:
-                this.pointerMoveReleasePointerCaptureCriteriaAbortController
-                  .signal,
-            }
-          );
+          const mainMomentaMouseScrollerIsActive = MomentaMouse.getScroller(
+            document.querySelector("main")
+          ).getScrollerData().active;
+
+          if (mainMomentaMouseScrollerIsActive) {
+            target.addEventListener(
+              "momentaMouseScrollerPointerRoute",
+              (event) => {
+                const { routeTo } = event.detail;
+                if (target === routeTo) return;
+                target.dispatchEvent(new PointerEvent("pointercancel"));
+                event.detail.forcedByMomentaMouse = true;
+                inputEventDelegator.forceInputUpHandler(event);
+              },
+              {
+                signal:
+                  this.pointerMoveReleasePointerCaptureCriteriaAbortController
+                    .signal,
+              }
+            );
+          }
 
           let movementX = 0;
           let previousScreenX = event.screenX; // Safari returns undefined for event.movementX
@@ -2298,7 +2305,31 @@ class InputEventDelegator {
           this.pointerMoveAbortController.abort();
           this.pointerMoveAbortController = new AbortController();
 
-          target.style.setProperty("cursor", "var(--kitteh-grab-cursor)");
+          const mainMomentaMouseScrollerIsActive = MomentaMouse.getScroller(
+            document.querySelector("main")
+          ).getScrollerData().active;
+
+          if (mainMomentaMouseScrollerIsActive) {
+            const { forcedByMomentaMouse } = event.detail;
+            if (forcedByMomentaMouse) {
+              const cursorSwitchingAbortController = new AbortController();
+              document.querySelector("main").addEventListener(
+                "momentaMouseScrollerPointerHandlingStop",
+                () => {
+                  target.style.setProperty(
+                    "cursor",
+                    "var(--kitteh-grab-cursor)"
+                  );
+                  cursorSwitchingAbortController.abort();
+                },
+                { signal: cursorSwitchingAbortController.signal }
+              );
+            } else if (!forcedByMomentaMouse) {
+              target.style.setProperty("cursor", "var(--kitteh-grab-cursor)");
+            }
+          } else if (!mainMomentaMouseScrollerIsActive) {
+            target.style.setProperty("cursor", "var(--kitteh-grab-cursor)");
+          }
 
           const videoGalleryObserver =
             VideoGalleryObservers.videoGalleryObserverMap.get(target);
@@ -2363,19 +2394,25 @@ class InputEventDelegator {
             inputEventDelegator.animationLibrary.ripple(target);
           }
 
-          target.addEventListener(
-            "momentaMouseScrollerPointerRoute",
-            (event) => {
-              const { routeTo } = event.detail;
-              if (target === routeTo) return;
-              inputEventDelegator.forceInputUpHandler(event);
-            },
-            {
-              signal:
-                this.pointerMoveReleasePointerCaptureCriteriaAbortController
-                  .signal,
-            }
-          );
+          const mainMomentaMouseScrollerIsActive = MomentaMouse.getScroller(
+            document.querySelector("main")
+          ).getScrollerData().active;
+
+          if (mainMomentaMouseScrollerIsActive) {
+            target.addEventListener(
+              "momentaMouseScrollerPointerRoute",
+              (event) => {
+                const { routeTo } = event.detail;
+                if (target === routeTo) return;
+                inputEventDelegator.forceInputUpHandler(event);
+              },
+              {
+                signal:
+                  this.pointerMoveReleasePointerCaptureCriteriaAbortController
+                    .signal,
+              }
+            );
+          }
         },
 
         async inputUpHandler({ target, targetsMatch }) {
@@ -2434,7 +2471,15 @@ class InputEventDelegator {
           )
             return;
 
-          if (target.closest("main") && event.type === "pointerdown") {
+          const mainMomentaMouseScrollerIsActive = MomentaMouse.getScroller(
+            document.querySelector("main")
+          ).getScrollerData().active;
+
+          if (
+            mainMomentaMouseScrollerIsActive &&
+            target.closest("main") &&
+            event.type === "pointerdown"
+          ) {
             target.addEventListener(
               "momentaMouseScrollerPointerRoute",
               (event) => {
