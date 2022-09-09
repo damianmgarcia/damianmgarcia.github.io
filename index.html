@@ -12,28 +12,28 @@
       href="/fonts/open-sans-wght-300.woff2"
       as="font"
       type="font/woff2"
-      crossorigin
+      crossorigin="anonymous"
     />
     <link
       rel="preload"
       href="/fonts/open-sans-wght-400.woff2"
       as="font"
       type="font/woff2"
-      crossorigin
+      crossorigin="anonymous"
     />
     <link
       rel="preload"
       href="/fonts/open-sans-italic-wght-300.woff2"
       as="font"
       type="font/woff2"
-      crossorigin
+      crossorigin="anonymous"
     />
     <link
       rel="preload"
       href="/fonts/comic-neue.woff2"
       as="font"
       type="font/woff2"
-      crossorigin
+      crossorigin="anonymous"
     />
     <link
       id="favicon"
@@ -286,6 +286,8 @@
         --button-background-color-active-active: hsl(0, 0%, 95%);
         --button-background-color-active-inverse: hsl(0, 0%, 30%);
         --charm-fur-color: hsl(0, 0%, 20%);
+        --ctrl-key-background-color: hsl(0, 0%, 90%);
+        --ctrl-key-border: solid 1px hsl(0, 0%, 100%);
         --demo-container-alert-background-color: hsl(60, 75%, 80%);
         --demo-container-title-background-color: hsl(120, 50%, 70%);
         --disabled-button-text-color: hsl(0, 0%, 75%);
@@ -307,6 +309,8 @@
         --button-background-color-active-active: hsl(0, 0%, 35%);
         --button-background-color-active-inverse: hsl(0, 0%, 90%);
         --charm-fur-color: hsl(0, 0%, 0%);
+        --ctrl-key-background-color: hsl(0, 0%, 50%);
+        --ctrl-key-border: solid 1px hsl(0, 0%, 80%);
         --demo-container-alert-background-color: hsl(60, 75%, 20%);
         --demo-container-title-background-color: hsl(120, 50%, 30%);
         --disabled-button-text-color: hsl(0, 0%, 30%);
@@ -598,8 +602,8 @@
       }
 
       .ctrl-key {
-        background: hsl(0, 0%, 50%);
-        border: solid 1px hsl(0, 0%, 80%);
+        background: var(--ctrl-key-background-color);
+        border: var(--ctrl-key-border);
         border-radius: 4px;
         font-size: var(--font-size-small);
         padding: 2px 8px 2px 4px;
@@ -1452,6 +1456,7 @@
           linear-gradient(to left, transparent 50%, var(--underline-color) 50%)
             left bottom / calc(750px / 34 / 6) calc(750px / 34 / 12) repeat-x;
         border-radius: calc(750px / 17 / 4);
+        display: inline;
       }
 
       .selector *,
@@ -1521,7 +1526,7 @@
                   d="M 129.659 390.41 C 129.659 390.41 180.518 402.723 179.982 402.723 C 179.446 402.723 195.017 470.409 211.032 500.693 C 218.459 514.736 240.477 538.167 240.477 538.167 L 159.103 559.046 C 159.103 559.046 157.531 516.387 154.285 495.339 C 149.756 465.97 131.883 399.35 131.168 399.058 C 130.523 398.794 130.031 398.65 129.136 398.329 C 128.783 398.202 129.659 390.41 129.659 390.41 Z"
                 ></path>
               </clipPath>
-              <linearGradient id="radial-gradient-color-stops" bx:pinned="true">
+              <linearGradient id="radial-gradient-color-stops">
                 <stop
                   offset="0.384"
                   style="stop-color: rgba(255, 255, 255, 1)"
@@ -1578,13 +1583,11 @@
                     d="M 83.552 838.956 Q 95.581 761.091 107.61 838.956 L 107.61 838.956 Q 119.639 916.82 95.581 916.82 L 95.581 916.82 Q 71.523 916.82 83.552 838.956 Z"
                     style="fill: rgb(0, 224, 11)"
                     transform="matrix(0.948512, -0.316741, 0.316741, 0.948512, -137.288025, -386.890564)"
-                    bx:shape="triangle 71.523 761.091 48.116 155.729 0.5 0.5 1@0567ae5d"
                   ></path>
                   <path
                     d="M 77.87 838.963 Q 89.081 761.097 100.291 838.963 L 100.291 838.963 Q 111.502 916.828 89.081 916.828 L 89.081 916.828 Q 66.659 916.828 77.87 838.963 Z"
                     style="fill: rgb(0, 224, 11)"
                     transform="matrix(0.948307, 0.317354, -0.317354, 0.948307, 463.831635, -444.867981)"
-                    bx:shape="triangle 66.659 761.097 44.843 155.731 0.5 0.5 1@1c31ba4a"
                   ></path>
                 </g>
                 <g
@@ -1672,7 +1675,6 @@
                       cy="314.134"
                       r="6.148"
                       transform="matrix(1, 0, 0, 0.999996, 7.084193, -4.151554)"
-                      bx:origin="-0.066 0.716"
                     ></circle>
                     <path
                       style="fill: rgb(255, 186, 97)"
@@ -1685,7 +1687,6 @@
                       height="13.546"
                       style="fill: rgb(255, 255, 255)"
                       transform="matrix(0.827917, 0.560851, -0.560851, 0.827917, 55.026592, -293.080261)"
-                      bx:origin="0.507 0.232"
                     ></rect>
                     <rect
                       x="459.456"
@@ -1694,7 +1695,6 @@
                       height="13.546"
                       style="fill: rgb(255, 255, 255)"
                       transform="matrix(0.926615, -0.376012, 0.376012, 0.926615, -313.650757, 105.582336)"
-                      bx:origin="0.507 0.232"
                     ></rect>
                   </g>
                 </g>
@@ -1916,14 +1916,12 @@
                   style="fill: rgb(255, 255, 255)"
                   transform="matrix(1, 0, 0, -1, 0, 0)"
                   class="halloween"
-                  bx:shape="triangle 210 -411.659 15 25.692 0.5 0 1@d8234d65"
                 ></path>
                 <path
                   d="M 280.986 -402.974 L 288.486 -377.282 L 273.486 -377.282 L 280.986 -402.974 Z"
                   style="fill: rgb(255, 255, 255)"
                   transform="matrix(1, 0, 0, -1, 0, 0)"
                   class="halloween"
-                  bx:shape="triangle 273.486 -402.974 15 25.692 0.5 0 1@027a9276"
                 ></path>
                 <path
                   style="
@@ -2223,14 +2221,12 @@
                   d="M 224.599 -337.418 L 232.099 -311.726 L 217.099 -311.726 L 224.599 -337.418 Z"
                   style="fill: rgb(255, 255, 255)"
                   transform="matrix(1, 0, 0, -1, 0, 0)"
-                  bx:shape="triangle 217.099 -337.418 15 25.692 0.5 0 1@4da2f40f"
                 ></path>
                 <path
                   class="halloween"
                   d="M 276.439 -339.255 L 283.939 -313.563 L 268.939 -313.563 L 276.439 -339.255 Z"
                   style="fill: rgb(255, 255, 255)"
                   transform="matrix(1, 0, 0, -1, 0, 0)"
-                  bx:shape="triangle 268.939 -339.255 15 25.692 0.5 0 1@4637f3e5"
                 ></path>
                 <path
                   style="
@@ -2516,7 +2512,6 @@
                     d="M 231.245 -671.542 L 238.745 -645.85 L 223.745 -645.85 L 231.245 -671.542 Z"
                     style="fill: rgb(230, 150, 0)"
                     transform="matrix(1, 0, 0, -1, 0, 0)"
-                    bx:shape="triangle 223.745 -671.542 15 25.692 0.5 0 1@0abea120"
                   ></path>
                 </g>
 
@@ -2621,13 +2616,11 @@
                     d="M 83.552 838.956 Q 95.581 761.091 107.61 838.956 L 107.61 838.956 Q 119.639 916.82 95.581 916.82 L 95.581 916.82 Q 71.523 916.82 83.552 838.956 Z"
                     style="fill: rgb(0, 224, 11)"
                     transform="matrix(0.948512, -0.316741, 0.316741, 0.948512, -137.288025, -386.890564)"
-                    bx:shape="triangle 71.523 761.091 48.116 155.729 0.5 0.5 1@0567ae5d"
                   ></path>
                   <path
                     d="M 77.87 838.963 Q 89.081 761.097 100.291 838.963 L 100.291 838.963 Q 111.502 916.828 89.081 916.828 L 89.081 916.828 Q 66.659 916.828 77.87 838.963 Z"
                     style="fill: rgb(0, 224, 11)"
                     transform="matrix(0.948307, 0.317354, -0.317354, 0.948307, 463.831635, -444.867981)"
-                    bx:shape="triangle 66.659 761.097 44.843 155.731 0.5 0.5 1@1c31ba4a"
                   ></path>
                 </g>
                 <g
@@ -2646,13 +2639,11 @@
                     d="M 83.552 838.956 Q 95.581 761.091 107.61 838.956 L 107.61 838.956 Q 119.639 916.82 95.581 916.82 L 95.581 916.82 Q 71.523 916.82 83.552 838.956 Z"
                     style="fill: rgb(0, 224, 11)"
                     transform="matrix(0.948512, -0.316741, 0.316741, 0.948512, -137.288025, -386.890564)"
-                    bx:shape="triangle 71.523 761.091 48.116 155.729 0.5 0.5 1@0567ae5d"
                   ></path>
                   <path
                     d="M 77.87 838.963 Q 89.081 761.097 100.291 838.963 L 100.291 838.963 Q 111.502 916.828 89.081 916.828 L 89.081 916.828 Q 66.659 916.828 77.87 838.963 Z"
                     style="fill: rgb(0, 224, 11)"
                     transform="matrix(0.948307, 0.317354, -0.317354, 0.948307, 463.831635, -444.867981)"
-                    bx:shape="triangle 66.659 761.097 44.843 155.731 0.5 0.5 1@1c31ba4a"
                   ></path>
                 </g>
               </g>
@@ -2708,7 +2699,6 @@
                       stroke-width: 18.0207px;
                     "
                     transform="matrix(0.866025, 0.5, -0.5, 0.866025, -470.240347, -957.143964)"
-                    bx:shape="star 1228 686.667 101.41 101.41 0.671 6 1@2bec258d"
                   ></path>
                   <path
                     d="M 1228 540.976 L 1276.879 602.006 L 1354.172 613.822 L 1325.759 686.667 L 1354.172 759.513 L 1276.879 771.328 L 1228 832.358 L 1179.121 771.328 L 1101.828 759.513 L 1130.241 686.667 L 1101.828 613.822 L 1179.121 602.006 Z"
@@ -2722,7 +2712,6 @@
                       stroke-width: 18.0207px;
                     "
                     transform="matrix(0.866025, 0.5, -0.5, 0.866025, -470.240598, -957.144415)"
-                    bx:shape="star 1228 686.667 145.691 145.691 0.671 6 1@01e97e46"
                   ></path>
                   <path
                     d="M 1228 639.225 L 1243.917 659.098 L 1269.086 662.946 L 1259.834 686.667 L 1269.086 710.388 L 1243.917 714.236 L 1228 734.109 L 1212.083 714.236 L 1186.914 710.388 L 1196.166 686.667 L 1186.914 662.946 L 1212.083 659.098 Z"
@@ -2734,7 +2723,6 @@
                       stroke-width: 27.031px;
                     "
                     transform="matrix(-0.866025, -0.5, 0.5, -0.866025, 970.051004, 1460.199264)"
-                    bx:shape="star 1228 686.667 47.442 47.442 0.671 6 1@956e833f"
                   ></path>
                 </g>
                 <g class="scarf">
@@ -2833,7 +2821,6 @@
                     d="M 569.091 679.467 L 581.751 687.703 L 596.834 688.481 L 602.236 702.586 L 613.981 712.081 L 610.061 726.667 L 613.981 741.253 L 602.236 750.748 L 596.834 764.853 L 581.751 765.631 L 569.091 773.867 L 556.431 765.631 L 541.348 764.853 L 535.946 750.748 L 524.201 741.253 L 528.121 726.667 L 524.201 712.081 L 535.946 702.586 L 541.348 688.481 L 556.431 687.703 Z"
                     style="fill: rgb(255, 255, 255)"
                     transform="matrix(-0.736794, 0.676117, -0.676117, -0.736794, 1116.00873, 727.214203)"
-                    bx:shape="star 569.091 726.667 47.2 47.2 0.868 10 1@242d9aaf"
                   ></path>
                 </g>
                 <g
@@ -2882,12 +2869,7 @@
                       style="fill: rgb(255, 151, 5)"
                     ></circle>
                     <circle cx="223.774" cy="311.407" r="5.615"></circle>
-                    <circle
-                      cx="275.944"
-                      cy="314.134"
-                      r="5.615"
-                      bx:origin="-0.066 0.716"
-                    ></circle>
+                    <circle cx="275.944" cy="314.134" r="5.615"></circle>
                   </g>
                 </g>
                 <g
@@ -2962,7 +2944,7 @@
         </div>
         <div id="slogan">
           <div class="main-selectors-container">
-            <span class="selector" id="article-selector">
+            <div class="selector" id="article-selector">
               <div
                 class="selector-item"
                 data-id-to-scroll-to="#projects-article"
@@ -2991,8 +2973,8 @@
               >
                 Experience
               </div>
-            </span>
-            <span class="selector" data-hidden="true" id="project-selector">
+            </div>
+            <div class="selector" data-hidden="true" id="project-selector">
               <div
                 class="selector-item"
                 data-id-to-scroll-to="#project-portfolio"
@@ -3017,7 +2999,7 @@
                   width="40"
                 />
               </div>
-            </span>
+            </div>
           </div>
           <span id="slogan-spacer"></span>
           <span id="slogan-end">You Can Verify</span>
@@ -3122,7 +3104,6 @@
         data-toggle-button-state="off"
         data-ripple-animate="true"
         data-user-interaction="false"
-        id="sound-button"
         role="button"
       >
         <div class="button-icon">
@@ -3178,7 +3159,7 @@
             <div class="position-organization-container">
               <div class="position">
                 <a class="link-container" href="/">
-                  <span class="link-content">Portfolio </span>
+                  <div class="link-content">Portfolio</div>
                   <div class="ripple-container">
                     <div class="ripple"></div>
                   </div>
@@ -3204,11 +3185,12 @@
                   id="scroll-to-charms-jobs"
                   tabindex="0"
                 >
-                  <span class="link-content"
-                    >Charm's Jobs
+                  <div class="link-content">
+                    Charm's Jobs
                     <div class="ripple-container">
-                      <div class="ripple"></div></div
-                  ></span>
+                      <div class="ripple"></div>
+                    </div>
+                  </div>
                 </div>
                 are my first web projects.
               </div>
@@ -3220,10 +3202,11 @@
                   id="link-portfolio-repository"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >repository
+                  ><div class="link-content">
+                    repository
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span
+                      <div class="ripple"></div>
+                    </div></div
                 ></a>
                 is available on GitHub.
               </div>
@@ -3235,10 +3218,11 @@
                   id="link-old-resume-portfolio-intro"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >my <span class="font-light-italic">old</span> resume
+                  ><div class="link-content">
+                    my <span class="font-light-italic">old</span> resume
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span
+                      <div class="ripple"></div>
+                    </div></div
                 ></a>
                 and publish it to the web. To accomplish that plan, I started
                 teaching myself HTML, CSS, and JavaScript.
@@ -3248,10 +3232,11 @@
                   id="link-mdn-web-docs"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >MDN Web Docs
+                  ><div class="link-content">
+                    MDN Web Docs
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span></a
+                      <div class="ripple"></div>
+                    </div></div></a
                 >, an invaluable web developer wiki, soon became my primary
                 learning resource.
               </div>
@@ -3267,10 +3252,11 @@
                   id="link-boxy-svg"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >Boxy SVG
+                  ><div class="link-content">
+                    Boxy SVG
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span></a
+                      <div class="ripple"></div>
+                    </div></div></a
                 >, are based on artwork by Charlotte Ma. All other SVG artwork,
                 including the seasonal logo artwork, associated animations, and
                 paw cursors, is my own work.
@@ -3283,10 +3269,11 @@
                   id="link-open-sans"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >Open Sans
+                  ><div class="link-content">
+                    Open Sans
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span
+                      <div class="ripple"></div>
+                    </div></div
                 ></a>
                 and
                 <a
@@ -3295,10 +3282,11 @@
                   id="link-comic-neue"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >Comic Neue
+                  ><div class="link-content">
+                    Comic Neue
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span></a
+                      <div class="ripple"></div>
+                    </div></div></a
                 >, are by Steve Matteson and Craig Rozynski, respectively. The
                 icons, except for the sun-moon transition icon, are
                 <a
@@ -3307,10 +3295,11 @@
                   id="link-material-icons"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >Material Icons
+                  ><div class="link-content">
+                    Material Icons
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span
+                      <div class="ripple"></div>
+                    </div></div
                 ></a>
                 by Google.
               </div>
@@ -3328,10 +3317,11 @@
                   id="link-webkit-cubic-bezier-solver"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >WebKit's algorithm
+                  ><div class="link-content">
+                    WebKit's algorithm
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span></a
+                      <div class="ripple"></div>
+                    </div></div></a
                 >.
               </div>
               <div class="paragraph">
@@ -3364,20 +3354,22 @@
                     id="link-momentum-scroller-repository"
                     rel="noreferrer"
                     target="_blank"
-                    ><span class="link-content"
-                      >repository
+                    ><div class="link-content">
+                      repository
                       <div class="ripple-container">
-                        <div class="ripple"></div></div></span
+                        <div class="ripple"></div>
+                      </div></div
                   ></a>
                   and a
                   <a
                     class="link-container"
                     href="/momenta-mouse/index.html"
                     id="link-momenta-mouse-demo-page"
-                    ><span class="link-content"
-                      >demo page
+                    ><div class="link-content">
+                      demo page
                       <div class="ripple-container">
-                        <div class="ripple"></div></div></span></a
+                        <div class="ripple"></div>
+                      </div></div></a
                   >.
                 </div>
                 <div class="media-container">
@@ -3603,10 +3595,11 @@
                     id="link-kinematic-equations"
                     rel="noreferrer"
                     target="_blank"
-                    ><span class="link-content"
-                      >kinematic equations
+                    ><div class="link-content">
+                      kinematic equations
                       <div class="ripple-container">
-                        <div class="ripple"></div></div></span></a
+                        <div class="ripple"></div>
+                      </div></div></a
                   >. After deceleration is set, the only missing variable needed
                   to calculate scroll duration, distance, and direction is
                   pointer velocity. The momentum accumulation feature is
@@ -3657,10 +3650,11 @@
                     id="link-smooth-scroller-repository"
                     rel="noreferrer"
                     target="_blank"
-                    ><span class="link-content"
-                      >repository
+                    ><div class="link-content">
+                      repository
                       <div class="ripple-container">
-                        <div class="ripple"></div></div></span></a
+                        <div class="ripple"></div>
+                      </div></div></a
                   >.
                 </div>
                 <div class="paragraph">
@@ -3697,10 +3691,11 @@
                     id="link-the-scream"
                     rel="noreferrer"
                     target="_blank"
-                    ><span class="link-content font-light-italic"
-                      >The Scream
+                    ><div class="link-content font-light-italic">
+                      The Scream
                       <div class="ripple-container">
-                        <div class="ripple"></div></div></span
+                        <div class="ripple"></div>
+                      </div></div
                   ></a>
                   by Edvard Munch.
                 </div>
@@ -3875,10 +3870,11 @@
                     id="link-safari-smooth-behavior-support"
                     rel="noreferrer"
                     target="_blank"
-                    ><span class="link-content font-light-italic"
-                      >not supported by Safari
+                    ><div class="link-content font-light-italic">
+                      not supported by Safari
                       <div class="ripple-container">
-                        <div class="ripple"></div></div></span></a
+                        <div class="ripple"></div>
+                      </div></div></a
                   >, and&thinsp;&mdash;&thinsp;most
                   importantly&thinsp;&mdash;&thinsp;does not tell you if the
                   scroll made it to the intended destination (e.g. top: 200 in
@@ -3890,10 +3886,11 @@
                     id="link-scrollend-draft"
                     rel="noreferrer"
                     target="_blank"
-                    ><span class="link-content"
-                      >draft
+                    ><div class="link-content">
+                      draft
                       <div class="ripple-container">
-                        <div class="ripple"></div></div></span
+                        <div class="ripple"></div>
+                      </div></div
                   ></a>
                   that should fix this problem if it becomes standard.
                 </div>
@@ -4081,7 +4078,6 @@
                         style="fill: rgb(255, 255, 255); opacity: 0"
                         transform="matrix(1, 0, 0, -1, 0, 0)"
                         class="halloween-demo"
-                        bx:shape="triangle 210 -411.659 15 25.692 0.5 0 1@d8234d65"
                       ></path>
                       <path
                         style="
@@ -4098,7 +4094,6 @@
                         style="fill: rgb(255, 255, 255); opacity: 0"
                         transform="matrix(1, 0, 0, -1, 0, 0)"
                         class="halloween-demo"
-                        bx:shape="triangle 273.486 -402.974 15 25.692 0.5 0 1@027a9276"
                       ></path>
                       <path
                         style="
@@ -4224,7 +4219,6 @@
                           d="M 231.245 -671.542 L 238.745 -645.85 L 223.745 -645.85 L 231.245 -671.542 Z"
                           style="fill: rgb(230, 150, 0)"
                           transform="matrix(1, 0, 0, -1, 0, 0)"
-                          bx:shape="triangle 223.745 -671.542 15 25.692 0.5 0 1@0abea120"
                         ></path>
                       </g>
                       <g
@@ -4605,12 +4599,12 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Charm's Jobs
+                  <div class="link-content">
+                    Charm's Jobs
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
               <div class="organization">Independent</div>
@@ -4699,12 +4693,12 @@
                       <path d="m105 55-40.8-23.4v46.8z" fill="#fff" />
                     </g>
                   </svg>
-                  <span class="link-content">
+                  <div class="link-content">
                     Watch the full video demo of the Charm's Jobs app
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
             </div>
@@ -4717,11 +4711,12 @@
                   id="scroll-to-portfolio"
                   tabindex="0"
                 >
-                  <span class="link-content"
-                    >my portfolio
+                  <div class="link-content">
+                    my portfolio
                     <div class="ripple-container">
-                      <div class="ripple"></div></div
-                  ></span>
+                      <div class="ripple"></div>
+                    </div>
+                  </div>
                 </div>
                 are my first web projects.
               </div>
@@ -4743,10 +4738,11 @@
                   id="link-comic-neue-2"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >Comic Neue
+                  ><div class="link-content">
+                    Comic Neue
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span></a
+                      <div class="ripple"></div>
+                    </div></div></a
                 >, is by Craig Rozynski, and the icons,
                 <a
                   class="link-container"
@@ -4754,10 +4750,11 @@
                   id="link-material-icons-2"
                   rel="noreferrer"
                   target="_blank"
-                  ><span class="link-content"
-                    >Material Icons
+                  ><div class="link-content">
+                    Material Icons
                     <div class="ripple-container">
-                      <div class="ripple"></div></div></span></a
+                      <div class="ripple"></div>
+                    </div></div></a
                 >, are by Google.
               </div>
               <div class="paragraph">
@@ -4908,12 +4905,12 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Doctor of Pharmacy (PharmD)
+                  <div class="link-content">
+                    Doctor of Pharmacy (PharmD)
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
               <div class="organization">
@@ -4931,12 +4928,12 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Class Rank 1 of 126
+                  <div class="link-content">
+                    Class Rank 1 of 126
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
               <div class="list-item">
@@ -4947,12 +4944,12 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content">
+                  <div class="link-content">
                     Pharmacy GPA 4.0
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
               <div class="list-item">
@@ -4963,12 +4960,12 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >PCOA score highest in class
+                  <div class="link-content">
+                    PCOA score highest in class
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
               <div class="list-item">
@@ -4979,12 +4976,12 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >PCAT composite 99th percentile rank
+                  <div class="link-content">
+                    PCAT composite 99th percentile rank
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
             </div>
@@ -5028,12 +5025,12 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Pharmacist License
+                  <div class="link-content">
+                    Pharmacist License
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
               <div class="organization">Texas State Board of Pharmacy</div>
@@ -5072,11 +5069,11 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Basic Life Support Certification
+                  <div class="link-content">
+                    Basic Life Support Certification
                     <div class="ripple-container">
                       <div class="ripple"></div>
-                    </div> </span
+                    </div></div
                 ></a>
               </div>
               <div class="organization">American Heart Association</div>
@@ -5115,11 +5112,11 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Medication Therapy Management Certification
+                  <div class="link-content">
+                    Medication Therapy Management Certification
                     <div class="ripple-container">
                       <div class="ripple"></div>
-                    </div> </span
+                    </div></div
                 ></a>
               </div>
               <div class="organization">American Pharmacists Association</div>
@@ -5153,11 +5150,11 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Sterile IV Compounding Certification
+                  <div class="link-content">
+                    Sterile IV Compounding Certification
                     <div class="ripple-container">
                       <div class="ripple"></div>
-                    </div> </span
+                    </div></div
                 ></a>
               </div>
               <div class="organization">
@@ -5193,11 +5190,11 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Immunization Delivery Certification
+                  <div class="link-content">
+                    Immunization Delivery Certification
                     <div class="ripple-container">
                       <div class="ripple"></div>
-                    </div> </span
+                    </div></div
                 ></a>
               </div>
               <div class="organization">American Pharmacists Association</div>
@@ -5241,23 +5238,22 @@
                     class="link-container"
                     href="https://github.com/damianmgarcia/"
                   >
-                    <span class="link-content">
+                    <div class="link-content">
                       GitHub repositories
                       <div class="ripple-container">
                         <div class="ripple"></div>
-                      </div> </span
+                      </div></div
                   ></a>
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
                   <a class="link-container" href="/">
-                    <span class="link-content"
-                      >damianmgarcia.com
+                    <div class="link-content">
+                      damianmgarcia.com
                       <div class="ripple-container">
                         <div class="ripple"></div>
-                      </div>
-                    </span> </a
+                      </div></div></a
                   >&thinsp;&mdash;&thinsp;Personal website
                 </div>
               </div>
@@ -5270,11 +5266,11 @@
                     rel="noreferrer"
                     target="_blank"
                   >
-                    <span class="link-content"
-                      >charmsjobs.com
+                    <div class="link-content">
+                      charmsjobs.com
                       <div class="ripple-container">
                         <div class="ripple"></div>
-                      </div> </span></a
+                      </div></div></a
                   >&thinsp;&mdash;&thinsp;Audiobook progressive web app
                 </div>
               </div>
@@ -5287,11 +5283,11 @@
                     rel="noreferrer"
                     target="_blank"
                   >
-                    <span class="link-content"
-                      >MomentaMouse
+                    <div class="link-content">
+                      MomentaMouse
                       <div class="ripple-container">
                         <div class="ripple"></div>
-                      </div> </span></a
+                      </div></div></a
                   >&thinsp;&mdash;&thinsp;JavaScript module that enables
                   mouse-users to use touch-style scrolling and flicking gestures
                   to navigate websites
@@ -5306,11 +5302,11 @@
                     rel="noreferrer"
                     target="_blank"
                   >
-                    <span class="link-content"
-                      >SmoothScroller
+                    <div class="link-content">
+                      SmoothScroller
                       <div class="ripple-container">
                         <div class="ripple"></div>
-                      </div> </span></a
+                      </div></div></a
                   >&thinsp;&mdash;&thinsp;JavaScript module that gives
                   developers a powerful and customizable smooth scroll method
                 </div>
@@ -5429,15 +5425,15 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Independently built a smart diabetes clinical workup
+                  <div class="link-content">
+                    Independently built a smart diabetes clinical workup
                     spreadsheet that generates clinical assessments and
                     recommendations based on vitals, labs, medications, and
                     medical history
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
             </div>
@@ -5490,15 +5486,15 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Using JavaScript, independently built a self-updating and
+                  <div class="link-content">
+                    Using JavaScript, independently built a self-updating and
                     self-maintaining autonomous database to study statistical
                     relationships between dyspnea and environmental factors such
                     as air pollution and airborne allergens
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
             </div>
@@ -5566,15 +5562,15 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Independently developed a set of clinical calculators to
+                  <div class="link-content">
+                    Independently developed a set of clinical calculators to
                     calculate estimated creatinine clearance, sodium correction
                     fluid rates, serum osmolality, opioid equivalencies, and
                     more
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
             </div>
@@ -5637,14 +5633,14 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Using Python, independently wrote a community-acquired
+                  <div class="link-content">
+                    Using Python, independently wrote a community-acquired
                     pneumonia clinical decision support program based on IDSA
                     guidelines
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
             </div>
@@ -5690,12 +5686,12 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Designed the H-E-B Navitus Prescription Mail Order Form
+                  <div class="link-content">
+                    Designed the H-E-B Navitus Prescription Mail Order Form
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
               <div class="list-item">
@@ -5877,13 +5873,13 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >Studied for the PCAT while working full-time and achieved a
+                  <div class="link-content">
+                    Studied for the PCAT while working full-time and achieved a
                     PCAT composite score that ranked in the 99th percentile
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
               <div class="list-item">
@@ -5894,8 +5890,8 @@
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span class="link-content"
-                    >With short notice, independently designed an original
+                  <div class="link-content">
+                    With short notice, independently designed an original
                     queen-size loft bed using SketchUp 3D modeling software,
                     determined and procured exactly the right amount of lumber
                     and hardware required, then cut, drilled, and assembled
@@ -5903,7 +5899,7 @@
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
-                  </span>
+                  </div>
                 </a>
               </div>
             </div>
