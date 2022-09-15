@@ -3,7 +3,7 @@
   <meta charset="UTF-8" />
   <meta
     name="description"
-    content="MomentaMouse: a JavaScript module that enables mouse-users to use
+    content="MomentaMouse: A JavaScript module that enables mouse-users to use
     touch-style scrolling and flicking gestures to navigate websites."
   />
   <title>MomentaMouse</title>
@@ -60,10 +60,14 @@
       filter: brightness(120%);
     }
 
+    .combination-reset-button {
+      margin-bottom: 15px;
+    }
+
     body {
       background: hsl(0, 0%, 0%);
       color: hsl(0, 0%, 100%);
-      margin: 30px 0;
+      margin: 0px;
     }
 
     .touch-screen-modal {
@@ -91,16 +95,14 @@
       width: 90%;
     }
 
-    .touch-screen-modal-content a {
-      border-radius: 5vmin;
-      font-size: 5vmin;
+    .touch-screen-modal-content h1 {
+      font-size: 6vmin;
       justify-self: center;
-      padding: 5vmin;
     }
 
     .touch-screen-modal-content p {
       font-size: 4vmin;
-      margin: 0 100px;
+      margin: 0 10vmin;
     }
 
     main {
@@ -113,13 +115,7 @@
       place-items: center;
     }
 
-    h1,
-    h2,
-    h3 {
-      text-align: center;
-    }
-
-    h3 {
+    h2 {
       backdrop-filter: brightness(75%);
       border: hsl(0, 0%, 0%, 10%) 2px solid;
       border-radius: 15px;
@@ -150,10 +146,14 @@
       width: 100%;
     }
 
-    .grid-item p,
-    .grid-item h3,
-    .grid-item ul {
+    .grid-item > p,
+    .grid-item > h3,
+    .grid-item > ul {
       width: 80%;
+    }
+
+    li > p {
+      width: 100%;
     }
 
     .options {
@@ -172,7 +172,7 @@
       border-radius: 15px;
       display: grid;
       gap: 15px;
-      grid-template-rows: 1fr 1fr;
+      grid-template-rows: auto auto;
       padding: 15px;
       place-content: center;
     }
@@ -181,9 +181,24 @@
       grid-column: 1 / 3;
     }
 
+    label {
+      text-align: center;
+    }
+
     select {
       margin: 0 auto;
       width: 82px;
+    }
+
+    .kitteh {
+      cursor: pointer;
+      height: 69.260089686098654708520179372197px;
+      position: relative;
+      width: 100px;
+    }
+
+    svg {
+      overflow: visible;
     }
 
     .carousel-container {
@@ -192,25 +207,35 @@
       height: 200px;
       margin: 0 auto;
       overflow: hidden;
-      width: 100%;
     }
 
     .carousel {
       background: hsl(0, 0%, 30%);
-      border-radius: 30px;
       display: grid;
-      gap: 30px;
-      grid-auto-flow: column;
-      height: 200px;
-      overflow: auto;
       place-items: center;
+      position: relative;
       scrollbar-color: hsl(0, 0%, 100%) transparent;
       scrollbar-width: thin;
+    }
+
+    .horizontal {
+      border-radius: 30px;
+      grid-auto-flow: column;
+      height: 200px;
+      overflow: auto hidden;
       width: 100%;
     }
 
+    .vertical {
+      background: red;
+      grid-auto-flow: row;
+      height: 100%;
+      overflow: hidden hidden;
+      width: 133px;
+    }
+
     .part-width {
-      width: 80%;
+      max-width: 80%;
     }
 
     .uncontained {
@@ -225,21 +250,30 @@
       border-radius: 15px;
       display: grid;
       height: 140px;
+      margin: 15px;
       place-items: center;
       width: 103px;
     }
 
-    .carousel-item:hover {
+    .carousel:not(.vertical) > .carousel-item:hover {
       filter: brightness(120%);
       transform: scale(1.2);
     }
 
-    .carousel-item:first-child {
+    .horizontal > *:first-child {
       margin-left: 30px;
     }
 
-    .carousel-item:last-child {
+    .horizontal > *:last-child {
       margin-right: 30px;
+    }
+
+    .vertical:first-of-type {
+      margin-left: 15px;
+    }
+
+    .vertical:last-of-type {
+      margin-right: 15px;
     }
 
     .carousel-item-number {
@@ -286,15 +320,17 @@
 <body>
   <div class="touch-screen-modal">
     <div class="touch-screen-modal-content">
-      <a href="https://github.com/damianmgarcia/MomentaMouse">MomentaMouse</a>
+      <h1>MomentaMouse</h1>
       <p>
         MomentaMouse enables mouse-users to use touch-style scrolling and
         flicking gestures to navigate websites.
       </p>
       <p>
-        Web developers interested in this functionality simply need to import
-        the module to begin automatically or manually creating MomentaMouse
-        scrollers.
+        Web developers can
+        <a href="https://github.com/damianmgarcia/MomentaMouse"
+          >easily add MomentaMouse functionality</a
+        >
+        to a website.
       </p>
       <p>
         However, since MomentaMouse is not intended to be used with touch-screen
@@ -306,72 +342,101 @@
       </p>
     </div>
   </div>
-  <h1>MomentaMouse</h1>
   <main>
+    <h1>MomentaMouse</h1>
     <div class="grid-item">
-      <h3>About</h3>
+      <h2>About</h2>
       <p>
-        <a href="https://github.com/damianmgarcia/MomentaMouse">MomentaMouse</a>
-        enables mouse-users to use touch-style scrolling and flicking gestures
-        to navigate websites.
+        MomentaMouse enables mouse-users to use touch-style scrolling and
+        flicking gestures to navigate websites.
       </p>
       <p>
-        Web developers interested in this functionality simply need to import
-        the module to begin automatically or manually creating MomentaMouse
-        scrollers.
+        Web developers can
+        <a href="https://github.com/damianmgarcia/MomentaMouse"
+          >easily add MomentaMouse functionality</a
+        >
+        to a website.
       </p>
-      <p>
-        To get started, hold down your mouse's primary button on this page, or
-        on one of the scrollers below, and then move the mouse around. The page,
-        or scroller, will follow the movement of the cursor. If you do a
-        flicking gesture, it will result in a scroll with momentum in proportion
-        to the speed of your flick.
-      </p>
-      <h3>Some Things to Try</h3>
+      <h2>Usage</h2>
       <ul>
         <li>
-          <strong>Scrolling on Nested Scrollers:</strong> Handling a single
-          MomentaMouse scroller is simple, but how do you handle scrolling when
-          there are nested scrollers or when a scroller is under another element
-          such as an anchor or a button? Let's find out. First, let's test
-          nested scrollers: Scroll vertically on one of the horizontal carousels
-          below. Notice that the "main" scroller takes control from the
-          horizontal carousel when you scroll vertically. Second, let's test a
-          scroller under an anchor: Click and hold the "Repository" link on the
-          red horizontal-only scroller below, and then scroll vertically to see
-          which scroller takes control. Next, try moving horizontally to see
-          which scroller takes control. Try the same tests with the other
-          scroller types (vertical-only, etc.) to see how they react.
+          <h3>Basic Scrolling</h3>
+          <p>
+            Hover your cursor over this page and then hold down your mouse's
+            primary button and move the cursor around. The page will follow the
+            movement of the cursor.
+          </p>
         </li>
         <li>
-          <strong>Highlighting and Dragging:</strong> The touch-screen
-          convention for text-highlighting is to perform a long-press on a word
-          to highlight it, and then to drag selection handles, if necessary, to
-          change the selection. This convention is not necessary with
-          MomentaMouse because mouse-users are also keyboard-users. Instead, a
-          "Quick Toggle Key," which is the
-          <span class="ctrl-key">Ctrl</span> key, is held down to temporarily
-          deactivate MomentaMouse. This allows you to use your mouse as you
-          normally would to highlight, copy, or drag things like text, links, or
-          images. MomentaMouse will reactivate once the
-          <span class="ctrl-key">Ctrl</span> key is let go. Try it out.
+          <h3>Momentum Scrolling</h3>
+          <p>
+            Do a basic scroll but let go of your mouse's primary button before
+            your mouse has stopped moving. The result of this flicking gesture
+            will be a scroll that continues, even after you have let go of the
+            button, with a speed and duration in proportion to the speed of the
+            flick.
+          </p>
         </li>
         <li>
-          <strong>Overscroll and Bouncing:</strong> Overscroll and bouncing
-          effects are useful visual indicators that the end of a scroller has
-          been reached. Let's test them: While at the top or bottom of this
-          page, or at one of the borders of any of the scrollers below, try
-          pulling away. MomentaMouse will create an overscroll effect to let you
-          know you have reached the end. To see a bounce, perform flick gestures
-          with your mouse until the momentum scroll impacts a border. Try
-          hitting the borders with varying amounts of force to see how they
-          react. Notice that the intensity of the bounce is in proportion to the
-          force of impact.
+          <h3>Scrolling Overlapped Scrollers</h3>
+          <p>
+            When another scroller or interactive element, such as an anchor or
+            button, overlaps a MomentaMouse scroller, MomentaMouse decides which
+            element should get attention.
+          </p>
+          <p>
+            Hover your cursor over one of the carousels below and do a basic
+            scroll in the left or right direction. The carousel should move. Now
+            do a basic scroll in the up or down direction. The main page should
+            move.
+          </p>
+        </li>
+        <li>
+          <h3>Highlighting and Dragging</h3>
+          <p>
+            The touch-screen convention for text-highlighting is to perform a
+            long-press on a word to highlight it, and then to drag selection
+            handles, if necessary, to change the selection. This convention is
+            not necessary with MomentaMouse because mouse-users (for the most
+            part) are also keyboard-users.
+          </p>
+          <p>
+            Instead, a "Quick Toggle Key," which is the
+            <span class="ctrl-key">Ctrl</span> key, is held down to temporarily
+            deactivate MomentaMouse. This allows you to use your mouse as you
+            normally would to highlight, copy, or drag things like text, links,
+            or images. MomentaMouse will reactivate once the
+            <span class="ctrl-key">Ctrl</span> key is let go.
+          </p>
+          <p>
+            Try highlighting this text or dragging
+            <a href="#">this link</a>.
+          </p>
+        </li>
+        <li>
+          <h3>Overscroll and Bouncing</h3>
+          <p>
+            Overscroll and bouncing effects are useful visual indicators that
+            the end of a scroller has been reached.
+          </p>
+          <p>
+            <em>Overscroll:</em> Try using a basic scroll to go past the top or
+            bottom of this page. MomentaMouse will create an overscroll effect
+            to let you know you have reached the end. Try this with the various
+            scrollers below as well.
+          </p>
+          <p>
+            <em>Bouncing:</em> Perform momentum scrolls until the momentum
+            scroll hits the top or bottom of this page. Try using various
+            amounts of force. Notice that the intensity of the bounce is in
+            proportion to the force of the impact. Try this with the various
+            scrollers below as well.
+          </p>
         </li>
       </ul>
     </div>
     <div class="grid-item">
-      <h3>Options</h3>
+      <h2>Options</h2>
       <div class="options">
         <div class="option">
           <label for="activation-state-select">MomentaMouse</label>
@@ -419,9 +484,9 @@
       </div>
     </div>
     <div class="grid-item">
-      <h3>Contained Carousel (Bouncy Inside)</h3>
+      <h2>Contained Carousel (Bouncy <em>Inside</em>)</h2>
       <div class="carousel-container part-width">
-        <div class="carousel">
+        <div class="carousel horizontal">
           <div class="carousel-item"></div>
           <div class="carousel-item"></div>
           <div class="carousel-item"></div>
@@ -476,8 +541,8 @@
       </div>
     </div>
     <div class="grid-item">
-      <h3>Contained Carousel (Bouncy Outside)</h3>
-      <div class="carousel part-width">
+      <h2>Contained Carousel (Bouncy <em>Outside</em>)</h2>
+      <div class="carousel horizontal part-width">
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
@@ -531,8 +596,8 @@
       </div>
     </div>
     <div class="grid-item">
-      <h3>Uncontained Carousel</h3>
-      <div class="carousel uncontained">
+      <h2>Uncontained Carousel</h2>
+      <div class="carousel horizontal uncontained">
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
@@ -586,7 +651,315 @@
       </div>
     </div>
     <div class="grid-item">
-      <h3>Horizontal and Vertical Scroller</h3>
+      <h2>Combination Scroller</h2>
+      <input type="button" value="Reset" class="combination-reset-button" />
+      <div class="carousel-container part-width">
+        <div class="carousel horizontal">
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+          <div class="carousel vertical uncontained">
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+            <div class="carousel-item"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-item">
+      <h2>Horizontal and Vertical Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-horizontal-and-vertical">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
@@ -594,7 +967,7 @@
       </div>
     </div>
     <div class="grid-item">
-      <h3>Horizontal-Only Scroller</h3>
+      <h2>Horizontal-Only Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-horizontal-only">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
@@ -602,7 +975,7 @@
       </div>
     </div>
     <div class="grid-item">
-      <h3>Vertical-Only Scroller</h3>
+      <h2>Vertical-Only Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-vertical-only">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
@@ -610,7 +983,7 @@
       </div>
     </div>
     <div class="grid-item">
-      <h3>Horizontal and Vertical Scroller (Right-to-Left)</h3>
+      <h2>Horizontal and Vertical Scroller (Right-to-Left)</h2>
       <div class="scroller-container rtl">
         <div class="scroller-content-horizontal-and-vertical rtl">
           <a class="rtl" href="https://github.com/damianmgarcia/MomentaMouse"
@@ -623,5 +996,324 @@
       >Copyright &copy; <span class="date-year"></span>
       <a href="/">Damian M. Garcia</a></small
     >
+    <div class="kitteh">
+      <svg
+        viewBox="6.389 106.059 445.952 308.941"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g>
+          <path
+            d="M 143.618 123.316 Q 139.84 125.184 135.766 124.609 Q 131.692 124.033 127.955 120.94 Q 124.219 117.846 121.589 112.527 Q 116.709 102.66 118.359 94.936 Q 120.008 87.213 127.717 83.401 Q 132.882 80.847 139.305 81.029 L 132.104 65.498 Q 131.608 64.495 132.017 63.382 Q 132.426 62.268 133.428 61.773 Q 134.353 61.315 135.467 61.724 Q 136.58 62.133 137.076 63.135 L 159.973 112.35 Q 160.469 113.353 160.061 114.37 Q 159.652 115.387 158.65 115.883 Q 157.571 116.417 156.477 115.95 Q 155.383 115.484 154.926 114.366 L 153.44 111.168 Q 150.325 120 143.618 123.316 Z M 141.446 118.73 Q 144.992 116.976 147.197 114.063 Q 149.402 111.15 150.049 108.287 Q 150.697 105.425 150.011 103.845 L 141.591 85.847 Q 139.399 85.683 136.205 86.111 Q 133.011 86.54 130.236 87.912 Q 124.3 90.847 123.39 96.574 Q 122.48 102.3 126.254 109.932 Q 129.304 116.099 133.37 118.406 Q 137.437 120.712 141.446 118.73 Z"
+            transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
+            style="
+              fill: hsl(0, 0%, 100%);
+              stroke-linecap: round;
+              stroke-linejoin: round;
+            "
+          />
+          <path
+            d="M 172.657 111.896 Q 171.543 111.983 170.668 111.275 Q 169.794 110.566 169.713 109.538 L 166.79 71.983 Q 166.71 70.954 167.461 70.076 Q 168.212 69.198 169.327 69.112 Q 170.441 69.025 171.276 69.779 Q 172.112 70.534 172.192 71.563 L 172.959 81.423 Q 175.355 75.629 179.586 71.807 Q 183.817 67.984 188.19 67.643 Q 191.877 67.356 195.005 69.312 Q 198.133 71.269 199.662 76.498 Q 202.361 71.284 206.036 68.626 Q 209.711 65.968 213.483 65.674 Q 218.713 65.267 222.143 68.882 Q 225.573 72.497 226.207 80.642 L 228.103 104.992 Q 228.183 106.021 227.428 106.856 Q 226.674 107.691 225.559 107.778 Q 224.445 107.865 223.613 107.153 Q 222.781 106.442 222.701 105.413 L 220.759 80.462 Q 220.345 75.146 218.44 72.836 Q 216.535 70.526 213.191 70.786 Q 210.619 70.987 207.643 73.202 Q 204.667 75.418 202.718 79.193 Q 200.769 82.967 201.129 87.597 L 202.638 106.975 Q 202.718 108.003 202.006 108.835 Q 201.295 109.667 200.18 109.754 Q 199.065 109.84 198.191 109.132 Q 197.316 108.424 197.236 107.395 L 195.294 82.445 Q 194.873 77.043 193.143 74.762 Q 191.413 72.482 187.898 72.755 Q 184.982 72.982 182.086 75.666 Q 179.19 78.35 176.891 82.066 Q 174.83 85.504 174.278 88.394 Q 173.727 91.283 174.121 96.342 L 175.115 109.117 Q 175.195 110.146 174.484 110.978 Q 173.772 111.809 172.657 111.896 Z"
+            transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
+            style="
+              fill: hsl(0, 0%, 100%);
+              stroke-linecap: round;
+              stroke-linejoin: round;
+            "
+          />
+          <path
+            d="M 247.677 127.027 Q 242.893 126.474 237.402 124.54 Q 236.482 124.261 235.968 123.466 Q 235.454 122.67 235.563 121.731 Q 235.691 120.62 236.592 119.945 Q 237.492 119.27 238.603 119.398 Q 239.03 119.448 240.528 119.967 Q 244.274 121.266 248.204 121.72 Q 254.526 122.451 257.758 119.578 Q 260.99 116.705 261.928 110.84 L 262.593 106.588 Q 260.026 109.322 256.853 110.557 Q 253.68 111.791 250.253 111.482 Q 245.469 110.929 241.888 107.831 Q 238.307 104.733 236.624 99.82 Q 234.941 94.908 235.603 89.184 Q 236.264 83.46 239.553 78.602 Q 242.842 73.745 247.815 71.16 Q 252.789 68.575 258.428 69.227 Q 262.785 69.731 267.272 72.847 Q 267.677 69.344 270.326 69.65 Q 271.436 69.778 272.159 70.641 Q 272.882 71.504 272.743 72.7 L 267.29 111.633 Q 266.112 120.327 260.782 124.126 Q 255.451 127.925 247.677 127.027 Z M 250.162 106.277 Q 255.373 106.879 259.574 103.123 Q 263.774 99.366 264.84 90.14 L 266.233 78.094 Q 264.994 76.825 262.729 75.828 Q 260.464 74.83 258.157 74.563 Q 253.885 74.069 250.036 75.918 Q 246.186 77.768 243.596 81.451 Q 241.006 85.133 240.453 89.918 Q 240.058 93.335 240.891 96.981 Q 241.725 100.627 244.064 103.234 Q 246.403 105.842 250.162 106.277 Z"
+            transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
+            style="
+              fill: hsl(0, 0%, 100%);
+              stroke-linecap: round;
+              stroke-linejoin: round;
+            "
+          />
+
+          <path
+            style="fill: rgb(106, 66, 32); stroke-linecap: round"
+            d="M 115 415 C 102.089 412.984 38.788 398.255 49.436 367.708 C 49.436 367.708 10.29 372.191 6.581 362.535 C 3.238 345.967 44.686 322.998 44.686 322.998 C 44.726 322.94 15.889 334.683 14.067 327.859 C 4.329 291.391 89.532 253.371 89.532 253.371 C 89.532 253.371 55.268 270.819 46.891 262.195 C 31.123 245.961 124.199 213.433 123.333 209.297 C 128.374 209.297 116.484 107.986 129.601 106.075 C 138.944 104.714 198.268 188.903 200.763 187.175 C 205.242 180.469 241.984 151.957 242.298 160.688 C 242.343 161.95 242.788 178.232 242.788 178.232 C 242.788 178.232 261.775 154.28 263.735 159.316 C 264.252 158.152 266.024 178.326 266.024 178.326 C 266.024 178.326 279.657 159.659 284.46 165.421 C 287.314 168.845 290.342 182.51 290.342 182.51 C 290.342 182.51 298.348 183.992 301.052 181.644 C 324.994 160.854 341.635 120.044 354.884 116.014 C 368.133 111.984 362.196 201.171 358.545 200.302 C 358.545 200.302 434.522 226.212 431.944 236.213 C 430.872 240.371 391.773 248.674 393.701 252.273 C 400.252 252.313 432.58 253.918 436.369 265.95 C 438.806 273.688 407.146 284.129 407.146 284.129 C 410.127 282.443 446.602 300.729 452.223 323.966 C 454.744 334.389 416.095 326.629 416.095 326.629 C 416.095 326.629 463.741 327.245 447.832 359.433 C 435.133 385.125 352.476 414.738 347.053 415"
+          ></path>
+          <g>
+            <path
+              style="
+                fill: none;
+                stroke-width: 6px;
+                stroke-linecap: round;
+                stroke: rgba(229, 187, 82, 0.39);
+              "
+              d="M 84.698 313.534 C 81.332 315.903 20.976 351.507 32.375 359.469 C 37.683 363.176 75.931 351.105 83.595 351.936"
+            ></path>
+            <path
+              style="
+                fill: none;
+                stroke: rgb(240, 221, 193);
+                stroke-width: 5px;
+                stroke-opacity: 0.42;
+                stroke-linecap: round;
+              "
+              d="M 209.12 195.442 C 208.048 187.74 227.846 170.092 234.491 168.452"
+            ></path>
+            <path
+              style="
+                fill: none;
+                stroke-width: 5px;
+                stroke-opacity: 0.42;
+                stroke-linecap: round;
+                stroke: rgba(221, 175, 110, 0.82);
+              "
+              d="M 270.142 186.403 C 269.658 181.281 278.6 169.543 281.601 168.452"
+            ></path>
+            <path
+              style="
+                fill: none;
+                stroke-width: 6px;
+                stroke-linecap: round;
+                stroke: rgba(142, 121, 67, 0.46);
+              "
+              d="M 369.499 285.59 C 363.526 287.306 331.793 285.481 330.101 294.993 C 328.967 301.367 383.603 319.427 391.267 320.258"
+              transform="matrix(-0.982154, 0.188079, -0.188079, -0.982154, 807.97311, 494.494676)"
+            ></path>
+            <path
+              style="
+                stroke-width: 6px;
+                stroke-linecap: round;
+                fill: none;
+                stroke: rgba(255, 191, 0, 0.3);
+              "
+              d="M 430.094 336.33 C 467.03 359.236 395.38 389.34 351.557 404.158"
+            ></path>
+          </g>
+          <path
+            style="fill: rgb(255, 255, 0)"
+            d="M 157.814 208.387 C 169.065 206.939 197.85 222.557 201.178 228.402 C 209.781 239.926 190.864 275.616 171.926 272.604 C 132.403 266.319 143.013 211.565 157.814 208.387 Z"
+          ></path>
+          <path
+            style="fill: rgb(255, 255, 0)"
+            d="M 302.851 229.255 C 305.643 222.331 330.586 209.417 335.452 211.377 C 351.363 213.605 365.719 255.422 330.971 268.694 C 315.005 274.792 300.263 246.81 302.851 229.255 Z"
+          ></path>
+          <path
+            style="stroke: rgb(0, 0, 0)"
+            d="M 236.596 267.51 C 238.182 263.69 258.191 263.497 257.629 267.247 C 257.067 270.997 248.473 284.979 246.849 283.679 C 245.124 286.266 235.452 268.699 236.596 267.51 Z"
+          ></path>
+          <path
+            style="
+              stroke: rgb(0, 0, 0);
+              fill: none;
+              stroke-width: 6px;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+            "
+            d="M 298.619 284.201 C 301.037 326.967 247.746 319.149 246.845 283.567 C 233.329 332.922 201.869 308.3 212.136 287.899"
+          ></path>
+          <ellipse
+            style="stroke-width: 0px"
+            cx="158.018"
+            cy="267.893"
+            rx="8.759"
+            ry="12.935"
+            transform="matrix(0.97752, 0.210842, -0.210842, 0.97752, 79.418502, -54.736551)"
+          ></ellipse>
+          <ellipse
+            style="stroke-width: 0px"
+            cx="158.018"
+            cy="267.893"
+            rx="8.759"
+            ry="12.935"
+            transform="matrix(0.999845, 0.017579, -0.017579, 0.999845, 175.856987, -33.380458)"
+          ></ellipse>
+          <path
+            style="
+              stroke-width: 0px;
+              stroke-linejoin: round;
+              stroke: hsl(0, 0%, 0%);
+              stroke-linecap: round;
+              fill: rgb(106, 66, 32);
+            "
+            d="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
+          >
+            <animate
+              class="eyelid-down"
+              attributeName="d"
+              to="M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729"
+              begin="indefinite"
+              dur="200ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+              keyTimes="0; 1"
+              fill="freeze"
+            />
+            <animate
+              class="eyelid-down"
+              attributeName="stroke-width"
+              to="6px"
+              begin="indefinite"
+              dur="200ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+              keyTimes="0; 1"
+              fill="freeze"
+            />
+            <animate
+              class="eyelid-up"
+              attributeName="d"
+              to="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
+              begin="indefinite"
+              dur="200ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+              keyTimes="0; 1"
+              fill="freeze"
+            />
+            <animate
+              class="eyelid-up"
+              attributeName="stroke-width"
+              to="0px"
+              begin="indefinite"
+              dur="200ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+              keyTimes="0; 1"
+              fill="freeze"
+            />
+            <animate
+              class="long-blink"
+              attributeName="d"
+              values="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
+              begin="indefinite"
+              dur="1000ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
+              fill="freeze"
+            />
+            <animate
+              class="long-blink"
+              attributeName="stroke-width"
+              values="0px; 6px; 6px; 0px"
+              begin="indefinite"
+              dur="1000ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
+              fill="freeze"
+            />
+            <animate
+              class="short-blink"
+              attributeName="d"
+              values="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
+              begin="indefinite"
+              dur="400ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1; 0 0 0.2 1"
+              fill="freeze"
+            />
+            <animate
+              class="short-blink"
+              attributeName="stroke-width"
+              values="0px; 6px; 0px"
+              begin="indefinite"
+              dur="400ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1; 0 0 0.2 1"
+              fill="freeze"
+            />
+          </path>
+          <path
+            style="
+              stroke-width: 0px;
+              stroke-linejoin: round;
+              stroke: hsl(0, 0%, 0%);
+              stroke-linecap: round;
+              fill: rgb(106, 66, 32);
+            "
+            d="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
+          >
+            <animate
+              class="eyelid-down"
+              attributeName="d"
+              to="M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786"
+              begin="indefinite"
+              dur="200ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+              keyTimes="0; 1"
+              fill="freeze"
+            />
+            <animate
+              class="eyelid-down"
+              attributeName="stroke-width"
+              to="6px"
+              begin="indefinite"
+              dur="200ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+              keyTimes="0; 1"
+              fill="freeze"
+            />
+            <animate
+              class="eyelid-up"
+              attributeName="d"
+              to="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
+              begin="indefinite"
+              dur="200ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+              keyTimes="0; 1"
+              fill="freeze"
+            />
+            <animate
+              class="eyelid-up"
+              attributeName="stroke-width"
+              to="0px"
+              begin="indefinite"
+              dur="200ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+              keyTimes="0; 1"
+              fill="freeze"
+            />
+            <animate
+              class="long-blink"
+              attributeName="d"
+              values="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
+              begin="indefinite"
+              dur="1000ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
+              fill="freeze"
+            />
+            <animate
+              class="long-blink"
+              attributeName="stroke-width"
+              values="0px; 6px; 6px; 0px"
+              begin="indefinite"
+              dur="1000ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
+              fill="freeze"
+            />
+            <animate
+              class="short-blink"
+              attributeName="d"
+              values="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
+              begin="indefinite"
+              dur="400ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1; 0 0 0.2 1"
+              fill="freeze"
+            />
+            <animate
+              class="short-blink"
+              attributeName="stroke-width"
+              values="0px; 6px; 0px"
+              begin="indefinite"
+              dur="400ms"
+              calcMode="spline"
+              keySplines="0 0 0.2 1; 0 0 0.2 1"
+              fill="freeze"
+            />
+          </path>
+        </g>
+      </svg>
+    </div>
   </main>
 </body>
