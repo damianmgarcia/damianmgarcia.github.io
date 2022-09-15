@@ -650,36 +650,36 @@ export class ScrollContainerTools {
       allowedPrototypes: [Element],
     });
 
-    const allowedOverflowValues = ["auto", "hidden", "overlay", "scroll"];
+    const isDocumentRoot = element === document.documentElement;
     const computedStyle = getComputedStyle(element);
     const xAxisOverflow = computedStyle.overflowX;
     const yAxisOverflow = computedStyle.overflowY;
-    const xHasScrollableOverflow = element.scrollWidth > element.clientWidth;
-    const yHasScrollableOverflow = element.scrollHeight > element.clientHeight;
 
-    const isDocumentRoot = element === document.documentElement;
-    const documentRootExceptionX =
-      isDocumentRoot &&
-      xHasScrollableOverflow &&
-      [...allowedOverflowValues, "visible"].includes(xAxisOverflow);
-    const documentRootExceptionY =
-      isDocumentRoot &&
-      yHasScrollableOverflow &&
-      [...allowedOverflowValues, "visible"].includes(yAxisOverflow);
+    const scrollableOverflowValues = ["auto", "hidden", "overlay", "scroll"];
+    const xAxisIsPotentiallyScrollable = isDocumentRoot
+      ? [...scrollableOverflowValues, "visible"].includes(xAxisOverflow)
+      : scrollableOverflowValues.includes(xAxisOverflow);
+    const yAxisIsPotentiallyScrollable = isDocumentRoot
+      ? [...scrollableOverflowValues, "visible"].includes(yAxisOverflow)
+      : scrollableOverflowValues.includes(yAxisOverflow);
+    const xAxisHasScrollableOverflow =
+      element.scrollWidth > element.clientWidth;
+    const yAxisHasScrollableOverflow =
+      element.scrollHeight > element.clientHeight;
 
     const xAxisIsScrollable =
-      documentRootExceptionX ||
-      (xHasScrollableOverflow && allowedOverflowValues.includes(xAxisOverflow));
+      xAxisIsPotentiallyScrollable && xAxisHasScrollableOverflow;
     const yAxisIsScrollable =
-      documentRootExceptionY ||
-      (yHasScrollableOverflow && allowedOverflowValues.includes(yAxisOverflow));
+      yAxisIsPotentiallyScrollable && yAxisHasScrollableOverflow;
 
     return {
+      xAxisIsPotentiallyScrollable,
+      xAxisHasScrollableOverflow,
       xAxisIsScrollable,
-      xHasScrollableOverflow,
       xAxisOverflow,
+      yAxisIsPotentiallyScrollable,
+      yAxisHasScrollableOverflow,
       yAxisIsScrollable,
-      yHasScrollableOverflow,
       yAxisOverflow,
     };
   }
