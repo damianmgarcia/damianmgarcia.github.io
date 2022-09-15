@@ -1781,7 +1781,7 @@ class InputEventDelegator {
 
   delegate(event) {
     if (event.repeat) return;
-    
+
     const inputIsAnAcceptableInput = InputTools.isPrimaryInput(event);
     if (!inputIsAnAcceptableInput) return;
 
@@ -2871,7 +2871,7 @@ function createTouchAppButton(toggleButtonState) {
 const createMomentaMouseScrollers = ({ activateImmediately = false } = {}) => {
   MomentaMouse.autoCreateScrollers({
     activateImmediately,
-    selectorsToIgnore: [":root", "body"],
+    selectorsToIgnore: [":root", "body", "textarea"],
   })
     .setSelectorsOfElementsScrollerShouldIgnore(["header", ".selector"])
     .setSelectorsOfClickableElements([".button", ".link-container"])
