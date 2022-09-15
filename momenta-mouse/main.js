@@ -161,12 +161,19 @@ if (!isTouchScreen) {
     });
   };
 
-  document.addEventListener("momentaMouseScrollerPointerRoute", (event) => {
-    if (event.detail.routeFrom && event.detail.routeFrom.matches(".vertical"))
-      snapCarouselItemIntoAlignment(event.detail.routeFrom);
-  });
+  document.addEventListener(
+    "momentaMouseScrollerPointerHandlingStop",
+    (event) => {
+      if (!event.detail.scrollContainer.matches(".vertical")) return;
+
+      if (event.detail.interruptedBy)
+        snapCarouselItemIntoAlignment(event.detail.scrollContainer);
+    }
+  );
 
   document.addEventListener("momentaMouseScrollerScrollStop", (event) => {
+    if (!event.detail.scrollContainer.matches(".vertical")) return;
+
     const scrollWasInterrupted =
       event.detail.interruptedBy !==
         "Scroll distance is below minimum scrollable distance" &&
