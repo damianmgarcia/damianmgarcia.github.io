@@ -12,10 +12,14 @@
     rel="apple-touch-icon"
     href="/images/charm-logo-square-background-180.png"
   />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300&display=swap"
+    rel="stylesheet"
+  />
   <script type="module" src="main.js"></script>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap");
-
     @media (pointer: fine) {
       ::-webkit-scrollbar {
         height: 10px;
@@ -42,6 +46,8 @@
 
     :root {
       font-family: "Open Sans", sans-serif;
+      font-synthesis: none;
+      font-weight: 300;
       line-height: 1.4;
       overflow: hidden auto;
       scrollbar-color: hsl(0, 0%, 100%) transparent;
@@ -49,19 +55,35 @@
     }
 
     a {
-      background: hsl(50, 80%, 50%);
+      background: hsl(60, 100%, 50%);
       border-radius: 4px;
       color: hsl(0, 0%, 0%);
+      font-weight: 400;
       padding: 0px 4px;
       text-decoration: none;
     }
 
     a:hover {
-      filter: brightness(120%);
+      filter: hue-rotate(90deg);
+    }
+
+    h1 {
+      font-weight: 700;
+    }
+
+    h2,
+    h3 {
+      font-weight: 400;
+      z-index: 1;
+    }
+
+    .center-aligned-text {
+      text-align: center;
     }
 
     .combination-reset-button {
-      margin-bottom: 15px;
+      margin: 0 auto 30px auto;
+      place-self: center;
     }
 
     body {
@@ -107,24 +129,15 @@
 
     main {
       background: hsl(0, 0%, 0%);
-      clear: both;
       display: grid;
-      gap: 5vmin;
+      gap: 60px;
       grid-auto-flow: row;
-      margin: 5vmin auto;
+      margin: 60px auto;
       place-items: center;
     }
 
-    h2 {
-      backdrop-filter: brightness(75%);
-      border: hsl(0, 0%, 0%, 10%) 2px solid;
-      border-radius: 15px;
-      margin: 0;
-      padding: 15px;
-      z-index: 1;
-    }
-
     ul {
+      margin: 0;
       padding: 0;
     }
 
@@ -142,18 +155,20 @@
 
     .grid-item {
       display: grid;
-      place-items: center;
+      place-content: center;
       width: 100%;
     }
 
-    .grid-item > p,
-    .grid-item > h3,
-    .grid-item > ul {
-      width: 80%;
+    .grid-item > * {
+      margin-left: 20vw;
+      margin-right: 20vw;
+      max-width: 40rem;
     }
 
-    li > p {
-      width: 100%;
+    .grid-item > h2 {
+      margin-left: calc(20vw - 60px);
+      margin-right: calc(20vw - 60px);
+      max-width: 100%;
     }
 
     .options {
@@ -164,7 +179,6 @@
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr 1fr;
       padding: 30px;
-      width: max-content;
     }
 
     .option {
@@ -212,6 +226,7 @@
     .carousel {
       background: hsl(0, 0%, 30%);
       display: grid;
+      margin: 0 auto;
       place-items: center;
       position: relative;
       scrollbar-color: hsl(0, 0%, 100%) transparent;
@@ -234,11 +249,15 @@
       width: 133px;
     }
 
+    .full-width {
+      max-width: 100%;
+    }
+
     .part-width {
       max-width: 80%;
     }
 
-    .uncontained {
+    .transparent-bg {
       background: transparent;
     }
 
@@ -283,10 +302,12 @@
     .scroller-container {
       border-radius: 2.5vmin;
       height: 50vmin;
+      justify-self: center;
       overflow: auto;
       scrollbar-color: hsl(0, 0%, 100%) transparent;
       scrollbar-width: thin;
       width: 50vmin;
+      max-width: 50vmin;
     }
 
     .scroller-container a {
@@ -320,7 +341,7 @@
 <body>
   <div class="touch-screen-modal">
     <div class="touch-screen-modal-content">
-      <h1>MomentaMouse</h1>
+      <h1><em>Momenta</em><strong>Mouse</strong></h1>
       <p>
         MomentaMouse enables mouse-users to use touch-style scrolling and
         flicking gestures to navigate websites.
@@ -343,20 +364,24 @@
     </div>
   </div>
   <main>
-    <h1>MomentaMouse</h1>
+    <h1><em>Momenta</em><strong>Mouse</strong></h1>
     <div class="grid-item">
       <h2>About</h2>
-      <p>
-        MomentaMouse enables mouse-users to use touch-style scrolling and
-        flicking gestures to navigate websites.
-      </p>
-      <p>
-        Web developers can
-        <a href="https://github.com/damianmgarcia/MomentaMouse"
-          >easily add MomentaMouse functionality</a
-        >
-        to a website.
-      </p>
+      <div>
+        <p>
+          MomentaMouse enables mouse-users to use touch-style scrolling and
+          flicking gestures to navigate websites.
+        </p>
+        <p>
+          Web developers can
+          <a href="https://github.com/damianmgarcia/MomentaMouse"
+            >easily add MomentaMouse functionality</a
+          >
+          to a website.
+        </p>
+      </div>
+    </div>
+    <div class="grid-item">
       <h2>Usage</h2>
       <ul>
         <li>
@@ -436,10 +461,12 @@
       </ul>
     </div>
     <div class="grid-item">
-      <h2>Options</h2>
+      <h2 class="center-aligned-text">Options</h2>
       <div class="options">
         <div class="option">
-          <label for="activation-state-select">MomentaMouse</label>
+          <label for="activation-state-select"
+            ><em>Momenta</em><strong>Mouse</strong></label
+          >
           <select name="activation-state" id="activation-state-select">
             <option value="on" selected>On</option>
             <option value="off">Off</option>
@@ -484,7 +511,9 @@
       </div>
     </div>
     <div class="grid-item">
-      <h2>Contained Carousel (Bouncy <em>Inside</em>)</h2>
+      <h2 class="center-aligned-text">
+        Contained Carousel (Bouncy <em>Inside</em>)
+      </h2>
       <div class="carousel-container part-width">
         <div class="carousel horizontal">
           <div class="carousel-item"></div>
@@ -541,7 +570,9 @@
       </div>
     </div>
     <div class="grid-item">
-      <h2>Contained Carousel (Bouncy <em>Outside</em>)</h2>
+      <h2 class="center-aligned-text">
+        Contained Carousel (Bouncy <em>Outside</em>)
+      </h2>
       <div class="carousel horizontal part-width">
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
@@ -596,8 +627,8 @@
       </div>
     </div>
     <div class="grid-item">
-      <h2>Uncontained Carousel</h2>
-      <div class="carousel horizontal uncontained">
+      <h2 class="center-aligned-text">Uncontained Carousel</h2>
+      <div class="carousel horizontal full-width transparent-bg">
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
@@ -651,11 +682,11 @@
       </div>
     </div>
     <div class="grid-item">
-      <h2>Combination Scroller</h2>
+      <h2 class="center-aligned-text">Combination Scroller</h2>
       <input type="button" value="Reset" class="combination-reset-button" />
       <div class="carousel-container part-width">
         <div class="carousel horizontal">
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -667,7 +698,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -679,7 +710,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -691,7 +722,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -703,7 +734,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -715,7 +746,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -727,7 +758,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -739,7 +770,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -751,7 +782,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -763,7 +794,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -775,7 +806,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -787,7 +818,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -799,7 +830,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -811,7 +842,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -823,7 +854,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -835,7 +866,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -847,7 +878,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -859,7 +890,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -871,7 +902,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -883,7 +914,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -895,7 +926,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -907,7 +938,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -919,7 +950,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -931,7 +962,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -943,7 +974,7 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
           </div>
-          <div class="carousel vertical uncontained">
+          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -959,7 +990,7 @@
       </div>
     </div>
     <div class="grid-item">
-      <h2>Horizontal and Vertical Scroller</h2>
+      <h2 class="center-aligned-text">Horizontal and Vertical Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-horizontal-and-vertical">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
@@ -967,7 +998,7 @@
       </div>
     </div>
     <div class="grid-item">
-      <h2>Horizontal-Only Scroller</h2>
+      <h2 class="center-aligned-text">Horizontal-Only Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-horizontal-only">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
@@ -975,7 +1006,7 @@
       </div>
     </div>
     <div class="grid-item">
-      <h2>Vertical-Only Scroller</h2>
+      <h2 class="center-aligned-text">Vertical-Only Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-vertical-only">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
@@ -983,7 +1014,9 @@
       </div>
     </div>
     <div class="grid-item">
-      <h2>Horizontal and Vertical Scroller (Right-to-Left)</h2>
+      <h2 class="center-aligned-text">
+        Horizontal and Vertical Scroller (Right-to-Left)
+      </h2>
       <div class="scroller-container rtl">
         <div class="scroller-content-horizontal-and-vertical rtl">
           <a class="rtl" href="https://github.com/damianmgarcia/MomentaMouse"
