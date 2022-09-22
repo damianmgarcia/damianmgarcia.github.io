@@ -449,10 +449,14 @@ export function getBrowserHeuristics() {
 }
 
 export function getDeviceHeuristics() {
-  const isTouchScreen = matchMedia("(any-pointer: coarse)").matches;
+  const hasTouchScreen = matchMedia("(any-pointer: coarse)").matches;
+  const hasMouseOrTouchpad =
+    matchMedia("(any-pointer: fine)").matches &&
+    matchMedia("(any-hover: hover)").matches;
 
   const deviceHeuristics = {
-    isTouchScreen,
+    hasTouchScreen,
+    hasMouseOrTouchpad,
   };
 
   return deviceHeuristics;
