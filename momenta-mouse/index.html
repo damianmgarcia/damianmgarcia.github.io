@@ -92,41 +92,6 @@
       margin: 0px;
     }
 
-    .touch-screen-modal {
-      backdrop-filter: blur(100px) brightness(120%);
-      display: none;
-      height: 100%;
-      place-items: center;
-      position: fixed;
-      top: 0px;
-      touch-action: none;
-      width: 100%;
-      z-index: 2;
-    }
-
-    .touch-screen-modal-content {
-      align-items: center;
-      background: hsl(0, 0%, 80%, 25%);
-      border-radius: 5vmin;
-      display: grid;
-      gap: 5vmin;
-      height: 95%;
-      justify-items: start;
-      place-content: center;
-      touch-action: none;
-      width: 90%;
-    }
-
-    .touch-screen-modal-content h1 {
-      font-size: 6vmin;
-      justify-self: center;
-    }
-
-    .touch-screen-modal-content p {
-      font-size: 4vmin;
-      margin: 0 10vmin;
-    }
-
     main {
       background: hsl(0, 0%, 0%);
       display: grid;
@@ -153,19 +118,53 @@
       padding: 2px 8px 2px 4px;
     }
 
-    .grid-item {
+    .mouse-status {
+      border-radius: 15px;
+      padding: 15px 30px;
+    }
+
+    body[data-mouse-found="false"] .mouse-status {
+      position: sticky;
+      top: 10px;
+      z-index: 2;
+    }
+
+    .mouse-status .found,
+    .mouse-status .not-found {
+      border: 2px hsl(0, 0%, 100%, 0.5);
+      border-radius: 15px;
+      padding: 15px 30px;
+    }
+
+    body[data-mouse-found="true"] .found {
+      background: hsl(120, 100%, 25%);
+    }
+
+    body[data-mouse-found="true"] .not-found {
+      display: none;
+    }
+
+    body[data-mouse-found="false"] .found {
+      display: none;
+    }
+
+    body[data-mouse-found="false"] .not-found {
+      background: hsl(0, 100%, 25%);
+    }
+
+    section {
       display: grid;
       place-content: center;
       width: 100%;
     }
 
-    .grid-item > * {
+    section > * {
       margin-left: 20vw;
       margin-right: 20vw;
       max-width: 40rem;
     }
 
-    .grid-item > h2 {
+    section > h2 {
       margin-left: calc(20vw - 60px);
       margin-right: calc(20vw - 60px);
       max-width: 100%;
@@ -195,13 +194,9 @@
       grid-column: 1 / 3;
     }
 
-    label {
-      text-align: center;
-    }
-
-    select {
+    .option > * {
       margin: 0 auto;
-      width: 82px;
+      text-align: center;
     }
 
     .kitteh {
@@ -338,34 +333,14 @@
     }
   </style>
 </head>
-<body>
-  <div class="touch-screen-modal">
-    <div class="touch-screen-modal-content">
-      <h1><em>Momenta</em><strong>Mouse</strong></h1>
-      <p>
-        MomentaMouse enables mouse-users to use touch-style scrolling and
-        flicking gestures to navigate websites.
-      </p>
-      <p>
-        Web developers can
-        <a href="https://github.com/damianmgarcia/MomentaMouse"
-          >easily add MomentaMouse functionality</a
-        >
-        to a website.
-      </p>
-      <p>
-        However, since MomentaMouse is not intended to be used with touch-screen
-        devices, it cannot be demonstrated on this device.
-      </p>
-      <p>
-        Please return at a later time if you have a non-touch-screen device with
-        a mouse.
-      </p>
-    </div>
-  </div>
+<body data-mouse-found="false">
   <main>
     <h1><em>Momenta</em><strong>Mouse</strong></h1>
-    <div class="grid-item">
+    <div class="mouse-status center-aligned-text">
+      <div class="found">Mouse Found</div>
+      <div class="not-found">Mouse Not Found</div>
+    </div>
+    <section>
       <h2>About</h2>
       <div>
         <p>
@@ -380,8 +355,8 @@
           to a website.
         </p>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2>Usage</h2>
       <ul>
         <li>
@@ -459,22 +434,21 @@
           </p>
         </li>
       </ul>
-    </div>
-    <div class="grid-item">
-      <h2 class="center-aligned-text">Options</h2>
+    </section>
+    <section>
       <div class="options">
         <div class="option">
           <label for="activation-state-select"
             ><em>Momenta</em><strong>Mouse</strong></label
           >
-          <select name="activation-state" id="activation-state-select">
+          <select name="activation-state" id="activation-state-select" disabled>
             <option value="on" selected>On</option>
             <option value="off">Off</option>
           </select>
         </div>
         <div class="option">
           <label for="deceleration-select">Deceleration</label>
-          <select name="deceleration" id="deceleration-select">
+          <select name="deceleration" id="deceleration-select" disabled>
             <option value="none">None</option>
             <option value="minimum">Minimum</option>
             <option value="low">Low</option>
@@ -485,7 +459,7 @@
         </div>
         <div class="option">
           <label for="bounciness-select">Bounciness</label>
-          <select name="bounciness" id="bounciness-select">
+          <select name="bounciness" id="bounciness-select" disabled>
             <option value="none">None</option>
             <option value="minimum">Minimum</option>
             <option value="low">Low</option>
@@ -496,21 +470,21 @@
         </div>
         <div class="option">
           <label for="reactive-cursor-select">Reactive Cursor</label>
-          <select name="reactive-cursor" id="reactive-cursor-select">
+          <select name="reactive-cursor" id="reactive-cursor-select" disabled>
             <option value="on" selected>On</option>
             <option value="off">Off</option>
           </select>
         </div>
         <div class="option">
           <label for="quick-toggle-key-select">Quick Toggle Key</label>
-          <select name="quick-toggle-key" id="quick-toggle-key-select">
+          <select name="quick-toggle-key" id="quick-toggle-key-select" disabled>
             <option value="on" selected>On</option>
             <option value="off">Off</option>
           </select>
         </div>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2 class="center-aligned-text">
         Contained Carousel (Bouncy <em>Inside</em>)
       </h2>
@@ -568,8 +542,8 @@
           <div class="carousel-item"></div>
         </div>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2 class="center-aligned-text">
         Contained Carousel (Bouncy <em>Outside</em>)
       </h2>
@@ -625,8 +599,8 @@
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2 class="center-aligned-text">Uncontained Carousel</h2>
       <div class="carousel horizontal full-width transparent-bg">
         <div class="carousel-item"></div>
@@ -680,8 +654,8 @@
         <div class="carousel-item"></div>
         <div class="carousel-item"></div>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2 class="center-aligned-text">Combination Scroller</h2>
       <input type="button" value="Reset" class="combination-reset-button" />
       <div class="carousel-container part-width">
@@ -988,32 +962,32 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2 class="center-aligned-text">Horizontal and Vertical Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-horizontal-and-vertical">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
         </div>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2 class="center-aligned-text">Horizontal-Only Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-horizontal-only">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
         </div>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2 class="center-aligned-text">Vertical-Only Scroller</h2>
       <div class="scroller-container">
         <div class="scroller-content-vertical-only">
           <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
         </div>
       </div>
-    </div>
-    <div class="grid-item">
+    </section>
+    <section>
       <h2 class="center-aligned-text">
         Horizontal and Vertical Scroller (Right-to-Left)
       </h2>
@@ -1024,7 +998,7 @@
           >
         </div>
       </div>
-    </div>
+    </section>
     <small
       >Copyright &copy; <span class="date-year"></span>
       <a href="/">Damian M. Garcia</a></small
