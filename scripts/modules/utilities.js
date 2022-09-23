@@ -419,47 +419,94 @@ export function flashAnimation(
   );
 }
 
-export function getBrowserHeuristics() {
-  const userAgent = navigator.userAgent.toLowerCase();
+export class Heuristics {
+  static getBrowserHeuristics() {
+    const userAgent = navigator.userAgent.toLowerCase();
 
-  const isChromium =
-    navigator?.userAgentData?.brands.some(
-      (brandInformation) => brandInformation.brand === "Chromium"
-    ) || /Chrome\/[.0-9]*/.test(navigator.userAgent);
+    const isChromium =
+      navigator?.userAgentData?.brands.some(
+        (brandInformation) => brandInformation.brand === "Chromium"
+      ) || /Chrome\/[.0-9]*/.test(navigator.userAgent);
 
-  const isSafari =
-    !isChromium &&
-    userAgent.includes("applewebkit/") &&
-    !userAgent.includes("chrome/") &&
-    !userAgent.includes("firefox/") &&
-    !userAgent.includes("edg/") &&
-    !userAgent.includes("opr/");
+    const isSafari =
+      !isChromium &&
+      userAgent.includes("applewebkit/") &&
+      !userAgent.includes("chrome/") &&
+      !userAgent.includes("firefox/") &&
+      !userAgent.includes("edg/") &&
+      !userAgent.includes("opr/");
 
-  const isIOsSafari =
-    isSafari &&
-    (navigator?.standalone === true || navigator?.standalone === false);
+    const isIOsSafari =
+      isSafari &&
+      (navigator?.standalone === true || navigator?.standalone === false);
 
-  const browserHeuristics = {
-    isChromium,
-    isSafari,
-    isIOsSafari,
-  };
+    const browserHeuristics = {
+      isChromium,
+      isSafari,
+      isIOsSafari,
+    };
 
-  return browserHeuristics;
-}
+    return browserHeuristics;
+  }
 
-export function getDeviceHeuristics() {
-  const hasTouchScreen = matchMedia("(any-pointer: coarse)").matches;
-  const hasMouseOrTouchpad =
-    matchMedia("(any-pointer: fine)").matches &&
-    matchMedia("(any-hover: hover)").matches;
+  static #deviceHeuristics;
+  static getDeviceHeuristics({ listenForAndDispatchChanges = false } = {}) {
+    if (this.#deviceHeuristics) return this.#deviceHeuristics;
 
-  const deviceHeuristics = {
-    hasTouchScreen,
-    hasMouseOrTouchpad,
-  };
+    const getHasTouchScreen = () => matchMedia("(any-pointer: coarse)").matches;
+    const getHasMouseOrTouchpad = () =>
+      matchMedia("(any-pointer: fine)").matches &&
+      matchMedia("(any-hover: hover)").matches;
+    const deviceHeuristics = {
+      hasTouchScreen: getHasTouchScreen(),
+      hasMouseOrTouchpad: getHasMouseOrTouchpad(),
+    };
 
-  return deviceHeuristics;
+    if (listenForAndDispatchChanges) {
+      this.#deviceHeuristics = deviceHeuristics;
+
+      const dispatchEvent = (change) =>
+        document.dispatchEvent(
+          new CustomEvent("deviceHeuristicsChange", {
+            detail: change,
+          })
+        );
+
+      matchMedia("(any-pointer: coarse)").addEventListener("change", () => {
+        const hasTouchScreen = getHasTouchScreen();
+        if (this.#deviceHeuristics.hasTouchScreen === hasTouchScreen) return;
+
+        const change = {
+          property: "hasTouchScreen",
+          oldValue: this.#deviceHeuristics.hasTouchScreen,
+          newValue: hasTouchScreen,
+        };
+        this.#deviceHeuristics.hasTouchScreen = hasTouchScreen;
+        dispatchEvent(change);
+      });
+
+      [
+        matchMedia("(any-pointer: fine)"),
+        matchMedia("(any-hover: hover)"),
+      ].forEach((mediaQuery) =>
+        mediaQuery.addEventListener("change", () => {
+          const hasMouseOrTouchpad = getHasMouseOrTouchpad();
+          if (this.#deviceHeuristics.hasMouseOrTouchpad === hasMouseOrTouchpad)
+            return;
+
+          const change = {
+            property: "hasMouseOrTouchpad",
+            oldValue: this.#deviceHeuristics.hasMouseOrTouchpad,
+            newValue: hasMouseOrTouchpad,
+          };
+          this.#deviceHeuristics.hasMouseOrTouchpad = hasMouseOrTouchpad;
+          dispatchEvent(change);
+        })
+      );
+    }
+
+    return deviceHeuristics;
+  }
 }
 
 export function getRandomNumber({
