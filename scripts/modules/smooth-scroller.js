@@ -1,6 +1,6 @@
-import { getBrowserHeuristics, validateArgument } from "./utilities.js";
+import { Heuristics, validateArgument } from "./utilities.js";
 
-const browserHeuristics = getBrowserHeuristics();
+const browserHeuristics = Heuristics.getBrowserHeuristics();
 const smoothScrollerKey = Symbol("smoothScrollerKey");
 
 class SmoothScroller {
