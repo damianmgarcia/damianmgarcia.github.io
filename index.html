@@ -287,7 +287,7 @@
         --button-background-color-active-inverse: hsl(0, 0%, 30%);
         --charm-fur-color: hsl(0, 0%, 20%);
         --ctrl-key-background-color: hsl(0, 0%, 90%);
-        --ctrl-key-border: solid 1px hsl(0, 0%, 100%);
+        --ctrl-key-border: solid 1px hsl(0, 0%, 20%);
         --demo-container-alert-background-color: hsl(60, 75%, 80%);
         --demo-container-title-background-color: hsl(120, 50%, 70%);
         --disabled-button-text-color: hsl(0, 0%, 75%);
@@ -607,6 +607,7 @@
         border-radius: 4px;
         font-size: var(--font-size-small);
         padding: 2px 8px 2px 4px;
+        transition: background-color 400ms ease 0ms, border-color 400ms ease 0ms;
       }
 
       #smooth-scroller-demo-promise {
@@ -759,6 +760,10 @@
         transform: translateZ(0);
         transition: color 400ms ease 0ms;
         width: calc(750px / 17 * 2);
+      }
+
+      body[data-mouse-found="false"] #touch-app-button {
+        opacity: 0.15;
       }
 
       .button-icon {
@@ -3443,10 +3448,9 @@
                   The touch-screen convention for text-highlighting is to
                   perform a long-press on a word to highlight it, and then to
                   drag selection handles, if necessary, to change the selection.
-                  This convention is not necessary with MomentaMouse because
-                  mouse-users are also keyboard-users. Instead, a "Quick Toggle
-                  Key," which is the
-                  <span class="ctrl-key">Ctrl</span> key, is held down to
+                  This convention is not necessary with MomentaMouse if a
+                  keyboard is available. Instead, a "Quick Toggle Key," which is
+                  the <span class="ctrl-key">Ctrl</span> key, is held down to
                   temporarily deactivate MomentaMouse. This allows you to use
                   your mouse as you normally would to highlight, copy, or drag
                   things like text, links, or images. MomentaMouse will
