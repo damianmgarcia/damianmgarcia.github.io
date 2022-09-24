@@ -472,10 +472,10 @@ document.addEventListener("momentaMouseScrollerActivate", (event) => {
   if (scrollContainer === document.querySelector("main")) {
     const touchAppButton = document.querySelector("#touch-app-button");
     touchAppButton.dataset.toggleButtonState = "on";
-    const { activationReason } = event.detail;
+    const { reason } = event.detail;
     if (
-      activationReason === "Quick toggle key" ||
-      activationReason === "Mouse available"
+      reason === "Quick toggle key" ||
+      reason === "Mouse available"
     )
       return inputEventDelegator.animationLibrary.ripple(touchAppButton);
     localStorage.setItem("momentaMouseScrollerPreference", "on");
@@ -498,10 +498,10 @@ document.addEventListener("momentaMouseScrollerDeactivate", (event) => {
   if (scrollContainer === document.querySelector("main")) {
     const touchAppButton = document.querySelector("#touch-app-button");
     touchAppButton.dataset.toggleButtonState = "off";
-    const { deactivationReason } = event.detail;
+    const { reason } = event.detail;
     if (
-      deactivationReason === "Quick toggle key" ||
-      deactivationReason === "Mouse not available"
+      reason === "Quick toggle key" ||
+      reason === "Mouse not available"
     )
       return inputEventDelegator.animationLibrary.deripple(touchAppButton);
     localStorage.setItem("momentaMouseScrollerPreference", "off");
