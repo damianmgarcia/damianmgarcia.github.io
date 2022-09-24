@@ -201,7 +201,6 @@ class SmoothScroller {
       this.#scrollContainer.dispatchEvent(
         new CustomEvent("smoothScrollerScrollStart", {
           bubbles: true,
-          cancelable: true,
           detail: this.#getScrollEventData(),
         })
       );
@@ -210,7 +209,6 @@ class SmoothScroller {
     this.#scrollContainer.dispatchEvent(
       new CustomEvent("smoothScrollerScroll", {
         bubbles: true,
-        cancelable: true,
         detail: this.#getScrollEventData(),
       })
     );
@@ -267,7 +265,6 @@ class SmoothScroller {
     this.#scrollContainer.dispatchEvent(
       new CustomEvent("smoothScrollerScrollStop", {
         bubbles: true,
-        cancelable: true,
         detail: eventData,
       })
     );
