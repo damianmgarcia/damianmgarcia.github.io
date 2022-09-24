@@ -3,9 +3,8 @@ import {
   cancelAllElementAnimations,
   DateTools,
   flashAnimation,
-  getBrowserHeuristics,
-  getDeviceHeuristics,
   getRandomNumber,
+  Heuristics,
   InputTools,
   SimpleDate,
   validateArgument,
@@ -47,8 +46,8 @@ addEventListener(
   { once: true }
 );
 
-const browserHeuristics = getBrowserHeuristics();
-const deviceHeuristics = getDeviceHeuristics();
+const browserHeuristics = Heuristics.getBrowserHeuristics();
+const deviceHeuristics = Heuristics.getDeviceHeuristics();
 
 const today = new SimpleDate();
 
@@ -473,8 +472,11 @@ document.addEventListener("momentaMouseScrollerActivate", (event) => {
   if (scrollContainer === document.querySelector("main")) {
     const touchAppButton = document.querySelector("#touch-app-button");
     touchAppButton.dataset.toggleButtonState = "on";
-    const { quickToggleActivation } = event.detail;
-    if (quickToggleActivation)
+    const { activationReason } = event.detail;
+    if (
+      activationReason === "Quick toggle key" ||
+      activationReason === "Mouse available"
+    )
       return inputEventDelegator.animationLibrary.ripple(touchAppButton);
     localStorage.setItem("momentaMouseScrollerPreference", "on");
   } else if (
@@ -496,8 +498,11 @@ document.addEventListener("momentaMouseScrollerDeactivate", (event) => {
   if (scrollContainer === document.querySelector("main")) {
     const touchAppButton = document.querySelector("#touch-app-button");
     touchAppButton.dataset.toggleButtonState = "off";
-    const { quickToggleDeactivation } = event.detail;
-    if (quickToggleDeactivation)
+    const { deactivationReason } = event.detail;
+    if (
+      deactivationReason === "Quick toggle key" ||
+      deactivationReason === "Mouse not available"
+    )
       return inputEventDelegator.animationLibrary.deripple(touchAppButton);
     localStorage.setItem("momentaMouseScrollerPreference", "off");
   } else if (
@@ -1585,7 +1590,7 @@ videos.forEach((video) => {
 
 videos.forEach((video) => {
   video.addEventListener("contextmenu", (event) => {
-    if (deviceHeuristics.isTouchScreen) event.preventDefault();
+    if (deviceHeuristics.hasTouchScreen) event.preventDefault();
   });
 
   video.addEventListener("timeupdate", () => {
@@ -1843,7 +1848,7 @@ class InputEventDelegator {
       this.#inputDownEvent &&
       event.target === this.#inputDownEvent.target &&
       !(
-        deviceHeuristics.isTouchScreen &&
+        deviceHeuristics.hasTouchScreen &&
         this.#inputDownEvent.target.hasPointerCapture(event.pointerId) &&
         (visualViewport.width + visualViewport.offsetLeft - event.clientX <
           10 ||
@@ -2093,7 +2098,7 @@ class InputEventDelegator {
               movementY = event.screenY - previousScreenY;
 
               target.scrollTop -=
-                movementY * (deviceHeuristics.isTouchScreen ? 4 : 1);
+                movementY * (deviceHeuristics.hasTouchScreen ? 4 : 1);
 
               previousScreenY = event.screenY;
             },
@@ -2292,7 +2297,7 @@ class InputEventDelegator {
               movementX = event.screenX - previousScreenX;
 
               target.scrollLeft -=
-                movementX * (deviceHeuristics.isTouchScreen ? 4 : 1);
+                movementX * (deviceHeuristics.hasTouchScreen ? 4 : 1);
 
               previousScreenX = event.screenX;
             },
@@ -2474,6 +2479,12 @@ class InputEventDelegator {
           )
             return;
 
+          if (
+            target.matches("#touch-app-button") &&
+            document.body.dataset.mouseFound === "false"
+          )
+            return;
+
           const mainMomentaMouseScrollerIsActive = MomentaMouse.getScroller(
             document.querySelector("main")
           ).getScrollerData().active;
@@ -2533,6 +2544,12 @@ class InputEventDelegator {
           if (
             target.matches("#message-submit-button") &&
             target.dataset.validMessage === "false"
+          )
+            return;
+
+          if (
+            target.matches("#touch-app-button") &&
+            document.body.dataset.mouseFound === "false"
           )
             return;
 
@@ -2884,28 +2901,6 @@ const createMomentaMouseScrollers = ({ activateImmediately = false } = {}) => {
     );
 };
 
-const momentaMouseScrollerPreference = localStorage.getItem(
-  "momentaMouseScrollerPreference"
-);
-
-if (
-  !deviceHeuristics.isTouchScreen &&
-  (!momentaMouseScrollerPreference || momentaMouseScrollerPreference === "on")
-) {
-  createTouchAppButton("on");
-  inputEventDelegator.animationLibrary.ripple(
-    document.querySelector("#touch-app-button"),
-    { duration: 0 }
-  );
-  createMomentaMouseScrollers({ activateImmediately: true });
-} else if (
-  !deviceHeuristics.isTouchScreen &&
-  momentaMouseScrollerPreference === "off"
-) {
-  createTouchAppButton("off");
-  createMomentaMouseScrollers();
-}
-
 const momentaMouseScrollerDemoContainer = document.querySelector(
   "#momentum-scroller-demo-container"
 );
@@ -2930,6 +2925,48 @@ momentaMouseScrollerDemoContainer.addEventListener(
     dataLabels.forEach((dataLabel) => (dataLabel.textContent = "-"));
   }
 );
+
+const momentaMouseScrollerPreference = localStorage.getItem(
+  "momentaMouseScrollerPreference"
+);
+
+if (
+  Heuristics.getDeviceHeuristics().hasMouseOrTouchpad &&
+  (!momentaMouseScrollerPreference || momentaMouseScrollerPreference === "on")
+) {
+  createTouchAppButton("on");
+  inputEventDelegator.animationLibrary.ripple(
+    document.querySelector("#touch-app-button"),
+    { duration: 0 }
+  );
+  createMomentaMouseScrollers({ activateImmediately: true });
+} else if (
+  !Heuristics.getDeviceHeuristics().hasMouseOrTouchpad ||
+  momentaMouseScrollerPreference === "off"
+) {
+  createTouchAppButton("off");
+  createMomentaMouseScrollers();
+}
+
+const updatePageAccordingToMouseAvailability = (hasMouseOrTouchpad) => {
+  if (hasMouseOrTouchpad) {
+    document.body.dataset.mouseFound = "true";
+  } else if (!hasMouseOrTouchpad) {
+    document.body.dataset.mouseFound = "false";
+  }
+};
+
+const { hasMouseOrTouchpad } = Heuristics.getDeviceHeuristics({
+  listenForAndDispatchChanges: true,
+});
+updatePageAccordingToMouseAvailability(hasMouseOrTouchpad);
+
+document.addEventListener("deviceHeuristicsChange", (event) => {
+  if (event.detail.property !== "hasMouseOrTouchpad") return;
+
+  const { newValue: hasMouseOrTouchpad } = event.detail;
+  updatePageAccordingToMouseAvailability(hasMouseOrTouchpad);
+});
 
 document.addEventListener("smoothScrollerScroll", (event) => {
   if (
