@@ -891,11 +891,7 @@ class MomentaMouse {
 
     if (!Heuristics.getDeviceHeuristics().hasMouseOrTouchpad) return;
 
-    if (
-      reason === "Quick toggle key" &&
-      !this.#quickToggleDeactivation
-    )
-      return;
+    if (reason === "Quick toggle key" && !this.#quickToggleDeactivation) return;
 
     this.#quickToggleDeactivation = false;
 
@@ -920,8 +916,7 @@ class MomentaMouse {
   deactivate({ reason } = {}) {
     if (!this.#active) return;
 
-    if (reason === "Quick toggle key")
-      this.#quickToggleDeactivation = true;
+    if (reason === "Quick toggle key") this.#quickToggleDeactivation = true;
 
     if (this.#scrollResolve)
       this.#stopScroll({
