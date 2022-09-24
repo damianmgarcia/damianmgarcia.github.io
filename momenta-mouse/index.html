@@ -1,666 +1,596 @@
 <!DOCTYPE html>
-<head>
-  <meta charset="UTF-8" />
-  <meta
-    name="description"
-    content="MomentaMouse: A JavaScript module that enables mouse-users to use
-    touch-style scrolling and flicking gestures to navigate websites."
-  />
-  <title>MomentaMouse</title>
-  <link id="favicon" rel="icon" href="/images/charm-logo-with-background.svg" />
-  <link
-    rel="apple-touch-icon"
-    href="/images/charm-logo-square-background-180.png"
-  />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,300&display=swap"
-    rel="stylesheet"
-  />
-  <script type="module" src="main.js"></script>
-  <style>
-    @media (pointer: fine) {
-      ::-webkit-scrollbar {
-        height: 10px;
-        width: 10px;
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="MomentaMouse: A JavaScript module that enables mouse-users to use touch-style scrolling and flicking gestures to navigate websites."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MomentaMouse</title>
+    <link
+      id="favicon"
+      rel="icon"
+      href="/images/charm-logo-with-background.svg"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="/images/charm-logo-square-background-180.png"
+    />
+    <link
+      rel="preload"
+      href="https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="https://fonts.gstatic.com/s/opensans/v34/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk5hkWVAewA.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <script type="module" src="main.js"></script>
+    <style>
+      @font-face {
+        font-family: "Open Sans";
+        font-style: italic;
+        font-weight: 300;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/opensans/v34/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk5hkWVAewA.woff2)
+          format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+          U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Open Sans";
+        font-style: normal;
+        font-weight: 300;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2)
+          format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+          U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Open Sans";
+        font-style: normal;
+        font-weight: 400;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2)
+          format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+          U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "Open Sans";
+        font-style: normal;
+        font-weight: 700;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2)
+          format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+          U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @media (pointer: fine) {
+        ::-webkit-scrollbar {
+          height: 10px;
+          width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: hsl(0, 0%, 85%);
+          border-radius: 1vmin;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: hsl(0, 0%, 95%);
+        }
+
+        ::-webkit-scrollbar-corner {
+          background: transparent;
+        }
       }
 
-      ::-webkit-scrollbar-track {
+      :root {
+        font-family: "Open Sans", sans-serif;
+        font-size: 24px;
+        font-synthesis: none;
+        font-weight: 300;
+        line-height: 1.4;
+        overflow: hidden auto;
+        scrollbar-color: hsl(0, 0%, 100%) transparent;
+        scrollbar-width: thin;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
+      }
+
+      a {
+        background: hsl(60, 100%, 50%);
+        border-radius: 4px;
+        color: hsl(0, 0%, 0%);
+        font-weight: 400;
+        padding: 0px 4px;
+        text-decoration: none;
+      }
+
+      a:hover {
+        filter: hue-rotate(90deg);
+      }
+
+      h1 {
+        font-weight: 700;
+        position: relative;
+      }
+
+      h1::after {
+        background: hsl(0, 100%, 25%);
+        border-radius: 4px;
+        content: "Disabled";
+        display: block;
+        font-weight: 400;
+        font-size: 1rem;
+        left: 0;
+        margin: 0 auto;
+        position: absolute;
+        text-align: center;
+        top: 100%;
+        width: 100%;
+      }
+
+      h2,
+      h3 {
+        font-weight: 400;
+        z-index: 1;
+      }
+
+      .center-aligned-text {
+        text-align: center;
+      }
+
+      .combination-reset-button {
+        margin: 0 auto 30px auto;
+        place-self: center;
+      }
+
+      body {
+        background: hsl(0, 0%, 0%);
+        color: hsl(0, 0%, 100%);
+        margin: 0px;
+      }
+
+      main {
+        background: hsl(0, 0%, 0%);
+        display: grid;
+        gap: 120px;
+        grid-auto-flow: row;
+        margin: 60px auto;
+        place-items: center;
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+      }
+
+      li + li {
+        margin-top: 1rem;
+      }
+
+      .ctrl-key {
+        background: hsl(0, 0%, 40%);
+        border: solid 1px hsl(0, 0%, 80%);
+        border-radius: 4px;
+        font-size: 0.75rem;
+        padding: 2px 8px 2px 4px;
+      }
+
+      .mouse-status {
+        background: hsl(0, 100%, 25%);
+        border-radius: 15px;
+        font-weight: 400;
+        padding: 15px 30px;
+        position: sticky;
+        top: 30px;
+        width: max-content;
+        z-index: 2;
+      }
+
+      .get-a-mouse {
+        color: hsl(0, 100%, 50%);
+      }
+
+      section {
+        display: grid;
+        place-content: center;
+        width: 100%;
+      }
+
+      section > * {
+        margin-left: 20vw;
+        margin-right: 20vw;
+        max-width: 40rem;
+      }
+
+      section > h2 {
+        margin-left: calc(20vw - 60px);
+        margin-right: calc(20vw - 60px);
+        max-width: 100%;
+      }
+
+      .options {
+        background: hsl(0, 0%, 30%);
+        border-radius: 30px;
+        display: grid;
+        gap: 30px;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        padding: 30px;
+      }
+
+      .option {
+        background: hsl(0, 0%, 50%);
+        border-radius: 15px;
+        display: grid;
+        gap: 15px;
+        grid-template-rows: auto auto;
+        padding: 15px;
+        place-content: center;
+      }
+
+      .option:first-child {
+        grid-column: 1 / 3;
+      }
+
+      .option > * {
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      input,
+      select {
+        font-family: "Open Sans", sans-serif;
+        font-size: calc(2rem / 3);
+        font-weight: 300;
+      }
+
+      .kitteh {
+        cursor: pointer;
+        height: 69.260089686098654708520179372197px;
+        position: relative;
+        width: 100px;
+      }
+
+      svg {
+        overflow: visible;
+      }
+
+      .carousel-container {
+        background: hsl(0, 0%, 30%);
+        border-radius: 30px;
+        height: 200px;
+        margin: 0 auto;
+        overflow: hidden;
+      }
+
+      .carousel {
+        background: hsl(0, 0%, 30%);
+        display: grid;
+        margin: 0 auto;
+        place-items: center;
+        position: relative;
+        scrollbar-color: hsl(0, 0%, 100%) transparent;
+        scrollbar-width: thin;
+      }
+
+      .horizontal {
+        border-radius: 30px;
+        grid-auto-flow: column;
+        height: 200px;
+        overflow: auto hidden;
+        width: 100%;
+      }
+
+      .vertical {
+        background: red;
+        grid-auto-flow: row;
+        height: 100%;
+        overflow: hidden auto;
+        width: 133px;
+      }
+
+      .full-width {
+        max-width: 100%;
+      }
+
+      .part-width {
+        max-width: 80%;
+      }
+
+      .transparent-bg {
         background: transparent;
       }
 
-      ::-webkit-scrollbar-thumb {
-        background: hsl(0, 0%, 85%);
-        border-radius: 1vmin;
+      .rtl {
+        direction: rtl;
       }
 
-      ::-webkit-scrollbar-thumb:hover {
-        background: hsl(0, 0%, 95%);
+      .carousel-item {
+        border-radius: 15px;
+        display: grid;
+        height: 140px;
+        margin: 15px;
+        place-items: center;
+        width: 103px;
       }
 
-      ::-webkit-scrollbar-corner {
-        background: transparent;
+      .carousel:not(.vertical) > .carousel-item:hover {
+        filter: brightness(120%);
+        transform: scale(1.2);
       }
-    }
 
-    :root {
-      font-family: "Open Sans", sans-serif;
-      font-synthesis: none;
-      font-weight: 300;
-      line-height: 1.4;
-      overflow: hidden auto;
-      scrollbar-color: hsl(0, 0%, 100%) transparent;
-      scrollbar-width: thin;
-    }
+      .horizontal > *:first-child {
+        margin-left: 30px;
+      }
 
-    a {
-      background: hsl(60, 100%, 50%);
-      border-radius: 4px;
-      color: hsl(0, 0%, 0%);
-      font-weight: 400;
-      padding: 0px 4px;
-      text-decoration: none;
-    }
+      .horizontal > *:last-child {
+        margin-right: 30px;
+      }
 
-    a:hover {
-      filter: hue-rotate(90deg);
-    }
+      .vertical:first-of-type {
+        margin-left: 15px;
+      }
 
-    h1 {
-      font-weight: 700;
-    }
+      .vertical:last-of-type {
+        margin-right: 15px;
+      }
 
-    h2,
-    h3 {
-      font-weight: 400;
-      z-index: 1;
-    }
+      .carousel-item-number {
+        background: hsl(0, 0%, 0%, 0.4);
+        border-radius: 50%;
+        display: grid;
+        font-size: 1.5rem;
+        height: 75px;
+        place-items: center;
+        width: 75px;
+      }
 
-    .center-aligned-text {
-      text-align: center;
-    }
+      .scroller-container {
+        border-radius: 2.5vmin;
+        height: 50vmin;
+        justify-self: center;
+        overflow: auto;
+        scrollbar-color: hsl(0, 0%, 100%) transparent;
+        scrollbar-width: thin;
+        width: 50vmin;
+        max-width: 50vmin;
+      }
 
-    .combination-reset-button {
-      margin: 0 auto 30px auto;
-      place-self: center;
-    }
+      .scroller-container a {
+        float: left;
+        margin: 10vmin;
+      }
 
-    body {
-      background: hsl(0, 0%, 0%);
-      color: hsl(0, 0%, 100%);
-      margin: 0px;
-    }
+      a.rtl {
+        float: right;
+      }
 
-    main {
-      background: hsl(0, 0%, 0%);
-      display: grid;
-      gap: 60px;
-      grid-auto-flow: row;
-      margin: 60px auto;
-      place-items: center;
-    }
+      .scroller-content-horizontal-and-vertical {
+        background: hsl(300, 100%, 25%);
+        height: 500vw;
+        width: 500vw;
+      }
 
-    ul {
-      margin: 0;
-      padding: 0;
-    }
+      .scroller-content-horizontal-only {
+        background: hsl(0, 100%, 50%);
+        height: 100%;
+        width: 500vw;
+      }
 
-    li + li {
-      margin-top: 1rem;
-    }
+      .scroller-content-vertical-only {
+        background: hsl(240, 100%, 50%);
+        height: 500vw;
+        width: 100%;
+      }
 
-    .ctrl-key {
-      background: hsl(0, 0%, 50%);
-      border: solid 1px hsl(0, 0%, 80%);
-      border-radius: 4px;
-      font-size: 0.8rem;
-      padding: 2px 8px 2px 4px;
-    }
+      @media (any-pointer: fine) and (any-hover: hover) {
+        h1::after {
+          background: hsl(120, 100%, 25%);
+          content: "Enabled";
+        }
 
-    .mouse-status {
-      border-radius: 15px;
-      padding: 15px 30px;
-    }
+        .mouse-not-found {
+          display: none;
+        }
 
-    body[data-mouse-found="false"] .mouse-status {
-      position: sticky;
-      top: 10px;
-      z-index: 2;
-    }
-
-    .mouse-status .found,
-    .mouse-status .not-found {
-      border: 2px hsl(0, 0%, 100%, 0.5);
-      border-radius: 15px;
-      padding: 15px 30px;
-    }
-
-    body[data-mouse-found="true"] .found {
-      background: hsl(120, 100%, 25%);
-    }
-
-    body[data-mouse-found="true"] .not-found {
-      display: none;
-    }
-
-    body[data-mouse-found="false"] .found {
-      display: none;
-    }
-
-    body[data-mouse-found="false"] .not-found {
-      background: hsl(0, 100%, 25%);
-    }
-
-    section {
-      display: grid;
-      place-content: center;
-      width: 100%;
-    }
-
-    section > * {
-      margin-left: 20vw;
-      margin-right: 20vw;
-      max-width: 40rem;
-    }
-
-    section > h2 {
-      margin-left: calc(20vw - 60px);
-      margin-right: calc(20vw - 60px);
-      max-width: 100%;
-    }
-
-    .options {
-      background: hsl(0, 0%, 30%);
-      border-radius: 30px;
-      display: grid;
-      gap: 30px;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr 1fr;
-      padding: 30px;
-    }
-
-    .option {
-      background: hsl(0, 0%, 50%);
-      border-radius: 15px;
-      display: grid;
-      gap: 15px;
-      grid-template-rows: auto auto;
-      padding: 15px;
-      place-content: center;
-    }
-
-    .option:first-child {
-      grid-column: 1 / 3;
-    }
-
-    .option > * {
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .kitteh {
-      cursor: pointer;
-      height: 69.260089686098654708520179372197px;
-      position: relative;
-      width: 100px;
-    }
-
-    svg {
-      overflow: visible;
-    }
-
-    .carousel-container {
-      background: hsl(0, 0%, 30%);
-      border-radius: 30px;
-      height: 200px;
-      margin: 0 auto;
-      overflow: hidden;
-    }
-
-    .carousel {
-      background: hsl(0, 0%, 30%);
-      display: grid;
-      margin: 0 auto;
-      place-items: center;
-      position: relative;
-      scrollbar-color: hsl(0, 0%, 100%) transparent;
-      scrollbar-width: thin;
-    }
-
-    .horizontal {
-      border-radius: 30px;
-      grid-auto-flow: column;
-      height: 200px;
-      overflow: auto hidden;
-      width: 100%;
-    }
-
-    .vertical {
-      background: red;
-      grid-auto-flow: row;
-      height: 100%;
-      overflow: hidden hidden;
-      width: 133px;
-    }
-
-    .full-width {
-      max-width: 100%;
-    }
-
-    .part-width {
-      max-width: 80%;
-    }
-
-    .transparent-bg {
-      background: transparent;
-    }
-
-    .rtl {
-      direction: rtl;
-    }
-
-    .carousel-item {
-      border-radius: 15px;
-      display: grid;
-      height: 140px;
-      margin: 15px;
-      place-items: center;
-      width: 103px;
-    }
-
-    .carousel:not(.vertical) > .carousel-item:hover {
-      filter: brightness(120%);
-      transform: scale(1.2);
-    }
-
-    .horizontal > *:first-child {
-      margin-left: 30px;
-    }
-
-    .horizontal > *:last-child {
-      margin-right: 30px;
-    }
-
-    .vertical:first-of-type {
-      margin-left: 15px;
-    }
-
-    .vertical:last-of-type {
-      margin-right: 15px;
-    }
-
-    .carousel-item-number {
-      font-size: 50px;
-    }
-
-    .scroller-container {
-      border-radius: 2.5vmin;
-      height: 50vmin;
-      justify-self: center;
-      overflow: auto;
-      scrollbar-color: hsl(0, 0%, 100%) transparent;
-      scrollbar-width: thin;
-      width: 50vmin;
-      max-width: 50vmin;
-    }
-
-    .scroller-container a {
-      float: left;
-      margin: 10vmin;
-    }
-
-    a.rtl {
-      float: right;
-    }
-
-    .scroller-content-horizontal-and-vertical {
-      background: hsl(300, 100%, 25%);
-      height: 500vw;
-      width: 500vw;
-    }
-
-    .scroller-content-horizontal-only {
-      background: hsl(0, 100%, 50%);
-      height: 100%;
-      width: 500vw;
-    }
-
-    .scroller-content-vertical-only {
-      background: hsl(240, 100%, 50%);
-      height: 500vw;
-      width: 100%;
-    }
-  </style>
-</head>
-<body data-mouse-found="false">
-  <main>
-    <h1><em>Momenta</em><strong>Mouse</strong></h1>
-    <div class="mouse-status center-aligned-text">
-      <div class="found">Mouse Found</div>
-      <div class="not-found">Mouse Not Found</div>
-    </div>
-    <section>
-      <h2>About</h2>
-      <div>
-        <p>
-          MomentaMouse enables mouse-users to use touch-style scrolling and
-          flicking gestures to navigate websites.
+        .vertical {
+          overflow: hidden hidden;
+        }
+      }
+    </style>
+  </head>
+  <body data-momenta-mouse-active="false">
+    <main>
+      <h1><em>Momenta</em><strong>Mouse</strong></h1>
+      <div class="mouse-status mouse-not-found center-aligned-text">
+        Mouse Not Found
+      </div>
+      <section>
+        <h2>About</h2>
+        <div>
+          <p>
+            MomentaMouse enables mouse-users to use touch-style scrolling and
+            flicking gestures to navigate websites.
+          </p>
+          <p>
+            Web developers can
+            <a href="https://github.com/damianmgarcia/MomentaMouse"
+              >easily add MomentaMouse functionality</a
+            >
+            to a website.
+          </p>
+        </div>
+      </section>
+      <section>
+        <h2>Usage</h2>
+        <p class="get-a-mouse mouse-not-found">
+          MomentaMouse is disabled because a mouse was not found. Please attach
+          a mouse to this device or try later with a device that has a mouse.
         </p>
-        <p>
-          Web developers can
-          <a href="https://github.com/damianmgarcia/MomentaMouse"
-            >easily add MomentaMouse functionality</a
-          >
-          to a website.
-        </p>
-      </div>
-    </section>
-    <section>
-      <h2>Usage</h2>
-      <ul>
-        <li>
-          <h3>Basic Scrolling</h3>
-          <p>
-            Hover your cursor over this page and then hold down your mouse's
-            primary button and move the cursor around. The page will follow the
-            movement of the cursor.
-          </p>
-        </li>
-        <li>
-          <h3>Momentum Scrolling</h3>
-          <p>
-            Do a basic scroll but let go of your mouse's primary button before
-            your mouse has stopped moving. The result of this flicking gesture
-            will be a scroll that continues, even after you have let go of the
-            button, with a speed and duration in proportion to the speed of the
-            flick.
-          </p>
-        </li>
-        <li>
-          <h3>Scrolling Overlapped Scrollers</h3>
-          <p>
-            When another scroller or interactive element, such as an anchor or
-            button, overlaps a MomentaMouse scroller, MomentaMouse decides which
-            element should get attention.
-          </p>
-          <p>
-            Hover your cursor over one of the carousels below and do a basic
-            scroll in the left or right direction. The carousel should move. Now
-            do a basic scroll in the up or down direction. The main page should
-            move.
-          </p>
-        </li>
-        <li>
-          <h3>Highlighting and Dragging</h3>
-          <p>
-            The touch-screen convention for text-highlighting is to perform a
-            long-press on a word to highlight it, and then to drag selection
-            handles, if necessary, to change the selection. This convention is
-            not necessary with MomentaMouse because mouse-users are also
-            keyboard-users.
-          </p>
-          <p>
-            Instead, a "Quick Toggle Key," which is the
-            <span class="ctrl-key">Ctrl</span> key, is held down to temporarily
-            deactivate MomentaMouse. This allows you to use your mouse as you
-            normally would to highlight, copy, or drag things like text, links,
-            or images. MomentaMouse will reactivate once the
-            <span class="ctrl-key">Ctrl</span> key is let go.
-          </p>
-          <p>
-            Try highlighting this text or dragging
-            <a href="#">this link</a>.
-          </p>
-        </li>
-        <li>
-          <h3>Overscroll and Bouncing</h3>
-          <p>
-            Overscroll and bouncing effects are useful visual indicators that
-            the end of a scroller has been reached.
-          </p>
-          <p>
-            <em>Overscroll:</em> Try using a basic scroll to go past the top or
-            bottom of this page. MomentaMouse will create an overscroll effect
-            to let you know you have reached the end. Try this with the various
-            scrollers below as well.
-          </p>
-          <p>
-            <em>Bouncing:</em> Perform momentum scrolls until the momentum
-            scroll hits the top or bottom of this page. Try using various
-            amounts of force. Notice that the intensity of the bounce is in
-            proportion to the force of the impact. Try this with the various
-            scrollers below as well.
-          </p>
-        </li>
-      </ul>
-    </section>
-    <section>
-      <div class="options">
-        <div class="option">
-          <label for="activation-state-select"
-            ><em>Momenta</em><strong>Mouse</strong></label
-          >
-          <select name="activation-state" id="activation-state-select" disabled>
-            <option value="on" selected>On</option>
-            <option value="off">Off</option>
-          </select>
+        <ul>
+          <li>
+            <h3>Basic Scrolling</h3>
+            <p>
+              Hover your cursor over this page and then hold down your mouse's
+              primary button and move the cursor around. The page will follow
+              the movement of the cursor.
+            </p>
+          </li>
+          <li>
+            <h3>Momentum Scrolling</h3>
+            <p>
+              Do a basic scroll but let go of your mouse's primary button before
+              your mouse has stopped moving. The result of this flicking gesture
+              will be a scroll that continues, even after you have let go of the
+              button, with a speed and duration in proportion to the speed of
+              the flick.
+            </p>
+          </li>
+          <li>
+            <h3>Scrolling Overlapped Scrollers</h3>
+            <p>
+              When another scroller or interactive element, such as an anchor or
+              button, overlaps a MomentaMouse scroller, MomentaMouse decides
+              which element should get attention.
+            </p>
+            <p>
+              Hover your cursor over one of the carousels below and do a basic
+              scroll in the left or right direction. The carousel should move.
+              Now do a basic scroll in the up or down direction. The main page
+              should move.
+            </p>
+          </li>
+          <li>
+            <h3>Highlighting and Dragging</h3>
+            <p>
+              The touch-screen convention for text-highlighting is to perform a
+              long-press on a word to highlight it, and then to drag selection
+              handles, if necessary, to change the selection. This convention is
+              not necessary with MomentaMouse
+              <em>if a keyboard is available.</em>
+            </p>
+            <p>
+              Instead, a "Quick Toggle Key," which is the
+              <span class="ctrl-key">Ctrl</span> key, is held down to
+              temporarily deactivate MomentaMouse. This allows you to use your
+              mouse as you normally would to highlight, copy, or drag things
+              like text, links, or images. MomentaMouse will reactivate once the
+              <span class="ctrl-key">Ctrl</span> key is let go.
+            </p>
+            <p>
+              Try highlighting this text or dragging
+              <a href="#">this link</a>.
+            </p>
+          </li>
+          <li>
+            <h3>Overscroll and Bouncing</h3>
+            <p>
+              Overscroll and bouncing effects are useful visual indicators that
+              the end of a scroller has been reached.
+            </p>
+            <p>
+              <em>Overscroll:</em> Try using a basic scroll to go past the top
+              or bottom of this page. MomentaMouse will create an overscroll
+              effect to let you know you have reached the end. Try this with the
+              various scrollers below as well.
+            </p>
+            <p>
+              <em>Bouncing:</em> Perform momentum scrolls until the momentum
+              scroll hits the top or bottom of this page. Try using various
+              amounts of force. Notice that the intensity of the bounce is in
+              proportion to the force of the impact. Try this with the various
+              scrollers below as well.
+            </p>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <div class="options">
+          <div class="option">
+            <label for="activation-state-select"
+              ><em>Momenta</em><strong>Mouse</strong></label
+            >
+            <select
+              name="activation-state"
+              id="activation-state-select"
+              disabled
+            >
+              <option value="on" selected>On</option>
+              <option value="off">Off</option>
+            </select>
+          </div>
+          <div class="option">
+            <label for="deceleration-select">Deceleration</label>
+            <select name="deceleration" id="deceleration-select" disabled>
+              <option value="none">None</option>
+              <option value="minimum">Minimum</option>
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+              <option value="maximum">Maximum</option>
+            </select>
+          </div>
+          <div class="option">
+            <label for="bounciness-select">Bounciness</label>
+            <select name="bounciness" id="bounciness-select" disabled>
+              <option value="none">None</option>
+              <option value="minimum">Minimum</option>
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+              <option value="maximum">Maximum</option>
+            </select>
+          </div>
+          <div class="option">
+            <label for="reactive-cursor-select">Reactive Cursor</label>
+            <select name="reactive-cursor" id="reactive-cursor-select" disabled>
+              <option value="on" selected>On</option>
+              <option value="off">Off</option>
+            </select>
+          </div>
+          <div class="option">
+            <label for="quick-toggle-key-select">Quick Toggle Key</label>
+            <select
+              name="quick-toggle-key"
+              id="quick-toggle-key-select"
+              disabled
+            >
+              <option value="on" selected>On</option>
+              <option value="off">Off</option>
+            </select>
+          </div>
         </div>
-        <div class="option">
-          <label for="deceleration-select">Deceleration</label>
-          <select name="deceleration" id="deceleration-select" disabled>
-            <option value="none">None</option>
-            <option value="minimum">Minimum</option>
-            <option value="low">Low</option>
-            <option value="medium" selected>Medium</option>
-            <option value="high">High</option>
-            <option value="maximum">Maximum</option>
-          </select>
-        </div>
-        <div class="option">
-          <label for="bounciness-select">Bounciness</label>
-          <select name="bounciness" id="bounciness-select" disabled>
-            <option value="none">None</option>
-            <option value="minimum">Minimum</option>
-            <option value="low">Low</option>
-            <option value="medium" selected>Medium</option>
-            <option value="high">High</option>
-            <option value="maximum">Maximum</option>
-          </select>
-        </div>
-        <div class="option">
-          <label for="reactive-cursor-select">Reactive Cursor</label>
-          <select name="reactive-cursor" id="reactive-cursor-select" disabled>
-            <option value="on" selected>On</option>
-            <option value="off">Off</option>
-          </select>
-        </div>
-        <div class="option">
-          <label for="quick-toggle-key-select">Quick Toggle Key</label>
-          <select name="quick-toggle-key" id="quick-toggle-key-select" disabled>
-            <option value="on" selected>On</option>
-            <option value="off">Off</option>
-          </select>
-        </div>
-      </div>
-    </section>
-    <section>
-      <h2 class="center-aligned-text">
-        Contained Carousel (Bouncy <em>Inside</em>)
-      </h2>
-      <div class="carousel-container part-width">
-        <div class="carousel horizontal">
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-          <div class="carousel-item"></div>
-        </div>
-      </div>
-    </section>
-    <section>
-      <h2 class="center-aligned-text">
-        Contained Carousel (Bouncy <em>Outside</em>)
-      </h2>
-      <div class="carousel horizontal part-width">
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-      </div>
-    </section>
-    <section>
-      <h2 class="center-aligned-text">Uncontained Carousel</h2>
-      <div class="carousel horizontal full-width transparent-bg">
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-        <div class="carousel-item"></div>
-      </div>
-    </section>
-    <section>
-      <h2 class="center-aligned-text">Combination Scroller</h2>
-      <input type="button" value="Reset" class="combination-reset-button" />
-      <div class="carousel-container part-width">
-        <div class="carousel horizontal">
-          <div class="carousel vertical transparent-bg">
+      </section>
+      <section>
+        <h2 class="center-aligned-text">
+          Contained Carousel (Bouncy <em>Inside</em>)
+        </h2>
+        <div class="carousel-container part-width">
+          <div class="carousel horizontal">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -671,8 +601,6 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -683,8 +611,6 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -695,8 +621,6 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -707,248 +631,6 @@
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-            <div class="carousel-item"></div>
-          </div>
-          <div class="carousel vertical transparent-bg">
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
             <div class="carousel-item"></div>
@@ -961,366 +643,792 @@
             <div class="carousel-item"></div>
           </div>
         </div>
-      </div>
-    </section>
-    <section>
-      <h2 class="center-aligned-text">Horizontal and Vertical Scroller</h2>
-      <div class="scroller-container">
-        <div class="scroller-content-horizontal-and-vertical">
-          <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
+      </section>
+      <section>
+        <h2 class="center-aligned-text">
+          Contained Carousel (Bouncy <em>Outside</em>)
+        </h2>
+        <div class="carousel horizontal part-width">
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
         </div>
-      </div>
-    </section>
-    <section>
-      <h2 class="center-aligned-text">Horizontal-Only Scroller</h2>
-      <div class="scroller-container">
-        <div class="scroller-content-horizontal-only">
-          <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
+      </section>
+      <section>
+        <h2 class="center-aligned-text">Uncontained Carousel</h2>
+        <div class="carousel horizontal full-width transparent-bg">
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
+          <div class="carousel-item"></div>
         </div>
-      </div>
-    </section>
-    <section>
-      <h2 class="center-aligned-text">Vertical-Only Scroller</h2>
-      <div class="scroller-container">
-        <div class="scroller-content-vertical-only">
-          <a href="https://github.com/damianmgarcia/MomentaMouse">Repository</a>
+      </section>
+      <section>
+        <h2 class="center-aligned-text">Combination Scroller</h2>
+        <input type="button" value="Reset" class="combination-reset-button" />
+        <div class="carousel-container part-width">
+          <div class="carousel horizontal">
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+            <div class="carousel vertical transparent-bg">
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+              <div class="carousel-item"></div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
-    <section>
-      <h2 class="center-aligned-text">
-        Horizontal and Vertical Scroller (Right-to-Left)
-      </h2>
-      <div class="scroller-container rtl">
-        <div class="scroller-content-horizontal-and-vertical rtl">
-          <a class="rtl" href="https://github.com/damianmgarcia/MomentaMouse"
-            >Repository</a
-          >
+      </section>
+      <section>
+        <h2 class="center-aligned-text">Horizontal and Vertical Scroller</h2>
+        <div class="scroller-container">
+          <div class="scroller-content-horizontal-and-vertical">
+            <a href="https://github.com/damianmgarcia/MomentaMouse"
+              >Repository</a
+            >
+          </div>
         </div>
-      </div>
-    </section>
-    <small
-      >Copyright &copy; <span class="date-year"></span>
-      <a href="/">Damian M. Garcia</a></small
-    >
-    <div class="kitteh">
-      <svg
-        viewBox="6.389 106.059 445.952 308.941"
-        xmlns="http://www.w3.org/2000/svg"
+      </section>
+      <section>
+        <h2 class="center-aligned-text">Horizontal-Only Scroller</h2>
+        <div class="scroller-container">
+          <div class="scroller-content-horizontal-only">
+            <a href="https://github.com/damianmgarcia/MomentaMouse"
+              >Repository</a
+            >
+          </div>
+        </div>
+      </section>
+      <section>
+        <h2 class="center-aligned-text">Vertical-Only Scroller</h2>
+        <div class="scroller-container">
+          <div class="scroller-content-vertical-only">
+            <a href="https://github.com/damianmgarcia/MomentaMouse"
+              >Repository</a
+            >
+          </div>
+        </div>
+      </section>
+      <section>
+        <h2 class="center-aligned-text">
+          Horizontal and Vertical Scroller (Right-to-Left)
+        </h2>
+        <div class="scroller-container rtl">
+          <div class="scroller-content-horizontal-and-vertical rtl">
+            <a class="rtl" href="https://github.com/damianmgarcia/MomentaMouse"
+              >Repository</a
+            >
+          </div>
+        </div>
+      </section>
+      <small
+        >Copyright &copy; <span class="date-year"></span>
+        <a href="/">Damian M. Garcia</a></small
       >
-        <g>
-          <path
-            d="M 143.618 123.316 Q 139.84 125.184 135.766 124.609 Q 131.692 124.033 127.955 120.94 Q 124.219 117.846 121.589 112.527 Q 116.709 102.66 118.359 94.936 Q 120.008 87.213 127.717 83.401 Q 132.882 80.847 139.305 81.029 L 132.104 65.498 Q 131.608 64.495 132.017 63.382 Q 132.426 62.268 133.428 61.773 Q 134.353 61.315 135.467 61.724 Q 136.58 62.133 137.076 63.135 L 159.973 112.35 Q 160.469 113.353 160.061 114.37 Q 159.652 115.387 158.65 115.883 Q 157.571 116.417 156.477 115.95 Q 155.383 115.484 154.926 114.366 L 153.44 111.168 Q 150.325 120 143.618 123.316 Z M 141.446 118.73 Q 144.992 116.976 147.197 114.063 Q 149.402 111.15 150.049 108.287 Q 150.697 105.425 150.011 103.845 L 141.591 85.847 Q 139.399 85.683 136.205 86.111 Q 133.011 86.54 130.236 87.912 Q 124.3 90.847 123.39 96.574 Q 122.48 102.3 126.254 109.932 Q 129.304 116.099 133.37 118.406 Q 137.437 120.712 141.446 118.73 Z"
-            transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
-            style="
-              fill: hsl(0, 0%, 100%);
-              stroke-linecap: round;
-              stroke-linejoin: round;
-            "
-          />
-          <path
-            d="M 172.657 111.896 Q 171.543 111.983 170.668 111.275 Q 169.794 110.566 169.713 109.538 L 166.79 71.983 Q 166.71 70.954 167.461 70.076 Q 168.212 69.198 169.327 69.112 Q 170.441 69.025 171.276 69.779 Q 172.112 70.534 172.192 71.563 L 172.959 81.423 Q 175.355 75.629 179.586 71.807 Q 183.817 67.984 188.19 67.643 Q 191.877 67.356 195.005 69.312 Q 198.133 71.269 199.662 76.498 Q 202.361 71.284 206.036 68.626 Q 209.711 65.968 213.483 65.674 Q 218.713 65.267 222.143 68.882 Q 225.573 72.497 226.207 80.642 L 228.103 104.992 Q 228.183 106.021 227.428 106.856 Q 226.674 107.691 225.559 107.778 Q 224.445 107.865 223.613 107.153 Q 222.781 106.442 222.701 105.413 L 220.759 80.462 Q 220.345 75.146 218.44 72.836 Q 216.535 70.526 213.191 70.786 Q 210.619 70.987 207.643 73.202 Q 204.667 75.418 202.718 79.193 Q 200.769 82.967 201.129 87.597 L 202.638 106.975 Q 202.718 108.003 202.006 108.835 Q 201.295 109.667 200.18 109.754 Q 199.065 109.84 198.191 109.132 Q 197.316 108.424 197.236 107.395 L 195.294 82.445 Q 194.873 77.043 193.143 74.762 Q 191.413 72.482 187.898 72.755 Q 184.982 72.982 182.086 75.666 Q 179.19 78.35 176.891 82.066 Q 174.83 85.504 174.278 88.394 Q 173.727 91.283 174.121 96.342 L 175.115 109.117 Q 175.195 110.146 174.484 110.978 Q 173.772 111.809 172.657 111.896 Z"
-            transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
-            style="
-              fill: hsl(0, 0%, 100%);
-              stroke-linecap: round;
-              stroke-linejoin: round;
-            "
-          />
-          <path
-            d="M 247.677 127.027 Q 242.893 126.474 237.402 124.54 Q 236.482 124.261 235.968 123.466 Q 235.454 122.67 235.563 121.731 Q 235.691 120.62 236.592 119.945 Q 237.492 119.27 238.603 119.398 Q 239.03 119.448 240.528 119.967 Q 244.274 121.266 248.204 121.72 Q 254.526 122.451 257.758 119.578 Q 260.99 116.705 261.928 110.84 L 262.593 106.588 Q 260.026 109.322 256.853 110.557 Q 253.68 111.791 250.253 111.482 Q 245.469 110.929 241.888 107.831 Q 238.307 104.733 236.624 99.82 Q 234.941 94.908 235.603 89.184 Q 236.264 83.46 239.553 78.602 Q 242.842 73.745 247.815 71.16 Q 252.789 68.575 258.428 69.227 Q 262.785 69.731 267.272 72.847 Q 267.677 69.344 270.326 69.65 Q 271.436 69.778 272.159 70.641 Q 272.882 71.504 272.743 72.7 L 267.29 111.633 Q 266.112 120.327 260.782 124.126 Q 255.451 127.925 247.677 127.027 Z M 250.162 106.277 Q 255.373 106.879 259.574 103.123 Q 263.774 99.366 264.84 90.14 L 266.233 78.094 Q 264.994 76.825 262.729 75.828 Q 260.464 74.83 258.157 74.563 Q 253.885 74.069 250.036 75.918 Q 246.186 77.768 243.596 81.451 Q 241.006 85.133 240.453 89.918 Q 240.058 93.335 240.891 96.981 Q 241.725 100.627 244.064 103.234 Q 246.403 105.842 250.162 106.277 Z"
-            transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
-            style="
-              fill: hsl(0, 0%, 100%);
-              stroke-linecap: round;
-              stroke-linejoin: round;
-            "
-          />
-
-          <path
-            style="fill: rgb(106, 66, 32); stroke-linecap: round"
-            d="M 115 415 C 102.089 412.984 38.788 398.255 49.436 367.708 C 49.436 367.708 10.29 372.191 6.581 362.535 C 3.238 345.967 44.686 322.998 44.686 322.998 C 44.726 322.94 15.889 334.683 14.067 327.859 C 4.329 291.391 89.532 253.371 89.532 253.371 C 89.532 253.371 55.268 270.819 46.891 262.195 C 31.123 245.961 124.199 213.433 123.333 209.297 C 128.374 209.297 116.484 107.986 129.601 106.075 C 138.944 104.714 198.268 188.903 200.763 187.175 C 205.242 180.469 241.984 151.957 242.298 160.688 C 242.343 161.95 242.788 178.232 242.788 178.232 C 242.788 178.232 261.775 154.28 263.735 159.316 C 264.252 158.152 266.024 178.326 266.024 178.326 C 266.024 178.326 279.657 159.659 284.46 165.421 C 287.314 168.845 290.342 182.51 290.342 182.51 C 290.342 182.51 298.348 183.992 301.052 181.644 C 324.994 160.854 341.635 120.044 354.884 116.014 C 368.133 111.984 362.196 201.171 358.545 200.302 C 358.545 200.302 434.522 226.212 431.944 236.213 C 430.872 240.371 391.773 248.674 393.701 252.273 C 400.252 252.313 432.58 253.918 436.369 265.95 C 438.806 273.688 407.146 284.129 407.146 284.129 C 410.127 282.443 446.602 300.729 452.223 323.966 C 454.744 334.389 416.095 326.629 416.095 326.629 C 416.095 326.629 463.741 327.245 447.832 359.433 C 435.133 385.125 352.476 414.738 347.053 415"
-          ></path>
+      <div class="kitteh">
+        <svg
+          viewBox="6.389 106.059 445.952 308.941"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <g>
             <path
+              d="M 143.618 123.316 Q 139.84 125.184 135.766 124.609 Q 131.692 124.033 127.955 120.94 Q 124.219 117.846 121.589 112.527 Q 116.709 102.66 118.359 94.936 Q 120.008 87.213 127.717 83.401 Q 132.882 80.847 139.305 81.029 L 132.104 65.498 Q 131.608 64.495 132.017 63.382 Q 132.426 62.268 133.428 61.773 Q 134.353 61.315 135.467 61.724 Q 136.58 62.133 137.076 63.135 L 159.973 112.35 Q 160.469 113.353 160.061 114.37 Q 159.652 115.387 158.65 115.883 Q 157.571 116.417 156.477 115.95 Q 155.383 115.484 154.926 114.366 L 153.44 111.168 Q 150.325 120 143.618 123.316 Z M 141.446 118.73 Q 144.992 116.976 147.197 114.063 Q 149.402 111.15 150.049 108.287 Q 150.697 105.425 150.011 103.845 L 141.591 85.847 Q 139.399 85.683 136.205 86.111 Q 133.011 86.54 130.236 87.912 Q 124.3 90.847 123.39 96.574 Q 122.48 102.3 126.254 109.932 Q 129.304 116.099 133.37 118.406 Q 137.437 120.712 141.446 118.73 Z"
+              transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
               style="
+                fill: hsl(0, 0%, 100%);
+                stroke-linecap: round;
+                stroke-linejoin: round;
+              "
+            />
+            <path
+              d="M 172.657 111.896 Q 171.543 111.983 170.668 111.275 Q 169.794 110.566 169.713 109.538 L 166.79 71.983 Q 166.71 70.954 167.461 70.076 Q 168.212 69.198 169.327 69.112 Q 170.441 69.025 171.276 69.779 Q 172.112 70.534 172.192 71.563 L 172.959 81.423 Q 175.355 75.629 179.586 71.807 Q 183.817 67.984 188.19 67.643 Q 191.877 67.356 195.005 69.312 Q 198.133 71.269 199.662 76.498 Q 202.361 71.284 206.036 68.626 Q 209.711 65.968 213.483 65.674 Q 218.713 65.267 222.143 68.882 Q 225.573 72.497 226.207 80.642 L 228.103 104.992 Q 228.183 106.021 227.428 106.856 Q 226.674 107.691 225.559 107.778 Q 224.445 107.865 223.613 107.153 Q 222.781 106.442 222.701 105.413 L 220.759 80.462 Q 220.345 75.146 218.44 72.836 Q 216.535 70.526 213.191 70.786 Q 210.619 70.987 207.643 73.202 Q 204.667 75.418 202.718 79.193 Q 200.769 82.967 201.129 87.597 L 202.638 106.975 Q 202.718 108.003 202.006 108.835 Q 201.295 109.667 200.18 109.754 Q 199.065 109.84 198.191 109.132 Q 197.316 108.424 197.236 107.395 L 195.294 82.445 Q 194.873 77.043 193.143 74.762 Q 191.413 72.482 187.898 72.755 Q 184.982 72.982 182.086 75.666 Q 179.19 78.35 176.891 82.066 Q 174.83 85.504 174.278 88.394 Q 173.727 91.283 174.121 96.342 L 175.115 109.117 Q 175.195 110.146 174.484 110.978 Q 173.772 111.809 172.657 111.896 Z"
+              transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
+              style="
+                fill: hsl(0, 0%, 100%);
+                stroke-linecap: round;
+                stroke-linejoin: round;
+              "
+            />
+            <path
+              d="M 247.677 127.027 Q 242.893 126.474 237.402 124.54 Q 236.482 124.261 235.968 123.466 Q 235.454 122.67 235.563 121.731 Q 235.691 120.62 236.592 119.945 Q 237.492 119.27 238.603 119.398 Q 239.03 119.448 240.528 119.967 Q 244.274 121.266 248.204 121.72 Q 254.526 122.451 257.758 119.578 Q 260.99 116.705 261.928 110.84 L 262.593 106.588 Q 260.026 109.322 256.853 110.557 Q 253.68 111.791 250.253 111.482 Q 245.469 110.929 241.888 107.831 Q 238.307 104.733 236.624 99.82 Q 234.941 94.908 235.603 89.184 Q 236.264 83.46 239.553 78.602 Q 242.842 73.745 247.815 71.16 Q 252.789 68.575 258.428 69.227 Q 262.785 69.731 267.272 72.847 Q 267.677 69.344 270.326 69.65 Q 271.436 69.778 272.159 70.641 Q 272.882 71.504 272.743 72.7 L 267.29 111.633 Q 266.112 120.327 260.782 124.126 Q 255.451 127.925 247.677 127.027 Z M 250.162 106.277 Q 255.373 106.879 259.574 103.123 Q 263.774 99.366 264.84 90.14 L 266.233 78.094 Q 264.994 76.825 262.729 75.828 Q 260.464 74.83 258.157 74.563 Q 253.885 74.069 250.036 75.918 Q 246.186 77.768 243.596 81.451 Q 241.006 85.133 240.453 89.918 Q 240.058 93.335 240.891 96.981 Q 241.725 100.627 244.064 103.234 Q 246.403 105.842 250.162 106.277 Z"
+              transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
+              style="
+                fill: hsl(0, 0%, 100%);
+                stroke-linecap: round;
+                stroke-linejoin: round;
+              "
+            />
+
+            <path
+              style="fill: rgb(106, 66, 32); stroke-linecap: round"
+              d="M 115 415 C 102.089 412.984 38.788 398.255 49.436 367.708 C 49.436 367.708 10.29 372.191 6.581 362.535 C 3.238 345.967 44.686 322.998 44.686 322.998 C 44.726 322.94 15.889 334.683 14.067 327.859 C 4.329 291.391 89.532 253.371 89.532 253.371 C 89.532 253.371 55.268 270.819 46.891 262.195 C 31.123 245.961 124.199 213.433 123.333 209.297 C 128.374 209.297 116.484 107.986 129.601 106.075 C 138.944 104.714 198.268 188.903 200.763 187.175 C 205.242 180.469 241.984 151.957 242.298 160.688 C 242.343 161.95 242.788 178.232 242.788 178.232 C 242.788 178.232 261.775 154.28 263.735 159.316 C 264.252 158.152 266.024 178.326 266.024 178.326 C 266.024 178.326 279.657 159.659 284.46 165.421 C 287.314 168.845 290.342 182.51 290.342 182.51 C 290.342 182.51 298.348 183.992 301.052 181.644 C 324.994 160.854 341.635 120.044 354.884 116.014 C 368.133 111.984 362.196 201.171 358.545 200.302 C 358.545 200.302 434.522 226.212 431.944 236.213 C 430.872 240.371 391.773 248.674 393.701 252.273 C 400.252 252.313 432.58 253.918 436.369 265.95 C 438.806 273.688 407.146 284.129 407.146 284.129 C 410.127 282.443 446.602 300.729 452.223 323.966 C 454.744 334.389 416.095 326.629 416.095 326.629 C 416.095 326.629 463.741 327.245 447.832 359.433 C 435.133 385.125 352.476 414.738 347.053 415"
+            ></path>
+            <g>
+              <path
+                style="
+                  fill: none;
+                  stroke-width: 6px;
+                  stroke-linecap: round;
+                  stroke: rgba(229, 187, 82, 0.39);
+                "
+                d="M 84.698 313.534 C 81.332 315.903 20.976 351.507 32.375 359.469 C 37.683 363.176 75.931 351.105 83.595 351.936"
+              ></path>
+              <path
+                style="
+                  fill: none;
+                  stroke: rgb(240, 221, 193);
+                  stroke-width: 5px;
+                  stroke-opacity: 0.42;
+                  stroke-linecap: round;
+                "
+                d="M 209.12 195.442 C 208.048 187.74 227.846 170.092 234.491 168.452"
+              ></path>
+              <path
+                style="
+                  fill: none;
+                  stroke-width: 5px;
+                  stroke-opacity: 0.42;
+                  stroke-linecap: round;
+                  stroke: rgba(221, 175, 110, 0.82);
+                "
+                d="M 270.142 186.403 C 269.658 181.281 278.6 169.543 281.601 168.452"
+              ></path>
+              <path
+                style="
+                  fill: none;
+                  stroke-width: 6px;
+                  stroke-linecap: round;
+                  stroke: rgba(142, 121, 67, 0.46);
+                "
+                d="M 369.499 285.59 C 363.526 287.306 331.793 285.481 330.101 294.993 C 328.967 301.367 383.603 319.427 391.267 320.258"
+                transform="matrix(-0.982154, 0.188079, -0.188079, -0.982154, 807.97311, 494.494676)"
+              ></path>
+              <path
+                style="
+                  stroke-width: 6px;
+                  stroke-linecap: round;
+                  fill: none;
+                  stroke: rgba(255, 191, 0, 0.3);
+                "
+                d="M 430.094 336.33 C 467.03 359.236 395.38 389.34 351.557 404.158"
+              ></path>
+            </g>
+            <path
+              style="fill: rgb(255, 255, 0)"
+              d="M 157.814 208.387 C 169.065 206.939 197.85 222.557 201.178 228.402 C 209.781 239.926 190.864 275.616 171.926 272.604 C 132.403 266.319 143.013 211.565 157.814 208.387 Z"
+            ></path>
+            <path
+              style="fill: rgb(255, 255, 0)"
+              d="M 302.851 229.255 C 305.643 222.331 330.586 209.417 335.452 211.377 C 351.363 213.605 365.719 255.422 330.971 268.694 C 315.005 274.792 300.263 246.81 302.851 229.255 Z"
+            ></path>
+            <path
+              style="stroke: rgb(0, 0, 0)"
+              d="M 236.596 267.51 C 238.182 263.69 258.191 263.497 257.629 267.247 C 257.067 270.997 248.473 284.979 246.849 283.679 C 245.124 286.266 235.452 268.699 236.596 267.51 Z"
+            ></path>
+            <path
+              style="
+                stroke: rgb(0, 0, 0);
                 fill: none;
                 stroke-width: 6px;
                 stroke-linecap: round;
-                stroke: rgba(229, 187, 82, 0.39);
+                stroke-linejoin: round;
               "
-              d="M 84.698 313.534 C 81.332 315.903 20.976 351.507 32.375 359.469 C 37.683 363.176 75.931 351.105 83.595 351.936"
+              d="M 298.619 284.201 C 301.037 326.967 247.746 319.149 246.845 283.567 C 233.329 332.922 201.869 308.3 212.136 287.899"
             ></path>
+            <ellipse
+              style="stroke-width: 0px"
+              cx="158.018"
+              cy="267.893"
+              rx="8.759"
+              ry="12.935"
+              transform="matrix(0.97752, 0.210842, -0.210842, 0.97752, 79.418502, -54.736551)"
+            ></ellipse>
+            <ellipse
+              style="stroke-width: 0px"
+              cx="158.018"
+              cy="267.893"
+              rx="8.759"
+              ry="12.935"
+              transform="matrix(0.999845, 0.017579, -0.017579, 0.999845, 175.856987, -33.380458)"
+            ></ellipse>
             <path
               style="
-                fill: none;
-                stroke: rgb(240, 221, 193);
-                stroke-width: 5px;
-                stroke-opacity: 0.42;
+                stroke-width: 0px;
+                stroke-linejoin: round;
+                stroke: hsl(0, 0%, 0%);
                 stroke-linecap: round;
+                fill: rgb(106, 66, 32);
               "
-              d="M 209.12 195.442 C 208.048 187.74 227.846 170.092 234.491 168.452"
-            ></path>
+              d="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
+            >
+              <animate
+                class="eyelid-down"
+                attributeName="d"
+                to="M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729"
+                begin="indefinite"
+                dur="200ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+                keyTimes="0; 1"
+                fill="freeze"
+              />
+              <animate
+                class="eyelid-down"
+                attributeName="stroke-width"
+                to="6px"
+                begin="indefinite"
+                dur="200ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+                keyTimes="0; 1"
+                fill="freeze"
+              />
+              <animate
+                class="eyelid-up"
+                attributeName="d"
+                to="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
+                begin="indefinite"
+                dur="200ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+                keyTimes="0; 1"
+                fill="freeze"
+              />
+              <animate
+                class="eyelid-up"
+                attributeName="stroke-width"
+                to="0px"
+                begin="indefinite"
+                dur="200ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+                keyTimes="0; 1"
+                fill="freeze"
+              />
+              <animate
+                class="long-blink"
+                attributeName="d"
+                values="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
+                begin="indefinite"
+                dur="1000ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
+                fill="freeze"
+              />
+              <animate
+                class="long-blink"
+                attributeName="stroke-width"
+                values="0px; 6px; 6px; 0px"
+                begin="indefinite"
+                dur="1000ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
+                fill="freeze"
+              />
+              <animate
+                class="short-blink"
+                attributeName="d"
+                values="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
+                begin="indefinite"
+                dur="400ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1; 0 0 0.2 1"
+                fill="freeze"
+              />
+              <animate
+                class="short-blink"
+                attributeName="stroke-width"
+                values="0px; 6px; 0px"
+                begin="indefinite"
+                dur="400ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1; 0 0 0.2 1"
+                fill="freeze"
+              />
+            </path>
             <path
               style="
-                fill: none;
-                stroke-width: 5px;
-                stroke-opacity: 0.42;
+                stroke-width: 0px;
+                stroke-linejoin: round;
+                stroke: hsl(0, 0%, 0%);
                 stroke-linecap: round;
-                stroke: rgba(221, 175, 110, 0.82);
+                fill: rgb(106, 66, 32);
               "
-              d="M 270.142 186.403 C 269.658 181.281 278.6 169.543 281.601 168.452"
-            ></path>
-            <path
-              style="
-                fill: none;
-                stroke-width: 6px;
-                stroke-linecap: round;
-                stroke: rgba(142, 121, 67, 0.46);
-              "
-              d="M 369.499 285.59 C 363.526 287.306 331.793 285.481 330.101 294.993 C 328.967 301.367 383.603 319.427 391.267 320.258"
-              transform="matrix(-0.982154, 0.188079, -0.188079, -0.982154, 807.97311, 494.494676)"
-            ></path>
-            <path
-              style="
-                stroke-width: 6px;
-                stroke-linecap: round;
-                fill: none;
-                stroke: rgba(255, 191, 0, 0.3);
-              "
-              d="M 430.094 336.33 C 467.03 359.236 395.38 389.34 351.557 404.158"
-            ></path>
+              d="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
+            >
+              <animate
+                class="eyelid-down"
+                attributeName="d"
+                to="M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786"
+                begin="indefinite"
+                dur="200ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+                keyTimes="0; 1"
+                fill="freeze"
+              />
+              <animate
+                class="eyelid-down"
+                attributeName="stroke-width"
+                to="6px"
+                begin="indefinite"
+                dur="200ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+                keyTimes="0; 1"
+                fill="freeze"
+              />
+              <animate
+                class="eyelid-up"
+                attributeName="d"
+                to="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
+                begin="indefinite"
+                dur="200ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+                keyTimes="0; 1"
+                fill="freeze"
+              />
+              <animate
+                class="eyelid-up"
+                attributeName="stroke-width"
+                to="0px"
+                begin="indefinite"
+                dur="200ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+                keyTimes="0; 1"
+                fill="freeze"
+              />
+              <animate
+                class="long-blink"
+                attributeName="d"
+                values="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
+                begin="indefinite"
+                dur="1000ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
+                fill="freeze"
+              />
+              <animate
+                class="long-blink"
+                attributeName="stroke-width"
+                values="0px; 6px; 6px; 0px"
+                begin="indefinite"
+                dur="1000ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
+                fill="freeze"
+              />
+              <animate
+                class="short-blink"
+                attributeName="d"
+                values="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
+                begin="indefinite"
+                dur="400ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1; 0 0 0.2 1"
+                fill="freeze"
+              />
+              <animate
+                class="short-blink"
+                attributeName="stroke-width"
+                values="0px; 6px; 0px"
+                begin="indefinite"
+                dur="400ms"
+                calcMode="spline"
+                keySplines="0 0 0.2 1; 0 0 0.2 1"
+                fill="freeze"
+              />
+            </path>
           </g>
-          <path
-            style="fill: rgb(255, 255, 0)"
-            d="M 157.814 208.387 C 169.065 206.939 197.85 222.557 201.178 228.402 C 209.781 239.926 190.864 275.616 171.926 272.604 C 132.403 266.319 143.013 211.565 157.814 208.387 Z"
-          ></path>
-          <path
-            style="fill: rgb(255, 255, 0)"
-            d="M 302.851 229.255 C 305.643 222.331 330.586 209.417 335.452 211.377 C 351.363 213.605 365.719 255.422 330.971 268.694 C 315.005 274.792 300.263 246.81 302.851 229.255 Z"
-          ></path>
-          <path
-            style="stroke: rgb(0, 0, 0)"
-            d="M 236.596 267.51 C 238.182 263.69 258.191 263.497 257.629 267.247 C 257.067 270.997 248.473 284.979 246.849 283.679 C 245.124 286.266 235.452 268.699 236.596 267.51 Z"
-          ></path>
-          <path
-            style="
-              stroke: rgb(0, 0, 0);
-              fill: none;
-              stroke-width: 6px;
-              stroke-linecap: round;
-              stroke-linejoin: round;
-            "
-            d="M 298.619 284.201 C 301.037 326.967 247.746 319.149 246.845 283.567 C 233.329 332.922 201.869 308.3 212.136 287.899"
-          ></path>
-          <ellipse
-            style="stroke-width: 0px"
-            cx="158.018"
-            cy="267.893"
-            rx="8.759"
-            ry="12.935"
-            transform="matrix(0.97752, 0.210842, -0.210842, 0.97752, 79.418502, -54.736551)"
-          ></ellipse>
-          <ellipse
-            style="stroke-width: 0px"
-            cx="158.018"
-            cy="267.893"
-            rx="8.759"
-            ry="12.935"
-            transform="matrix(0.999845, 0.017579, -0.017579, 0.999845, 175.856987, -33.380458)"
-          ></ellipse>
-          <path
-            style="
-              stroke-width: 0px;
-              stroke-linejoin: round;
-              stroke: hsl(0, 0%, 0%);
-              stroke-linecap: round;
-              fill: rgb(106, 66, 32);
-            "
-            d="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
-          >
-            <animate
-              class="eyelid-down"
-              attributeName="d"
-              to="M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729"
-              begin="indefinite"
-              dur="200ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-              keyTimes="0; 1"
-              fill="freeze"
-            />
-            <animate
-              class="eyelid-down"
-              attributeName="stroke-width"
-              to="6px"
-              begin="indefinite"
-              dur="200ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-              keyTimes="0; 1"
-              fill="freeze"
-            />
-            <animate
-              class="eyelid-up"
-              attributeName="d"
-              to="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
-              begin="indefinite"
-              dur="200ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-              keyTimes="0; 1"
-              fill="freeze"
-            />
-            <animate
-              class="eyelid-up"
-              attributeName="stroke-width"
-              to="0px"
-              begin="indefinite"
-              dur="200ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-              keyTimes="0; 1"
-              fill="freeze"
-            />
-            <animate
-              class="long-blink"
-              attributeName="d"
-              values="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
-              begin="indefinite"
-              dur="1000ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
-              fill="freeze"
-            />
-            <animate
-              class="long-blink"
-              attributeName="stroke-width"
-              values="0px; 6px; 6px; 0px"
-              begin="indefinite"
-              dur="1000ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
-              fill="freeze"
-            />
-            <animate
-              class="short-blink"
-              attributeName="d"
-              values="M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729; M 156.801 201.311 C 112.336 261.538 188.537 317.03 210.907 227.729; M 156.801 201.311 C 156.801 201.311 210.907 227.729 210.907 227.729"
-              begin="indefinite"
-              dur="400ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1; 0 0 0.2 1"
-              fill="freeze"
-            />
-            <animate
-              class="short-blink"
-              attributeName="stroke-width"
-              values="0px; 6px; 0px"
-              begin="indefinite"
-              dur="400ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1; 0 0 0.2 1"
-              fill="freeze"
-            />
-          </path>
-          <path
-            style="
-              stroke-width: 0px;
-              stroke-linejoin: round;
-              stroke: hsl(0, 0%, 0%);
-              stroke-linecap: round;
-              fill: rgb(106, 66, 32);
-            "
-            d="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
-          >
-            <animate
-              class="eyelid-down"
-              attributeName="d"
-              to="M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786"
-              begin="indefinite"
-              dur="200ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-              keyTimes="0; 1"
-              fill="freeze"
-            />
-            <animate
-              class="eyelid-down"
-              attributeName="stroke-width"
-              to="6px"
-              begin="indefinite"
-              dur="200ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-              keyTimes="0; 1"
-              fill="freeze"
-            />
-            <animate
-              class="eyelid-up"
-              attributeName="d"
-              to="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
-              begin="indefinite"
-              dur="200ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-              keyTimes="0; 1"
-              fill="freeze"
-            />
-            <animate
-              class="eyelid-up"
-              attributeName="stroke-width"
-              to="0px"
-              begin="indefinite"
-              dur="200ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-              keyTimes="0; 1"
-              fill="freeze"
-            />
-            <animate
-              class="long-blink"
-              attributeName="d"
-              values="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
-              begin="indefinite"
-              dur="1000ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
-              fill="freeze"
-            />
-            <animate
-              class="long-blink"
-              attributeName="stroke-width"
-              values="0px; 6px; 6px; 0px"
-              begin="indefinite"
-              dur="1000ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1; 0 0 0.2 1; 0 0 0.2 1"
-              fill="freeze"
-            />
-            <animate
-              class="short-blink"
-              attributeName="d"
-              values="M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786; M 293.912 229.409 C 320.934 318.058 382.349 242.336 338.245 203.786; M 293.912 229.409 C 293.912 229.409 338.245 203.786 338.245 203.786"
-              begin="indefinite"
-              dur="400ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1; 0 0 0.2 1"
-              fill="freeze"
-            />
-            <animate
-              class="short-blink"
-              attributeName="stroke-width"
-              values="0px; 6px; 0px"
-              begin="indefinite"
-              dur="400ms"
-              calcMode="spline"
-              keySplines="0 0 0.2 1; 0 0 0.2 1"
-              fill="freeze"
-            />
-          </path>
-        </g>
-      </svg>
-    </div>
-  </main>
-</body>
+        </svg>
+      </div>
+    </main>
+  </body>
+</html>
