@@ -660,16 +660,16 @@ export class ScrollContainerTools {
     const edgeStatus = {};
 
     if (pageProgression === "left-to-right") {
-      edgeStatus.atLeftEdge = element.scrollLeft === 0;
+      edgeStatus.atLeftEdge = element.scrollLeft <= 0;
       edgeStatus.atRightEdge =
         element.scrollWidth - element.scrollLeft - element.clientWidth <= 1;
     } else if (pageProgression === "right-to-left") {
       edgeStatus.atLeftEdge =
         element.scrollWidth + element.scrollLeft - element.clientWidth <= 1;
-      edgeStatus.atRightEdge = element.scrollLeft === 0;
+      edgeStatus.atRightEdge = element.scrollLeft >= 0;
     }
 
-    edgeStatus.atTopEdge = element.scrollTop === 0;
+    edgeStatus.atTopEdge = element.scrollTop <= 0;
     edgeStatus.atBottomEdge =
       element.scrollHeight - element.scrollTop - element.clientHeight <= 1;
 
