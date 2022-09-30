@@ -19,14 +19,28 @@
     />
     <link
       rel="preload"
-      href="https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2"
+      href="/fonts/open-sans-italic-wght-300.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href="https://fonts.gstatic.com/s/opensans/v34/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk5hkWVAewA.woff2"
+      href="/fonts/open-sans-wght-300.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/open-sans-wght-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/open-sans-wght-700.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -39,75 +53,56 @@
         font-weight: 300;
         font-stretch: 100%;
         font-display: swap;
-        src: url(https://fonts.gstatic.com/s/opensans/v34/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk5hkWVAewA.woff2)
-          format("woff2");
+        src: url(/fonts/open-sans-italic-wght-300.woff2) format("woff2");
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
           U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
           U+2212, U+2215, U+FEFF, U+FFFD;
       }
+
       @font-face {
         font-family: "Open Sans";
         font-style: normal;
         font-weight: 300;
         font-stretch: 100%;
         font-display: swap;
-        src: url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2)
-          format("woff2");
+        src: url(/fonts/open-sans-wght-300.woff2) format("woff2");
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
           U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
           U+2212, U+2215, U+FEFF, U+FFFD;
       }
+
       @font-face {
         font-family: "Open Sans";
         font-style: normal;
         font-weight: 400;
         font-stretch: 100%;
         font-display: swap;
-        src: url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2)
-          format("woff2");
+        src: url(/fonts/open-sans-wght-400.woff2) format("woff2");
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
           U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
           U+2212, U+2215, U+FEFF, U+FFFD;
       }
+
       @font-face {
         font-family: "Open Sans";
         font-style: normal;
         font-weight: 700;
         font-stretch: 100%;
         font-display: swap;
-        src: url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.woff2)
-          format("woff2");
+        src: url(/fonts/open-sans-wght-700.woff2) format("woff2");
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
           U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
           U+2212, U+2215, U+FEFF, U+FFFD;
       }
-      @media (pointer: fine) {
-        ::-webkit-scrollbar {
-          height: 10px;
-          width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-          background: hsl(0, 0%, 85%);
-          border-radius: 1vmin;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-          background: hsl(0, 0%, 95%);
-        }
-
-        ::-webkit-scrollbar-corner {
-          background: transparent;
-        }
-      }
 
       :root {
+        --scroll-bar-thickness: 10px;
+        --spacing-1x: 15px;
+        --spacing-2x: calc(var(--spacing-1x) * 2);
+        --spacing-4x: calc(var(--spacing-1x) * 4);
+        --spacing-6x: calc(var(--spacing-1x) * 6);
+        --spacing-8x: calc(var(--spacing-1x) * 8);
         font-family: "Open Sans", sans-serif;
-        font-size: 24px;
         font-synthesis: none;
         font-weight: 300;
         line-height: 1.4;
@@ -119,17 +114,10 @@
         text-size-adjust: none;
       }
 
-      a {
-        background: hsl(60, 100%, 50%);
-        border-radius: 4px;
-        color: hsl(0, 0%, 0%);
-        font-weight: 400;
-        padding: 0px 4px;
-        text-decoration: none;
-      }
-
-      a:hover {
-        filter: hue-rotate(90deg);
+      header {
+        display: grid;
+        margin-bottom: var(--spacing-6x);
+        place-items: center;
       }
 
       h1 {
@@ -139,11 +127,11 @@
 
       h1::after {
         background: hsl(0, 100%, 25%);
-        border-radius: 4px;
+        border-radius: 5px;
         content: "Disabled";
         display: block;
-        font-weight: 400;
         font-size: 1rem;
+        font-weight: 400;
         left: 0;
         margin: 0 auto;
         position: absolute;
@@ -152,108 +140,127 @@
         width: 100%;
       }
 
+      body {
+        background: hsl(0, 0%, 0%);
+        color: hsl(0, 0%, 100%);
+        margin: var(--spacing-4x) 0;
+        overflow: clip;
+      }
+
+      main {
+        background: hsl(0, 0%, 0%);
+        display: grid;
+        gap: var(--spacing-4x);
+        place-items: center;
+        width: 100%;
+      }
+
+      section {
+        --carousel-container-height-with-mouse: 210px;
+        --carousel-container-height-without-mouse: calc(
+          var(--carousel-container-height-with-mouse) -
+            var(--scroll-bar-thickness)
+        );
+        display: grid;
+        max-width: 35rem;
+      }
+
+      section.sticky-mouse-not-found-message {
+        font-weight: 400;
+        place-self: center;
+        position: sticky;
+        top: var(--spacing-2x);
+        width: max-content;
+        z-index: 2;
+      }
+
+      .full-width {
+        max-width: 100%;
+      }
+
+      .part-width {
+        width: min(35rem, 80vw);
+      }
+
+      section > *:not(h2) {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      a {
+        color: hsl(60, 50%, 85%);
+        font-weight: 300;
+        text-decoration: hsl(60, 100%, 50%) underline;
+        text-underline-offset: 5px;
+      }
+
+      a:hover {
+        background: hsl(0, 0%, 100%, 0.125);
+        color: hsl(60, 100%, 90%);
+      }
+
       h2,
       h3 {
         font-weight: 400;
         z-index: 1;
       }
 
-      .center-aligned-text {
+      .centered-text {
         text-align: center;
       }
 
-      .combination-reset-button {
-        margin: 0 auto 30px auto;
-        place-self: center;
-      }
-
-      body {
-        background: hsl(0, 0%, 0%);
-        color: hsl(0, 0%, 100%);
-        margin: 0px;
-      }
-
-      main {
-        background: hsl(0, 0%, 0%);
-        display: grid;
-        gap: 120px;
-        grid-auto-flow: row;
-        margin: 60px auto;
-        place-items: center;
-      }
-
       ul {
-        margin: 0;
-        padding: 0;
+        margin-bottom: 0;
+        margin-top: 0;
+        padding-left: var(--spacing-2x);
+        padding-right: var(--spacing-2x);
       }
 
-      li + li {
+      ul > li + li {
         margin-top: 1rem;
       }
 
-      .ctrl-key {
-        background: hsl(0, 0%, 40%);
-        border: solid 1px hsl(0, 0%, 80%);
-        border-radius: 4px;
-        font-size: 0.75rem;
-        padding: 2px 8px 2px 4px;
+      .attention-container {
+        border-radius: var(--spacing-1x);
+        padding: var(--spacing-1x);
       }
 
-      .mouse-status {
+      .warning-background {
         background: hsl(0, 100%, 25%);
-        border-radius: 15px;
-        font-weight: 400;
-        padding: 15px 30px;
-        position: sticky;
-        top: 30px;
-        width: max-content;
-        z-index: 2;
       }
 
-      .get-a-mouse {
-        color: hsl(0, 100%, 50%);
+      .caution-background {
+        background: hsl(60, 100%, 25%);
       }
 
-      section {
-        display: grid;
-        place-content: center;
-        width: 100%;
-      }
-
-      section > * {
-        margin-left: 20vw;
-        margin-right: 20vw;
-        max-width: 40rem;
-      }
-
-      section > h2 {
-        margin-left: calc(20vw - 60px);
-        margin-right: calc(20vw - 60px);
-        max-width: 100%;
+      .touch-screen-with-mouse-message {
+        display: none;
       }
 
       .options {
-        background: hsl(0, 0%, 30%);
-        border-radius: 30px;
-        display: grid;
-        gap: 30px;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr 1fr;
-        padding: 30px;
+        background: hsl(0, 0%, 25%);
+        border-radius: var(--spacing-2x);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-2x);
+        justify-content: center;
+        margin: 0 auto;
+        padding: var(--spacing-2x);
       }
 
       .option {
-        background: hsl(0, 0%, 50%);
-        border-radius: 15px;
+        background: hsl(0, 0%, 40%);
+        border-radius: var(--spacing-1x);
         display: grid;
-        gap: 15px;
+        flex: 1 1 0;
+        gap: var(--spacing-1x);
         grid-template-rows: auto auto;
-        padding: 15px;
+        padding: var(--spacing-1x);
         place-content: center;
       }
 
-      .option:first-child {
-        grid-column: 1 / 3;
+      .option:first-of-type {
+        flex-basis: 100%;
       }
 
       .option > * {
@@ -264,31 +271,33 @@
       input,
       select {
         font-family: "Open Sans", sans-serif;
-        font-size: calc(2rem / 3);
         font-weight: 300;
       }
 
-      .kitteh {
-        cursor: pointer;
-        height: 69.260089686098654708520179372197px;
-        position: relative;
-        width: 100px;
+      .ctrl-key {
+        background: hsl(0, 0%, 40%);
+        border: solid 1px hsl(0, 0%, 80%);
+        border-radius: 5px;
+        font-size: 0.75rem;
+        padding: 2px 8px 2px 4px;
       }
 
-      svg {
-        overflow: visible;
+      .combination-reset-button {
+        margin-top: var(--spacing-2x);
+        place-self: center;
       }
 
       .carousel-container {
-        background: hsl(0, 0%, 30%);
-        border-radius: 30px;
-        height: 200px;
+        background: hsl(0, 0%, 25%);
+        border-radius: var(--spacing-2x);
+        height: var(--carousel-container-height-without-mouse);
         margin: 0 auto;
         overflow: hidden;
       }
 
       .carousel {
-        background: hsl(0, 0%, 30%);
+        --carousel-item-margin: 12px;
+        background: hsl(0, 0%, 25%);
         display: grid;
         margin: 0 auto;
         place-items: center;
@@ -297,43 +306,44 @@
         scrollbar-width: thin;
       }
 
-      .horizontal {
-        border-radius: 30px;
+      .full-width > .carousel {
+        background: transparent;
+      }
+
+      .full-width > h2 {
+        margin-bottom: 0;
+      }
+
+      .carousel.horizontal {
+        border-radius: var(--spacing-2x);
         grid-auto-flow: column;
-        height: 200px;
+        height: var(--carousel-container-height-without-mouse);
         overflow: auto hidden;
         width: 100%;
       }
 
-      .vertical {
-        background: red;
-        grid-auto-flow: row;
+      .carousel.vertical {
+        --vertical-carousel-side-margin: calc(
+          var(--spacing-2x) - var(--carousel-item-margin)
+        );
         height: 100%;
         overflow: hidden auto;
-        width: 133px;
+        width: 127px;
       }
 
-      .full-width {
-        max-width: 100%;
+      .carousel.vertical:first-of-type {
+        margin-left: var(--vertical-carousel-side-margin);
       }
 
-      .part-width {
-        max-width: 80%;
-      }
-
-      .transparent-bg {
-        background: transparent;
-      }
-
-      .rtl {
-        direction: rtl;
+      .carousel.vertical:last-of-type {
+        margin-right: var(--vertical-carousel-side-margin);
       }
 
       .carousel-item {
-        border-radius: 15px;
+        border-radius: var(--spacing-1x);
         display: grid;
         height: 140px;
-        margin: 15px;
+        margin: var(--carousel-item-margin);
         place-items: center;
         width: 103px;
       }
@@ -343,20 +353,20 @@
         transform: scale(1.2);
       }
 
-      .horizontal > *:first-child {
-        margin-left: 30px;
+      .carousel.horizontal > .carousel-item:first-of-type {
+        margin-left: var(--spacing-2x);
       }
 
-      .horizontal > *:last-child {
-        margin-right: 30px;
+      .carousel.horizontal > .carousel-item:last-of-type {
+        margin-right: var(--spacing-2x);
       }
 
-      .vertical:first-of-type {
-        margin-left: 15px;
+      .carousel.vertical > .carousel-item:first-of-type {
+        margin-top: var(--spacing-2x);
       }
 
-      .vertical:last-of-type {
-        margin-right: 15px;
+      .carousel.vertical > .carousel-item:last-of-type {
+        margin-bottom: var(--spacing-2x);
       }
 
       .carousel-item-number {
@@ -370,41 +380,78 @@
       }
 
       .scroller-container {
-        border-radius: 2.5vmin;
-        height: 50vmin;
+        aspect-ratio: 1;
+        border-radius: var(--spacing-2x);
         justify-self: center;
+        margin: 0 auto;
         overflow: auto;
         scrollbar-color: hsl(0, 0%, 100%) transparent;
         scrollbar-width: thin;
-        width: 50vmin;
-        max-width: 50vmin;
+        width: min(20rem, 80vw);
       }
 
-      .scroller-container a {
-        float: left;
-        margin: 10vmin;
+      .rtl {
+        direction: rtl;
       }
 
-      a.rtl {
-        float: right;
-      }
-
-      .scroller-content-horizontal-and-vertical {
-        background: hsl(300, 100%, 25%);
-        height: 500vw;
-        width: 500vw;
-      }
-
-      .scroller-content-horizontal-only {
-        background: hsl(0, 100%, 50%);
+      .scroller-content {
+        --breakthrough-size: 500%;
+        box-sizing: border-box;
         height: 100%;
-        width: 500vw;
+        padding: var(--spacing-2x);
+        width: 100%;
       }
 
-      .scroller-content-vertical-only {
-        background: hsl(240, 100%, 50%);
-        height: 500vw;
-        width: 100%;
+      .scroller-container.horizontal-and-vertical > .scroller-content {
+        background: linear-gradient(45deg, hsl(260, 100%, 50%), transparent 75%),
+          linear-gradient(135deg, hsl(160, 100%, 50%), transparent 75%),
+          linear-gradient(225deg, hsl(60, 100%, 50%), transparent 75%),
+          linear-gradient(315deg, hsl(360, 100%, 50%), transparent 75%);
+        height: var(--breakthrough-size);
+        width: var(--breakthrough-size);
+      }
+
+      .scroller-container.horizontal-and-vertical.rtl > .scroller-content {
+        background: linear-gradient(45deg, hsl(60, 100%, 50%), transparent 75%),
+          linear-gradient(135deg, hsl(360, 100%, 50%), transparent 75%),
+          linear-gradient(225deg, hsl(260, 100%, 50%), transparent 75%),
+          linear-gradient(315deg, hsl(160, 100%, 50%), transparent 75%);
+      }
+
+      .scroller-container.horizontal-only > .scroller-content {
+        background: linear-gradient(
+          90deg,
+          hsl(0, 100%, 50%),
+          hsl(60, 100%, 50%) 50%
+        );
+        width: var(--breakthrough-size);
+      }
+
+      .scroller-container.vertical-only > .scroller-content {
+        background: linear-gradient(
+          180deg,
+          hsl(240, 100%, 50%),
+          hsl(300, 100%, 50%) 50%
+        );
+        height: var(--breakthrough-size);
+      }
+
+      footer {
+        display: grid;
+        margin-top: var(--spacing-6x);
+        place-items: center;
+      }
+
+      .kitteh {
+        cursor: pointer;
+        height: 4.1556053811659192825112107623318rem;
+        margin-top: var(--spacing-2x);
+        position: relative;
+        width: 6rem;
+      }
+
+      svg {
+        overflow: visible;
       }
 
       @media (any-pointer: fine) and (any-hover: hover) {
@@ -413,22 +460,60 @@
           content: "Enabled";
         }
 
-        .mouse-not-found {
+        .mouse-not-found-message,
+        .sticky-mouse-not-found-message {
           display: none;
         }
 
-        .vertical {
+        .carousel-container,
+        .carousel.horizontal {
+          height: var(--carousel-container-height-with-mouse);
+        }
+
+        .carousel.vertical {
           overflow: hidden hidden;
+        }
+
+        ::-webkit-scrollbar {
+          height: var(--scroll-bar-thickness);
+          width: var(--scroll-bar-thickness);
+        }
+
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: hsl(0, 0%, 85%);
+          border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: hsl(0, 0%, 95%);
+        }
+
+        ::-webkit-scrollbar-corner {
+          background: transparent;
+        }
+      }
+
+      @media (any-pointer: coarse) and (any-pointer: fine) and (any-hover: hover) {
+        .touch-screen-with-mouse-message {
+          display: revert;
         }
       }
     </style>
   </head>
   <body data-momenta-mouse-active="false">
-    <main>
+    <header>
       <h1><em>Momenta</em><strong>Mouse</strong></h1>
-      <div class="mouse-status mouse-not-found center-aligned-text">
-        Mouse Not Found
-      </div>
+    </header>
+    <main>
+      <section class="sticky-mouse-not-found-message">
+        <div class="attention-container warning-background centered-text">
+          Mouse Not Found
+        </div>
+      </section>
       <section>
         <h2>About</h2>
         <div>
@@ -447,9 +532,20 @@
       </section>
       <section>
         <h2>Usage</h2>
-        <p class="get-a-mouse mouse-not-found">
+        <p
+          class="attention-container warning-background mouse-not-found-message"
+        >
           MomentaMouse is disabled because a mouse was not found. Please attach
           a mouse to this device or try later with a device that has a mouse.
+        </p>
+        <p
+          class="attention-container caution-background touch-screen-with-mouse-message"
+        >
+          MomentaMouse is enabled and works with touch screen devices such as
+          this. However, only input from a mouse can trigger a MomentaMouse
+          scroll. Input from your finger, or input from a mouse being used with
+          an emulator, is considered touch input, and is handled by the
+          operating system or browser, not MomentaMouse.
         </p>
         <ul>
           <li>
@@ -528,7 +624,8 @@
           </li>
         </ul>
       </section>
-      <section>
+      <section class="part-width">
+        <h2 class="centered-text">Options</h2>
         <div class="options">
           <div class="option">
             <label for="activation-state-select"
@@ -585,8 +682,8 @@
           </div>
         </div>
       </section>
-      <section>
-        <h2 class="center-aligned-text">
+      <section class="part-width">
+        <h2 class="centered-text">
           Contained Carousel (Bouncy <em>Inside</em>)
         </h2>
         <div class="carousel-container part-width">
@@ -644,8 +741,8 @@
           </div>
         </div>
       </section>
-      <section>
-        <h2 class="center-aligned-text">
+      <section class="part-width">
+        <h2 class="centered-text">
           Contained Carousel (Bouncy <em>Outside</em>)
         </h2>
         <div class="carousel horizontal part-width">
@@ -701,9 +798,9 @@
           <div class="carousel-item"></div>
         </div>
       </section>
-      <section>
-        <h2 class="center-aligned-text">Uncontained Carousel</h2>
-        <div class="carousel horizontal full-width transparent-bg">
+      <section class="full-width">
+        <h2 class="centered-text">Uncontained Carousel</h2>
+        <div class="horizontal carousel">
           <div class="carousel-item"></div>
           <div class="carousel-item"></div>
           <div class="carousel-item"></div>
@@ -756,12 +853,11 @@
           <div class="carousel-item"></div>
         </div>
       </section>
-      <section>
-        <h2 class="center-aligned-text">Combination Scroller</h2>
-        <input type="button" value="Reset" class="combination-reset-button" />
+      <section class="part-width">
+        <h2 class="centered-text">Combination Scroller</h2>
         <div class="carousel-container part-width">
           <div class="carousel horizontal">
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -773,7 +869,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -785,7 +881,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -797,7 +893,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -809,7 +905,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -821,7 +917,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -833,7 +929,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -845,7 +941,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -857,7 +953,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -869,7 +965,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -881,7 +977,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -893,7 +989,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -905,7 +1001,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -917,7 +1013,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -929,7 +1025,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -941,7 +1037,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -953,7 +1049,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -965,7 +1061,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -977,7 +1073,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -989,7 +1085,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -1001,7 +1097,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -1013,7 +1109,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -1025,7 +1121,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -1037,7 +1133,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -1049,7 +1145,7 @@
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
             </div>
-            <div class="carousel vertical transparent-bg">
+            <div class="carousel vertical">
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
               <div class="carousel-item"></div>
@@ -1063,11 +1159,16 @@
             </div>
           </div>
         </div>
+        <input
+          type="button"
+          value="Reset Combination"
+          class="combination-reset-button"
+        />
       </section>
       <section>
-        <h2 class="center-aligned-text">Horizontal and Vertical Scroller</h2>
-        <div class="scroller-container">
-          <div class="scroller-content-horizontal-and-vertical">
+        <h2 class="centered-text">Horizontal and Vertical Scroller</h2>
+        <div class="scroller-container horizontal-and-vertical">
+          <div class="scroller-content">
             <a href="https://github.com/damianmgarcia/MomentaMouse"
               >Repository</a
             >
@@ -1075,9 +1176,9 @@
         </div>
       </section>
       <section>
-        <h2 class="center-aligned-text">Horizontal-Only Scroller</h2>
-        <div class="scroller-container">
-          <div class="scroller-content-horizontal-only">
+        <h2 class="centered-text">Horizontal-Only Scroller</h2>
+        <div class="scroller-container horizontal-only">
+          <div class="scroller-content">
             <a href="https://github.com/damianmgarcia/MomentaMouse"
               >Repository</a
             >
@@ -1085,9 +1186,9 @@
         </div>
       </section>
       <section>
-        <h2 class="center-aligned-text">Vertical-Only Scroller</h2>
-        <div class="scroller-container">
-          <div class="scroller-content-vertical-only">
+        <h2 class="centered-text">Vertical-Only Scroller</h2>
+        <div class="scroller-container vertical-only">
+          <div class="scroller-content">
             <a href="https://github.com/damianmgarcia/MomentaMouse"
               >Repository</a
             >
@@ -1095,21 +1196,25 @@
         </div>
       </section>
       <section>
-        <h2 class="center-aligned-text">
+        <h2 class="centered-text">
           Horizontal and Vertical Scroller (Right-to-Left)
         </h2>
-        <div class="scroller-container rtl">
-          <div class="scroller-content-horizontal-and-vertical rtl">
-            <a class="rtl" href="https://github.com/damianmgarcia/MomentaMouse"
+        <div class="scroller-container horizontal-and-vertical rtl">
+          <div class="scroller-content">
+            <a href="https://github.com/damianmgarcia/MomentaMouse"
               >Repository</a
             >
           </div>
         </div>
       </section>
-      <small
-        >Copyright &copy; <span class="date-year"></span>
-        <a href="/">Damian M. Garcia</a></small
-      >
+    </main>
+    <footer>
+      <p>
+        <small>
+          Copyright &copy; <span class="date-year"></span>
+          <a href="/">Damian M. Garcia</a></small
+        >
+      </p>
       <div class="kitteh">
         <svg
           viewBox="6.389 106.059 445.952 308.941"
@@ -1429,6 +1534,6 @@
           </g>
         </svg>
       </div>
-    </main>
+    </footer>
   </body>
 </html>
