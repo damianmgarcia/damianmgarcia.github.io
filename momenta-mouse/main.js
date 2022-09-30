@@ -11,7 +11,8 @@ const createAndAddCarouselItemNumberDiv = (element, number) => {
   element.insertAdjacentElement("afterbegin", carouselItemNumber);
 };
 
-document.querySelectorAll(".carousel.vertical").forEach((verticalCarousel) => {
+const verticalCarousels = document.querySelectorAll(".carousel.vertical");
+verticalCarousels.forEach((verticalCarousel) => {
   let hue = 0;
   let number = 0;
 
@@ -35,41 +36,58 @@ document
   });
 
 const kitteh = document.querySelector(".kitteh");
+
+kitteh.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
+});
+
 kitteh.addEventListener("pointerdown", () => {
+  const kittehBlinkAbortController = new AbortController();
+
   kitteh.querySelectorAll(".eyelid-down").forEach((element) => {
     element.beginElement();
   });
-});
 
-const openEyes = () => {
-  kitteh.querySelectorAll(".eyelid-up").forEach((element) => {
-    element.beginElement();
-  });
-};
+  const openEyes = () => {
+    kitteh.querySelectorAll(".eyelid-up").forEach((element) => {
+      element.beginElement();
+    });
 
-["pointercancel", "pointerup"].forEach((eventType) =>
-  kitteh.addEventListener(eventType, () => openEyes())
-);
+    kittehBlinkAbortController.abort();
+  };
 
-["contextmenu", "momentaMouseScrollerPointerRoute"].forEach((eventType) =>
-  document.addEventListener(eventType, (event) => {
-    if (
-      event.type === "momentaMouseScrollerPointerRoute" &&
-      event.detail.routeFrom !== kitteh
+  ["pointercancel", "pointerup"].forEach((eventType) =>
+    kitteh.addEventListener(eventType, () => openEyes(), {
+      signal: kittehBlinkAbortController.signal,
+    })
+  );
+
+  ["contextmenu", "momentaMouseScrollerPointerRoute"].forEach((eventType) =>
+    document.addEventListener(
+      eventType,
+      (event) => {
+        if (
+          event.type === "momentaMouseScrollerPointerRoute" &&
+          event.detail.routeFrom !== kitteh
+        )
+          return;
+
+        openEyes();
+      },
+      { signal: kittehBlinkAbortController.signal }
     )
-      return;
+  );
 
-    openEyes();
-  })
-);
-
-addEventListener("blur", () => openEyes());
+  addEventListener("blur", () => openEyes(), {
+    signal: kittehBlinkAbortController.signal,
+  });
+});
 
 document
   .querySelector(".combination-reset-button")
   .addEventListener("click", () => {
     let wait = 0;
-    document.querySelectorAll(".carousel.vertical").forEach((scroller) => {
+    verticalCarousels.forEach((scroller) => {
       setTimeout(
         () =>
           SmoothScroller.scroll({
@@ -82,7 +100,8 @@ document
     });
   });
 
-document.querySelectorAll("select").forEach((element) =>
+const selectElements = document.querySelectorAll("select");
+selectElements.forEach((element) =>
   element.addEventListener("input", (event) => {
     const option = event.target.name;
     const value = event.target.value;
@@ -124,37 +143,6 @@ document.querySelectorAll("select").forEach((element) =>
   })
 );
 
-const snapCarouselItemIntoAlignment = (verticalCarousel) => {
-  if (!verticalCarousel.matches(".vertical")) return;
-
-  const verticalCarouselScrollTop = verticalCarousel.scrollTop;
-
-  const verticalCarouselItemOffsets = Array.from(
-    verticalCarousel.querySelectorAll(".carousel-item")
-  ).map(
-    (carouseItem) =>
-      carouseItem.offsetTop -
-      Number.parseInt(getComputedStyle(carouseItem).marginTop)
-  );
-
-  const carouselItemDistancesFromScrollTop = verticalCarouselItemOffsets.map(
-    (offset) => Math.abs(offset - verticalCarouselScrollTop)
-  );
-
-  const smallestDistanceFromScrollTop = Math.min(
-    ...carouselItemDistancesFromScrollTop
-  );
-
-  const carouselItemClosestToScrollTop =
-    carouselItemDistancesFromScrollTop.indexOf(smallestDistanceFromScrollTop);
-
-  SmoothScroller.scroll({
-    scrollContainer: verticalCarousel,
-    y: verticalCarouselItemOffsets[carouselItemClosestToScrollTop],
-  });
-};
-
-const selectElements = document.querySelectorAll("select");
 const activationStateSelect = document.querySelector(
   "#activation-state-select"
 );
@@ -204,6 +192,36 @@ document.addEventListener("momentaMouseScrollerDeactivate", (event) => {
 
   document.body.dataset.momentaMouseActive = "false";
 });
+
+const snapCarouselItemIntoAlignment = (verticalCarousel) => {
+  if (!verticalCarousel.matches(".vertical")) return;
+
+  const verticalCarouselScrollTop = verticalCarousel.scrollTop;
+
+  const verticalCarouselMarginTop = Number.parseInt(
+    getComputedStyle(verticalCarousel.querySelector(".carousel-item")).marginTop
+  );
+
+  const verticalCarouselItemOffsets = Array.from(
+    verticalCarousel.querySelectorAll(".carousel-item")
+  ).map((carouseItem) => carouseItem.offsetTop - verticalCarouselMarginTop);
+
+  const carouselItemDistancesFromScrollTop = verticalCarouselItemOffsets.map(
+    (offset) => Math.abs(offset - verticalCarouselScrollTop)
+  );
+
+  const smallestDistanceFromScrollTop = Math.min(
+    ...carouselItemDistancesFromScrollTop
+  );
+
+  const carouselItemClosestToScrollTop =
+    carouselItemDistancesFromScrollTop.indexOf(smallestDistanceFromScrollTop);
+
+  SmoothScroller.scroll({
+    scrollContainer: verticalCarousel,
+    y: verticalCarouselItemOffsets[carouselItemClosestToScrollTop],
+  });
+};
 
 document.addEventListener(
   "momentaMouseScrollerPointerHandlingStop",
