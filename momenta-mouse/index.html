@@ -455,7 +455,7 @@
       }
 
       @media (any-pointer: fine) and (any-hover: hover) {
-        h1::after {
+        body[data-momenta-mouse-active="true"] h1::after {
           background: hsl(120, 100%, 25%);
           content: "Enabled";
         }
