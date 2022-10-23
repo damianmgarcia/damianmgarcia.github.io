@@ -419,6 +419,103 @@ export function flashAnimation(
   );
 }
 
+export class FunctionTools {
+  static addCallBlockingForRepetitiveCallsButAllowLastCall(
+    functionToCallBlock,
+    minCallFreeTimeRequiredBeforeAllowingNextCall = NaN
+  ) {
+    validateArgument("functionToCallBlock", functionToCallBlock, {
+      allowedTypes: ["function"],
+    });
+
+    validateArgument(
+      "minCallFreeTimeRequiredBeforeAllowingNextCall",
+      minCallFreeTimeRequiredBeforeAllowingNextCall,
+      {
+        allowedTypes: ["number"],
+        allowedMin: 0,
+        allowFiniteNumbersOnly: true,
+      }
+    );
+
+    let callBlockingTimer;
+
+    const functionWithCallBlockingAdded = (...args) => {
+      clearTimeout(callBlockingTimer);
+      callBlockingTimer = setTimeout(
+        () => functionToCallBlock(...args),
+        minCallFreeTimeRequiredBeforeAllowingNextCall
+      );
+    };
+
+    return functionWithCallBlockingAdded;
+  }
+
+  static addCallBlockingForRepetitiveCallsButAllowFirstCall(
+    functionToCallBlock,
+    minCallFreeTimeRequiredBeforeAllowingNextCall = NaN
+  ) {
+    validateArgument("functionToCallBlock", functionToCallBlock, {
+      allowedTypes: ["function"],
+    });
+
+    validateArgument(
+      "minCallFreeTimeRequiredBeforeAllowingNextCall",
+      minCallFreeTimeRequiredBeforeAllowingNextCall,
+      {
+        allowedTypes: ["number"],
+        allowedMin: 0,
+        allowFiniteNumbersOnly: true,
+      }
+    );
+
+    let callBlockingTimer;
+
+    const functionWithCallBlockingAdded = (...args) => {
+      if (!callBlockingTimer) functionToCallBlock(...args);
+      clearTimeout(callBlockingTimer);
+      callBlockingTimer = setTimeout(
+        () => (callBlockingTimer = null),
+        minCallFreeTimeRequiredBeforeAllowingNextCall
+      );
+    };
+
+    return functionWithCallBlockingAdded;
+  }
+
+  static addCallBlockingForRepetitiveCallsButAllowPeriodicCalls(
+    functionToCallBlock,
+    minTimeRequiredBeforeAllowingNextCall = NaN
+  ) {
+    validateArgument("functionToCallBlock", functionToCallBlock, {
+      allowedTypes: ["function"],
+    });
+
+    validateArgument(
+      "minTimeRequiredBeforeAllowingNextCall",
+      minTimeRequiredBeforeAllowingNextCall,
+      {
+        allowedTypes: ["number"],
+        allowedMin: 0,
+        allowFiniteNumbersOnly: true,
+      }
+    );
+
+    let callBlockingTimer;
+
+    const functionWithCallBlockingAdded = (...args) => {
+      if (callBlockingTimer) return;
+      functionToCallBlock(...args);
+      callBlockingTimer = setTimeout(
+        () => (callBlockingTimer = null),
+        minTimeRequiredBeforeAllowingNextCall
+      );
+    };
+
+    return functionWithCallBlockingAdded;
+  }
+}
+
 export class Heuristics {
   static getBrowserHeuristics() {
     const userAgent = navigator.userAgent.toLowerCase();
