@@ -94,9 +94,7 @@ const snowGlobeAnimation = {
           easing,
           keyframes,
         });
-      } catch (error) {
-        null;
-      }
+      } catch {}
     };
 
     document.querySelectorAll(".foreground-snow *").forEach((element) => {
@@ -473,10 +471,7 @@ document.addEventListener("momentaMouseScrollerActivate", (event) => {
     const touchAppButton = document.querySelector("#touch-app-button");
     touchAppButton.dataset.toggleButtonState = "on";
     const { reason } = event.detail;
-    if (
-      reason === "Quick toggle key" ||
-      reason === "Mouse available"
-    )
+    if (reason === "Quick toggle key" || reason === "Mouse available")
       return inputEventDelegator.animationLibrary.ripple(touchAppButton);
     localStorage.setItem("momentaMouseScrollerPreference", "on");
   } else if (
@@ -499,10 +494,7 @@ document.addEventListener("momentaMouseScrollerDeactivate", (event) => {
     const touchAppButton = document.querySelector("#touch-app-button");
     touchAppButton.dataset.toggleButtonState = "off";
     const { reason } = event.detail;
-    if (
-      reason === "Quick toggle key" ||
-      reason === "Mouse not available"
-    )
+    if (reason === "Quick toggle key" || reason === "Mouse not available")
       return inputEventDelegator.animationLibrary.deripple(touchAppButton);
     localStorage.setItem("momentaMouseScrollerPreference", "off");
   } else if (
@@ -1251,9 +1243,7 @@ const themedLogoAnimationDemo = {
       if (this.requestToLoop) {
         this.play();
       }
-    } catch (error) {
-      null;
-    }
+    } catch {}
   },
 
   reset() {
