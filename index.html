@@ -383,6 +383,11 @@
         max-width: 100%;
       }
 
+      .marquee-image {
+        border-radius: calc(750px / 34 * 1);
+        margin: calc(750px / 34 * 2) 0;
+      }
+
       video {
         border-radius: calc(750px / 34 * 1);
         cursor: var(--kitteh-grab-cursor);
@@ -861,8 +866,9 @@
         opacity: 1;
       }
 
-      .selector[data-disabled-selector="true"]:not(.demo-container[data-disabled-demo="true"]
-          .selector) {
+      .selector[data-disabled-selector="true"]:not(
+          .demo-container[data-disabled-demo="true"] .selector
+        ) {
         opacity: 0.25;
         pointer-events: none;
       }
@@ -1248,6 +1254,9 @@
       }
 
       .section-header {
+        display: flex;
+        flex-direction: column;
+        gap: calc(750px / 34 * 2);
         margin: calc(750px / 34 * 2);
       }
 
@@ -1349,25 +1358,24 @@
         margin: calc(750px / 34 / 0.5) auto calc(750px / 34 / 2) auto;
       }
 
+      .section-header-logo {
+        height: auto;
+        margin: 0 auto;
+        width: 80px;
+      }
+
       .position-organization-container {
         display: grid;
-        grid: auto / auto;
-        padding-top: calc(750px / 34 * 2);
         place-items: center;
         row-gap: calc(750px / 34 * 0.5);
       }
 
       .position {
         font-weight: var(--font-weight-normal);
-        grid-column: 1 / 2;
-        grid-row: 1 / 2;
-        text-align: center;
       }
 
       .organization {
         font-size: var(--font-size-small);
-        grid-column: 1 / 2;
-        grid-row: 2 / 3;
       }
 
       .demo-container {
@@ -2519,7 +2527,6 @@
                     transform="matrix(1, 0, 0, -1, 0, 0)"
                   ></path>
                 </g>
-
                 <g
                   transform="matrix(0.656575, -0.049106, 0.049106, 0.656575, 282.243622, -10.956932)"
                 >
@@ -2982,6 +2989,18 @@
             <div class="selector" data-hidden="true" id="project-selector">
               <div
                 class="selector-item"
+                data-id-to-scroll-to="#project-hide-n-seek"
+                id="project-selector-hide-n-seek"
+              >
+                <img
+                  alt="A simple drawing of a briefcase, bisected diagonally, with one side a light-brown color and the other side a black color. The face of a black cat with yellow eyes is partially visible as it peeks around the brown edge of the diagonal bisection. This is the logo for the Hide n' Seek browser extension."
+                  height="40"
+                  src="/images/hide-n-seek-icon-normalized.svg"
+                  width="40"
+                />
+              </div>
+              <div
+                class="selector-item"
                 data-id-to-scroll-to="#project-portfolio"
                 id="project-selector-portfolio"
               >
@@ -3136,6 +3155,102 @@
         <div class="title">Projects</div>
         <section
           class="project-section"
+          data-selector-id="#project-selector-hide-n-seek"
+          id="project-hide-n-seek"
+        >
+          <div class="section-header">
+            <div class="date-range-container">
+              <div
+                class="start-date"
+                data-year="2022"
+                data-month="11"
+                data-day="20"
+              ></div>
+              <div class="date-line"></div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="Completed"
+                data-status-no="get-duration"
+              ></div>
+              <div
+                class="end-date"
+                data-year="2022"
+                data-month="12"
+                data-day="29"
+              ></div>
+            </div>
+            <div class="position-organization-container">
+              <img
+                alt="A simple drawing of a briefcase, bisected diagonally, with one side a light-brown color and the other side a black color. The face of a black cat with yellow eyes is partially visible as it peeks around the brown edge of the diagonal bisection. This is the logo for the Hide n' Seek browser extension."
+                class="section-header-logo"
+                height="80"
+                src="/images/hide-n-seek-icon-normalized.svg"
+                width="80"
+              />
+              <div class="position">
+                <a
+                  class="link-container"
+                  href="https://github.com/damianmgarcia/Hide-n-Seek"
+                >
+                  <div class="link-content">Hide n' Seek</div>
+                  <div class="ripple-container">
+                    <div class="ripple"></div>
+                  </div>
+                </a>
+              </div>
+              <div class="organization">Independent</div>
+            </div>
+          </div>
+          <div class="section-accomplishments">
+            <div class="list">
+              <img
+                alt="A promotional marquee for the Hide n' Seek browser extension. The Hide n' Seek logo and name are featured on the left side of the marquee. The logo is a simple drawing of a briefcase, bisected diagonally, with one side a light-brown color and the other side a black color. The face of a black cat with yellow eyes is partially visible as it peeks around the brown edge of the diagonal bisection. A before and after demonstration of how Hide n' Seek hides jobs is featured on the right side of the marquee, titled: View the jobs you seek. Hide the ones you don't"
+                class="marquee-image"
+                height="358.453"
+                src="/images/hide-n-seek-marquee-1.svg"
+                width="573.531"
+              />
+              <div class="paragraph">
+                Hide n' Seek is a browser extension that allows its users to
+                hide job listings by companies they are not interested in as
+                they search job boards.
+              </div>
+              <img
+                alt="A promotional marquee for the Hide n' Seek browser extension. It demonstrates how the popup may be used to unhide all jobs."
+                class="marquee-image"
+                height="358.453"
+                src="/images/hide-n-seek-marquee-2.svg"
+                width="573.531"
+              />
+              <div class="paragraph">
+                This functionality is necessary because job boards do not allow
+                job seekers to filter out jobs by company name. This results in
+                a poor user experience, especially when many job search results
+                are by companies that the job seeker is not interested in.
+              </div>
+              <div class="paragraph">
+                Hide n' Seek aims to solve this problem by adding "hide" buttons
+                to all job listings within a list of job search results,
+                allowing users to easily hide jobs with just a click.
+              </div>
+              <div class="paragraph">
+                After a job's "hide" button is clicked, Hide n' Seek will hide
+                that job, as well as all other jobs by that company, behind an
+                overlay, which allows the user to focus on the listings they are
+                interested in and ignore the ones they are not. Hide n' Seek
+                will continue to hide jobs by that company in future job search
+                results unless the user decides to unhide the job.
+              </div>
+              <div class="paragraph">
+                Hide n' Seek also allows users to hide sponsored and promoted
+                jobs.
+              </div>
+            </div>
+          </div>
+        </section>
+        <section
+          class="project-section"
           data-selector-id="#project-selector-portfolio"
           id="project-portfolio"
         >
@@ -3162,6 +3277,13 @@
               ></div>
             </div>
             <div class="position-organization-container">
+              <img
+                alt="Portfolio website logo featuring Charm, a black cat with yellow eyes, and the letters 'dmg' above his head"
+                class="section-header-logo"
+                height="40"
+                src="/images/charm-logo-with-background.svg"
+                width="40"
+              />
               <div class="position">
                 <a class="link-container" href="/">
                   <div class="link-content">Portfolio</div>
@@ -3175,13 +3297,6 @@
           </div>
           <div class="section-accomplishments">
             <div class="list">
-              <!-- To anyone wondering why semantic <p> tags are not used: It 
-                is because they trigger some browsers to prompt the user to 
-                try reader mode, which is a non-standard feature that does 
-                not work well with many sites. Reader modes do not include 
-                official documentation to help developers create high-quality
-                 reader-mode versions of their sites. Therefore, for this 
-                 site, <div> tags are used instead of <p> tags. -->
               <div class="paragraph">
                 This site is my portfolio. It and
                 <div
@@ -4595,6 +4710,13 @@
               ></div>
             </div>
             <div class="position-organization-container">
+              <img
+                alt="Charm's Jobs website logo featuring Charm, a black cat with yellow eyes and a confident smile"
+                class="section-header-logo"
+                height="40"
+                src="/images/charms-jobs-logo.svg"
+                width="40"
+              />
               <div class="position">
                 <a
                   class="link-container"
@@ -5265,6 +5387,25 @@
                 <div class="paragraph">
                   <a
                     class="link-container"
+                    href="https://github.com/damianmgarcia/Hide-n-Seek"
+                    id="link-hide-n-seek-repository-experience"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <div class="link-content">
+                      Hide n' Seek
+                      <div class="ripple-container">
+                        <div class="ripple"></div>
+                      </div></div></a
+                  >&thinsp;&mdash;&thinsp;Browser extension that allows its
+                  users to hide job listings by companies they are not
+                  interested in as they search job boards
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="paragraph">
+                  <a
+                    class="link-container"
                     href="https://charmsjobs.com"
                     id="link-charms-jobs-website"
                     rel="noreferrer"
@@ -5420,7 +5561,6 @@
                   and recommended tobacco-cessation pharmacotherapy
                 </div>
               </div>
-
               <div class="list-item">
                 <a
                   class="link-container"
