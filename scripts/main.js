@@ -1973,7 +1973,7 @@ class InputEventDelegator {
 
     async flashUnderline(underlineElement) {
       const camelCaseTargetId = convertHyphenCaseToCamelCase(
-        underlineElement.id
+        underlineElement.closest(".link-container").id
       );
 
       this[`flashUnderlineAnimationFor${camelCaseTargetId}`]?.cancel();
