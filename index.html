@@ -340,6 +340,11 @@
         -webkit-touch-callout: none;
       }
 
+      a.image {
+        line-height: 0;
+        margin: auto;
+      }
+
       code {
         background: var(--button-background-color);
         border-radius: calc(750px / 34 * 1);
@@ -385,7 +390,6 @@
 
       .marquee-image {
         border-radius: calc(750px / 34 * 1);
-        margin: calc(750px / 34 * 2) 0;
       }
 
       video {
@@ -1318,10 +1322,6 @@
         margin: auto;
       }
 
-      .list .marquee-image:last-of-type {
-        margin-bottom: 0;
-      }
-
       .paragraph {
         margin: calc(750px / 34 / 1) auto;
       }
@@ -1476,6 +1476,10 @@
         display: inline;
       }
 
+      img.link-content {
+        background: none;
+      }
+
       .selector *,
       .video-gallery *,
       .video-progress-bar-container *,
@@ -1497,6 +1501,14 @@
       footer {
         margin: calc(750px / 34 * 2) auto;
         text-align: center;
+      }
+
+      .small-padding {
+        padding: calc(750px / 34 * 0.5);
+      }
+
+      .large-padding {
+        padding: calc(750px / 34 * 1);
       }
     </style>
   </head>
@@ -3185,17 +3197,27 @@
               ></div>
             </div>
             <div class="position-organization-container">
-              <img
-                alt="A simple drawing of a briefcase, bisected diagonally, with one side a light-brown color and the other side a black color. The face of a black cat with yellow eyes is partially visible as it peeks around the brown edge of the diagonal bisection. This is the logo for the Hide n' Seek browser extension."
-                class="section-header-logo"
-                height="80"
-                src="/images/hide-n-seek-icon-normalized.svg"
-                width="80"
-              />
+              <a
+                class="link-container image small-padding"
+                href="https://github.com/damianmgarcia/Hide-n-Seek"
+                id="link-logo-to-github"
+              >
+                <img
+                  alt="A simple drawing of a briefcase, bisected diagonally, with one side a light-brown color and the other side a black color. The face of a black cat with yellow eyes is partially visible as it peeks around the brown edge of the diagonal bisection. This is the logo for the Hide n' Seek browser extension."
+                  class="section-header-logo link-content"
+                  height="80"
+                  src="/images/hide-n-seek-icon-normalized.svg"
+                  width="80"
+                />
+                <div class="ripple-container">
+                  <div class="ripple"></div>
+                </div>
+              </a>
               <div class="position">
                 <a
                   class="link-container"
                   href="https://github.com/damianmgarcia/Hide-n-Seek"
+                  id="link-title-to-github"
                 >
                   <div class="link-content">Hide n' Seek</div>
                   <div class="ripple-container">
@@ -3259,20 +3281,38 @@
                     </div></div
                 ></a>
               </div>
-              <img
-                alt="A promotional marquee for the Hide n' Seek browser extension. The Hide n' Seek logo and name are featured on the left side of the marquee. The logo is a simple drawing of a briefcase, bisected diagonally, with one side a light-brown color and the other side a black color. The face of a black cat with yellow eyes is partially visible as it peeks around the brown edge of the diagonal bisection. A before and after demonstration of how Hide n' Seek hides jobs is featured on the right side of the marquee, titled: View the jobs you seek. Hide the ones you don't"
-                class="marquee-image"
-                height="358.453"
-                src="/images/hide-n-seek-marquee-1.svg"
-                width="573.531"
-              />
-              <img
-                alt="A promotional marquee for the Hide n' Seek browser extension. It demonstrates how the popup may be used to unhide all jobs."
-                class="marquee-image"
-                height="358.453"
-                src="/images/hide-n-seek-marquee-2.svg"
-                width="573.531"
-              />
+              <a
+                class="link-container image large-padding"
+                href="/images/hide-n-seek-marquee-1.svg"
+                id="link-hide-n-seek-marquee-1-image"
+              >
+                <img
+                  alt="A promotional marquee for the Hide n' Seek browser extension. The Hide n' Seek logo and name are featured on the left side of the marquee. The logo is a simple drawing of a briefcase, bisected diagonally, with one side a light-brown color and the other side a black color. The face of a black cat with yellow eyes is partially visible as it peeks around the brown edge of the diagonal bisection. A before and after demonstration of how Hide n' Seek hides jobs is featured on the right side of the marquee, titled: View the jobs you seek. Hide the ones you don't"
+                  class="marquee-image link-content"
+                  height="358.453"
+                  src="/images/hide-n-seek-marquee-1.svg"
+                  width="573.531"
+                />
+                <div class="ripple-container">
+                  <div class="ripple"></div>
+                </div>
+              </a>
+              <a
+                class="link-container image large-padding"
+                href="/images/hide-n-seek-marquee-2.svg"
+                id="link-hide-n-seek-marquee-2-image"
+              >
+                <img
+                  alt="A promotional marquee for the Hide n' Seek browser extension. It demonstrates how the popup may be used to unhide all jobs."
+                  class="marquee-image link-content"
+                  height="358.453"
+                  src="/images/hide-n-seek-marquee-2.svg"
+                  width="573.531"
+                />
+                <div class="ripple-container">
+                  <div class="ripple"></div>
+                </div>
+              </a>
             </div>
           </div>
         </section>
@@ -3304,15 +3344,28 @@
               ></div>
             </div>
             <div class="position-organization-container">
-              <img
-                alt="Portfolio website logo featuring Charm, a black cat with yellow eyes, and the letters 'dmg' above his head"
-                class="section-header-logo"
-                height="40"
-                src="/images/charm-logo-with-background.svg"
-                width="40"
-              />
+              <a
+                class="link-container image small-padding"
+                href="/"
+                id="link-logo-reload-portfolio"
+              >
+                <img
+                  alt="Portfolio website logo featuring Charm, a black cat with yellow eyes, and the letters 'dmg' above his head"
+                  class="section-header-logo link-content"
+                  height="40"
+                  src="/images/charm-logo-with-background.svg"
+                  width="40"
+                />
+                <div class="ripple-container">
+                  <div class="ripple"></div>
+                </div>
+              </a>
               <div class="position">
-                <a class="link-container" href="/">
+                <a
+                  class="link-container"
+                  href="/"
+                  id="link-project-name-reload-portfolio"
+                >
                   <div class="link-content">Portfolio</div>
                   <div class="ripple-container">
                     <div class="ripple"></div>
@@ -4737,13 +4790,22 @@
               ></div>
             </div>
             <div class="position-organization-container">
-              <img
-                alt="Charm's Jobs website logo featuring Charm, a black cat with yellow eyes and a confident smile"
-                class="section-header-logo"
-                height="40"
-                src="/images/charms-jobs-logo.svg"
-                width="40"
-              />
+              <a
+                class="link-container image small-padding"
+                href="https://charmsjobs.com"
+                id="link-logo-charms-jobs-website-projects"
+              >
+                <img
+                  alt="Charm's Jobs website logo featuring Charm, a black cat with yellow eyes and a confident smile"
+                  class="section-header-logo link-content"
+                  height="40"
+                  src="/images/charms-jobs-logo.svg"
+                  width="40"
+                />
+                <div class="ripple-container">
+                  <div class="ripple"></div>
+                </div>
+              </a>
               <div class="position">
                 <a
                   class="link-container"
