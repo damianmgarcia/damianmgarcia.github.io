@@ -633,6 +633,65 @@ export function getRandomNumber({
   return randomNumber;
 }
 
+export function getRandomString(
+  length,
+  { includeUpperCase, includeLowerCase, includeNumber, includeSpecial } = {}
+) {
+  validateArgument("length", length, {
+    allowedTypes: ["number"],
+    allowIntegerNumbersOnly: true,
+    allowedMin: 1,
+  });
+
+  const allInclusionOptions = [
+    includeUpperCase,
+    includeLowerCase,
+    includeNumber,
+    includeSpecial,
+  ];
+
+  allInclusionOptions.forEach((inclusionOption) =>
+    validateArgument("inclusionOption", inclusionOption, {
+      allowedTypes: ["boolean", "undefined"],
+    })
+  );
+
+  const includeNothing =
+    allInclusionOptions.every((includeOption) => includeOption === false) ||
+    (allInclusionOptions.some((inclusionOption) => inclusionOption === false) &&
+      !allInclusionOptions.some((inclusionOption) => inclusionOption === true));
+
+  if (includeNothing)
+    throw Error(
+      "At least one type of character must be permitted to generate a string"
+    );
+
+  const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowerCase = "abcdefghijklmnopqrstuvwxyz";
+  const number = "0123456789";
+  const special = `!"#$%&'()*+,-./:;<=>?@[\]^_\`{|}~`;
+
+  const includeAll = allInclusionOptions.every(
+    (includeOption) => includeOption === undefined
+  );
+
+  const permittedCharacters = includeAll
+    ? upperCase + lowerCase + number + special
+    : `${includeUpperCase ? upperCase : ""}${
+        includeLowerCase ? lowerCase : ""
+      }${includeNumber ? number : ""}${includeSpecial ? special : ""}`;
+
+  return Array.from({ length }, () =>
+    permittedCharacters.charAt(
+      this.getRandomNumber({
+        min: 0,
+        max: permittedCharacters.length - 1,
+        randomIntegersOnly: true,
+      })
+    )
+  ).join("");
+}
+
 export function getComputedTransformProperties(element) {
   validateArgument("element", element, {
     allowedPrototypes: [Element],
