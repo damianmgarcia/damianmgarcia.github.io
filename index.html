@@ -322,6 +322,10 @@
         --video-progress-bars-container: hsl(0, 0%, 22.5%, 0.5);
       }
 
+      .font-weight-normal {
+        font-weight: var(--font-weight-normal);
+      }
+
       body {
         background: var(--body-background-color);
         display: grid;
@@ -1336,7 +1340,7 @@
         margin: 0 auto calc(750px / 34 / 1) auto;
       }
 
-      .list-item:last-child *:last-child {
+      .list:last-of-type > .list-item:last-child > *:last-child {
         margin: 0 auto;
       }
 
@@ -3242,6 +3246,20 @@
               <div class="paragraph">
                 <a
                   class="link-container"
+                  href="https://youtu.be/1U6WQ0mTmUg?t=80"
+                  id="link-hide-n-seek-video"
+                  rel="noreferrer"
+                  target="_blank"
+                  ><div class="link-content">
+                    Video
+                    <div class="ripple-container">
+                      <div class="ripple"></div>
+                    </div></div
+                ></a>
+              </div>
+              <div class="paragraph">
+                <a
+                  class="link-container"
                   href="https://chrome.google.com/webstore/detail/hide-n-seek/agghbaheofcoecndkbflbnggdjcmiaml"
                   id="link-hide-n-seek-chrome-web-store"
                   rel="noreferrer"
@@ -3622,7 +3640,7 @@
                   produce more momentum, resulting in scrolls that travel
                   farther and last longer. Slower flicks have the opposite
                   effect. Flicking in the same direction in quick succession
-                  results accumulation of scrolling speed.
+                  results in accumulation of scrolling speed.
                 </div>
                 <div class="paragraph">
                   <span class="font-light-italic">Overscroll:</span> If a user
@@ -5176,7 +5194,8 @@
                   target="_blank"
                 >
                   <div class="link-content">
-                    PCOA score highest in class
+                    PCOA score highest in class, ranked 99th percentile
+                    nationally
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
@@ -5192,7 +5211,7 @@
                   target="_blank"
                 >
                   <div class="link-content">
-                    PCAT composite 99th percentile rank
+                    PCAT score ranked 99th percentile nationally
                     <div class="ripple-container">
                       <div class="ripple"></div>
                     </div>
@@ -5449,85 +5468,278 @@
             <div class="list">
               <div class="list-item">
                 <div class="paragraph">
-                  <a
-                    class="link-container"
-                    href="https://chrome.google.com/webstore/detail/hide-n-seek/agghbaheofcoecndkbflbnggdjcmiaml"
-                    id="link-hide-n-seek-chrome-web-store-experience"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <div class="link-content">
-                      Hide n' Seek
-                      <div class="ripple-container">
-                        <div class="ripple"></div>
-                      </div></div></a
+                  <span class="font-weight-normal">Hide n' Seek</span
                   >&thinsp;&mdash;&thinsp;Browser extension that lets users hide
                   jobs by company name on job boards such as LinkedIn and Indeed
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://youtu.be/1U6WQ0mTmUg?t=80"
+                      id="link-hide-n-seek-video-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Video
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://chrome.google.com/webstore/detail/hide-n-seek/agghbaheofcoecndkbflbnggdjcmiaml"
+                      id="link-hide-n-seek-chrome-web-store-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Chrome Web Store
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://github.com/damianmgarcia/Hide-n-Seek"
+                      id="link-hide-n-seek-repository-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Repository
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <a
-                    class="link-container"
-                    href="https://damianmgarcia.com/momenta-mouse/index.html"
-                    id="link-momentum-scroller-demo-experience"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <div class="link-content">
-                      MomentaMouse
-                      <div class="ripple-container">
-                        <div class="ripple"></div>
-                      </div></div></a
+                  <span class="font-weight-normal">MomentaMouse</span
                   >&thinsp;&mdash;&thinsp;JavaScript module that enables
                   mouse-users to use touch-style scrolling and flicking gestures
                   to navigate websites
                 </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://youtu.be/n3Z1fDQ5YJ0"
+                      id="link-momentum-scroller-video-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Video
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://damianmgarcia.com/momenta-mouse"
+                      id="link-momentum-scroller-demo-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Demo
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://github.com/damianmgarcia/MomentaMouse"
+                      id="link-momentum-scroller-repository-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Repository
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <a
-                    class="link-container"
-                    href="https://github.com/damianmgarcia/SmoothScroller"
-                    id="link-smooth-scroller-repository-experience"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <div class="link-content">
-                      SmoothScroller
-                      <div class="ripple-container">
-                        <div class="ripple"></div>
-                      </div></div></a
+                  <span class="font-weight-normal">SmoothScroller</span
                   >&thinsp;&mdash;&thinsp;JavaScript module that gives
                   developers a powerful and customizable smooth scroll method
                 </div>
-              </div>
-              <div class="list-item">
-                <div class="paragraph">
-                  <a class="link-container" href="/">
-                    <div class="link-content">
-                      damianmgarcia.com
-                      <div class="ripple-container">
-                        <div class="ripple"></div>
-                      </div></div></a
-                  >&thinsp;&mdash;&thinsp;Personal website
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://youtu.be/8iPYW6wBJ7w?t=120"
+                      id="link-smooth-scroller-video-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Video
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <div
+                      class="link-container"
+                      data-id-to-scroll-to="#demo-container-for-smooth-scroller"
+                      id="scroll-to-demo-container-for-smooth-scroller"
+                      tabindex="0"
+                    >
+                      <div class="link-content">
+                        Demo
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://github.com/damianmgarcia/SmoothScroller"
+                      id="link-smooth-scroller-repository-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Repository
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
                 </div>
               </div>
               <div class="list-item">
                 <div class="paragraph">
-                  <a
-                    class="link-container"
-                    href="https://charmsjobs.com"
-                    id="link-charms-jobs-website"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <div class="link-content">
-                      charmsjobs.com
-                      <div class="ripple-container">
-                        <div class="ripple"></div>
-                      </div></div></a
-                  >&thinsp;&mdash;&thinsp;Audiobook progressive web app
+                  <span class="font-weight-normal">Personal Website</span
+                  >&thinsp;&mdash;&thinsp;Completely custom website built with
+                  vanilla JavaScript, HTML, and CSS while independently learning
+                  web development
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://youtu.be/8iPYW6wBJ7w"
+                      id="link-personal-website-video-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Video
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="/"
+                      id="link-personal-website-demo-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Site
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://github.com/damianmgarcia/damianmgarcia.github.io"
+                      id="link-personal-website-repository-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Repository
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+              </div>
+              <div class="list-item">
+                <div class="paragraph">
+                  <span class="font-weight-normal">Charm's Jobs</span
+                  >&thinsp;&mdash;&thinsp;Audiobook progressive web app built
+                  with vanilla JavaScript, HTML, and CSS while independently
+                  learning web development
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://youtu.be/OQWY4cMujNE"
+                      id="link-charms-jobs-video-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Video
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
+                </div>
+                <div class="list-item">
+                  <div class="paragraph">
+                    <a
+                      class="link-container"
+                      href="https://charmsjobs.com"
+                      id="link-charms-jobs-demo-experience"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      <div class="link-content">
+                        Site
+                        <div class="ripple-container">
+                          <div class="ripple"></div>
+                        </div></div
+                    ></a>
+                  </div>
                 </div>
               </div>
               <div class="list-item">
@@ -5537,7 +5749,7 @@
                     href="https://github.com/damianmgarcia/"
                   >
                     <div class="link-content">
-                      GitHub repositories
+                      <span class="font-weight-normal">Repositories</span>
                       <div class="ripple-container">
                         <div class="ripple"></div>
                       </div></div
@@ -5624,9 +5836,7 @@
               ></div>
             </div>
             <div class="position-organization-container">
-              <div class="position">
-                Pharmacist Intern (Ambulatory Care Rotation)
-              </div>
+              <div class="position">Pharmacist Intern (Ambulatory Care)</div>
               <div class="organization">University Health</div>
             </div>
           </div>
@@ -5695,9 +5905,7 @@
               ></div>
             </div>
             <div class="position-organization-container">
-              <div class="position">
-                Pharmacist Intern (Poison Control Rotation)
-              </div>
+              <div class="position">Pharmacist Intern (Poison Control)</div>
               <div class="organization">South Texas Poison Center</div>
             </div>
           </div>
@@ -5756,9 +5964,7 @@
               ></div>
             </div>
             <div class="position-organization-container">
-              <div class="position">
-                Pharmacist Intern (Internal Medicine Rotation)
-              </div>
+              <div class="position">Pharmacist Intern (Internal Medicine)</div>
               <div class="organization">
                 Audie L. Murphy Memorial VA Hospital
               </div>
@@ -5832,9 +6038,7 @@
               ></div>
             </div>
             <div class="position-organization-container">
-              <div class="position">
-                Pharmacist Intern (Hospital Pharmacy Rotation)
-              </div>
+              <div class="position">Pharmacist Intern (Hospital Pharmacy)</div>
               <div class="organization">University Health</div>
             </div>
           </div>
@@ -5903,7 +6107,7 @@
             </div>
             <div class="position-organization-container">
               <div class="position">
-                Pharmacist Intern (Pharmacy Management Rotation)
+                Pharmacist Intern (Pharmacy Management)
               </div>
               <div class="organization">H-E-B</div>
             </div>
@@ -5971,7 +6175,7 @@
             </div>
             <div class="position-organization-container">
               <div class="position">
-                Pharmacist Intern (Psychiatric Pharmacy Rotation)
+                Pharmacist Intern (Psychiatric Pharmacy)
               </div>
               <div class="organization">San Antonio State Hospital</div>
             </div>
@@ -6019,9 +6223,7 @@
               ></div>
             </div>
             <div class="position-organization-container">
-              <div class="position">
-                Pharmacist Intern (Community Pharmacy Rotation)
-              </div>
+              <div class="position">Pharmacist Intern (Community Pharmacy)</div>
               <div class="organization">H-E-B</div>
             </div>
           </div>
