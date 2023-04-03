@@ -1514,6 +1514,15 @@
       .large-padding {
         padding: calc(750px / 34 * 1);
       }
+
+      .youtube-iframe {
+        aspect-ratio: 16 / 9;
+        border-radius: calc(750px / 17 / 4);
+        display: block;
+        height: auto;
+        margin: calc(750px / 34 * 2) auto calc(750px / 34 * 1) auto;
+        width: 529.413px;
+      }
     </style>
   </head>
   <body>
@@ -3246,20 +3255,6 @@
               <div class="paragraph">
                 <a
                   class="link-container"
-                  href="https://youtu.be/zhh7mI7bgRg"
-                  id="link-hide-n-seek-video"
-                  rel="noreferrer"
-                  target="_blank"
-                  ><div class="link-content">
-                    Check it out on YouTube
-                    <div class="ripple-container">
-                      <div class="ripple"></div>
-                    </div></div
-                ></a>
-              </div>
-              <div class="paragraph">
-                <a
-                  class="link-container"
                   href="https://chrome.google.com/webstore/detail/hide-n-seek/agghbaheofcoecndkbflbnggdjcmiaml"
                   id="link-hide-n-seek-chrome-web-store"
                   rel="noreferrer"
@@ -3299,6 +3294,16 @@
                     </div></div
                 ></a>
               </div>
+              <iframe
+                class="youtube-iframe"
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/zhh7mI7bgRg"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
               <a
                 class="link-container image large-padding"
                 href="/images/hide-n-seek-marquee-1.svg"
