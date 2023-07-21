@@ -3144,9 +3144,11 @@ dateRangeContainers.forEach((dateRangeContainer) => {
   const startDate = new Date(startDateYear, startDateMonth, startDateDay);
   startDateElement.textContent = DateTools.getDateInISOFormat(startDate);
 
+  const currentDate = new Date(today.year, today.month - 1, today.day);
+
   let endDate =
     endDateElement.dataset.date === "current"
-      ? new Date(today.year, today.month - 1, today.day)
+      ? currentDate
       : endDateElement.dataset.date === "indefinite"
       ? Infinity
       : null;
@@ -3210,10 +3212,11 @@ dateRangeContainers.forEach((dateRangeContainer) => {
       : statusElement.dataset.statusNo;
 
   if (statusType === "has-completed") {
-    statusElement.textContent = endDate ? statusYes : statusNo;
+    statusElement.textContent =
+      endDate.getTime() === currentDate.getTime() ? statusNo : statusYes;
   } else if (statusType === "has-expired") {
     statusElement.textContent =
-      new Date(today.year, today.month - 1, today.day) > endDate
+      endDate !== Infinity && currentDate.getTime() > endDate.getTime()
         ? statusYes
         : statusNo;
   }
