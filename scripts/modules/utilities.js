@@ -799,6 +799,15 @@ export class InputTools {
       "Tab",
     ].includes(key);
   }
+
+  static supportsGetCoalescedEvents() {
+    return (
+      !!window.PointerEvent &&
+      Object.getOwnPropertyNames(window.PointerEvent.prototype).includes(
+        "getCoalescedEvents"
+      )
+    );
+  }
 }
 
 export class ScrollContainerTools {
