@@ -1809,9 +1809,10 @@ class InputEventDelegator {
       });
       this.reset();
     } else if (inputState === "canceled") {
-      this.#inputDownEvent.target.releasePointerCapture(
-        this.#inputDownEvent.pointerId
-      );
+      if (this.#inputDownEvent.pointerId)
+        this.#inputDownEvent.target.releasePointerCapture(
+          this.#inputDownEvent.pointerId
+        );
       this.#inputDownEvent.target.dispatchEvent(
         new PointerEvent("pointercancel", {
           bubbles: true,
