@@ -3183,7 +3183,7 @@ dateRangeContainers.forEach((dateRangeContainer) => {
             new Date(endDateYear, endDateMonth)
           )
         : +endDateElement.dataset.day;
-    validateArgument("end-date data-da`", endDateDay, {
+    validateArgument("end-date data-day", endDateDay, {
       allowedMin: 1,
       allowedMax: DateTools.getNumberOfDaysInTheMonth(
         new Date(endDateYear, endDateMonth)
