@@ -1634,7 +1634,7 @@ videos.forEach((video) => {
 
     const nextVideo = video.nextElementSibling?.matches("video")
       ? video.nextElementSibling
-      : null;
+      : video.parentElement.querySelector("video");
 
     if (nextVideo && !VideoGalleryObservers.aVideoGalleryIsActive) {
       const nextVideoPosition = nextVideo.offsetLeft;
@@ -2136,23 +2136,38 @@ class InputEventDelegator {
             kittehThemeSelectorObserver,
           ].find((observer) => observer.root === target);
 
+          const wantsNextItem = targetsMatch && !event.shiftKey;
+          const nextItem = observer.incoming.nextElementSibling;
+
+          const wantsPreviousItem = targetsMatch && event.shiftKey;
+          const previousItem = observer.incoming.previousElementSibling;
+
+          const firstItem = target.querySelector(
+            ".selector-item:first-of-type"
+          );
+          const lastItem = target.querySelector(".selector-item:last-of-type");
+
+          const selectorItem =
+            event.type === "pointerup"
+              ? observer.incoming
+              : wantsNextItem && nextItem
+              ? nextItem
+              : wantsPreviousItem && previousItem
+              ? previousItem
+              : wantsNextItem && !nextItem
+              ? firstItem
+              : wantsPreviousItem && !previousItem
+              ? lastItem
+              : observer.incoming;
+
           let matchingMainScrollTop;
           if (isArticleSelector || isProjectSelector) {
-            if (browserHeuristics.isIOsSafari) {
-              document.querySelector("main").style.removeProperty("overflow");
-            }
+            const main = document.querySelector("main");
+
+            if (browserHeuristics.isIOsSafari)
+              main.style.removeProperty("overflow");
 
             mainArticleObserver.requestToPause = true;
-
-            const main = document.querySelector("main");
-            const selectorItem =
-              event.type === "pointerup"
-                ? observer.incoming
-                : observer.incoming.nextElementSibling && targetsMatch
-                ? observer.incoming.nextElementSibling
-                : target.querySelector(".selector-item") && targetsMatch
-                ? target.querySelector(".selector-item")
-                : observer.incoming;
 
             if (!selectorItem)
               return (mainArticleObserver.requestToPause = false);
@@ -2169,18 +2184,9 @@ class InputEventDelegator {
               : 0;
           }
 
-          const incomingOffsetTop =
-            event.type === "pointerup" && targetsMatch
-              ? observer.incoming.offsetTop
-              : observer.incoming.nextElementSibling && targetsMatch
-              ? observer.incoming.nextElementSibling.offsetTop
-              : target.querySelector("div") && targetsMatch
-              ? target.querySelector("div").offsetTop
-              : this.currentOffsetTop;
-
           const smoothScrollerPromise = SmoothScroller.scroll({
             scrollContainer: target,
-            y: incomingOffsetTop,
+            y: selectorItem.offsetTop,
           });
 
           target.classList.toggle("pressed");
@@ -2333,15 +2339,29 @@ class InputEventDelegator {
           const videoGalleryObserver =
             VideoGalleryObservers.videoGalleryObserverMap.get(target);
 
+          const wantsNextItem = targetsMatch && !event.shiftKey;
+          const nextItem =
+            videoGalleryObserver.lastObservedVideo.nextElementSibling;
+
+          const wantsPreviousItem = targetsMatch && event.shiftKey;
+          const previousItem =
+            videoGalleryObserver.lastObservedVideo.previousElementSibling;
+
+          const firstItem = target.querySelector("video:first-of-type");
+          const lastItem = target.querySelector("video:last-of-type");
+
           const lastObservedVideo =
             (event.type === "pointerup" || event.type === "pointermove") &&
             targetsMatch
               ? videoGalleryObserver.lastObservedVideo
-              : videoGalleryObserver.lastObservedVideo.nextElementSibling &&
-                targetsMatch
-              ? videoGalleryObserver.lastObservedVideo.nextElementSibling
-              : target.querySelector("video") && targetsMatch
-              ? target.querySelector("video")
+              : wantsNextItem && nextItem
+              ? nextItem
+              : wantsPreviousItem && previousItem
+              ? previousItem
+              : wantsNextItem && !nextItem
+              ? firstItem
+              : wantsPreviousItem && !previousItem
+              ? lastItem
               : this.lastObservedVideo;
 
           const videoOffsetLeft = lastObservedVideo.offsetLeft;
