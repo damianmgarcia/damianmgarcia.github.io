@@ -2902,7 +2902,11 @@ const createMomentaMouseScrollers = ({ activateImmediately = false } = {}) => {
     selectorsToIgnore: [":root", "body", "textarea"],
   })
     .setSelectorsOfElementsScrollerShouldIgnore(["header", ".selector"])
-    .setSelectorsOfClickableElements([".button", ".link-container"])
+    .setSelectorsOfClickableElements([
+      ".button",
+      ".link-container",
+      ".video-progress-bar-container",
+    ])
     .setSelectorsOfOtherTouchScrollers([".video-gallery"])
     .getAllScrollers()
     .forEach((scroller) =>
