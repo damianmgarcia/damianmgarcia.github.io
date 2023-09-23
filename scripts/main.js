@@ -685,11 +685,9 @@ function getCursorDataUri(cursorType, fillColor) {
     const appearance = lightDarkAppearanceSwitcher.currentAppearance;
 
     if (kitteh === "shelby") {
-      return "hsl(28, 53.6%, 27.1%)";
-    } else if (kitteh === "charm" && appearance === "dark") {
-      return "hsl(0, 0%, 0%)";
-    } else if (kitteh === "charm" && appearance === "light") {
-      return "hsl(0, 0%, 20%)";
+      return appearance === "light" ? "hsl(28, 54%, 32%)" : "hsl(28, 54%, 27%)";
+    } else if (kitteh === "charm") {
+      return appearance === "light" ? "hsl(0, 0%, 20%)" : "hsl(0, 0%, 0%)";
     }
   }
 
