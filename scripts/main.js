@@ -2055,7 +2055,7 @@ class InputEventDelegator {
             kittehThemeSelectorObserver,
           ].find((observer) => observer.root === target);
 
-          this.currentOffsetTop = observer.incoming.offsetTop;
+          this.selectorItemOnInputDown = observer.incoming;
 
           const isArticleSelector =
             target === document.querySelector("#article-selector");
@@ -2156,7 +2156,7 @@ class InputEventDelegator {
               ? firstItem
               : wantsPreviousItem && !previousItem
               ? lastItem
-              : observer.incoming;
+              : this.selectorItemOnInputDown;
 
           let matchingMainScrollTop;
           if (isArticleSelector || isProjectSelector) {
@@ -2248,7 +2248,7 @@ class InputEventDelegator {
           const videoGalleryObserver =
             VideoGalleryObservers.videoGalleryObserverMap.get(target);
 
-          this.lastObservedVideo = videoGalleryObserver.lastObservedVideo;
+          this.videoOnInputDown = videoGalleryObserver.lastObservedVideo;
 
           target.style.setProperty("cursor", "var(--kitteh-grabbing-cursor)");
           target.style.setProperty("transform", "scale(1.1)");
@@ -2360,7 +2360,7 @@ class InputEventDelegator {
               ? firstItem
               : wantsPreviousItem && !previousItem
               ? lastItem
-              : this.lastObservedVideo;
+              : this.videoOnInputDown;
 
           const videoOffsetLeft = lastObservedVideo.offsetLeft;
 
