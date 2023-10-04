@@ -810,21 +810,19 @@ export class InputTools {
   }
 }
 
-export function* range(start = NaN, stop = NaN, step = 1) {
-  if (arguments.length === 0) {
-    throw TypeError("No arguments provided");
-  }
+export function* range(stop = 0, { start = 0, step = 1 } = {}) {
+  const nonFiniteArgument = [stop, start, step].some(
+    (argument) => !Number.isFinite(argument)
+  );
+  const zeroStep = step === 0;
+  const aStepInTheWrongDirection = Math.sign(step) !== Math.sign(stop - start);
 
-  if (!Number.isFinite(start))
-    throw TypeError("argument must be a finite number");
-
-  if (arguments.length === 1) return yield* range(0, start);
-
-  if ([stop, step].some((value) => !Number.isFinite(value)))
-    throw TypeError("arguments must be finite numbers");
+  if (nonFiniteArgument || zeroStep || aStepInTheWrongDirection) return;
 
   let currentValue = start;
-  while (currentValue < stop) {
+  const condition =
+    step > 0 ? () => currentValue < stop : () => currentValue > stop;
+  while (condition()) {
     yield currentValue;
     currentValue += step;
   }
