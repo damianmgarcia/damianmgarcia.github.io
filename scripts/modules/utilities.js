@@ -810,6 +810,26 @@ export class InputTools {
   }
 }
 
+export function* range(start = NaN, stop = NaN, step = 1) {
+  if (arguments.length === 0) {
+    throw TypeError("No arguments provided");
+  }
+
+  if (!Number.isFinite(start))
+    throw TypeError("argument must be a finite number");
+
+  if (arguments.length === 1) return yield* range(0, start);
+
+  if ([stop, step].some((value) => !Number.isFinite(value)))
+    throw TypeError("arguments must be finite numbers");
+
+  let currentValue = start;
+  while (currentValue < stop) {
+    yield currentValue;
+    currentValue += step;
+  }
+}
+
 export class ScrollContainerTools {
   static getEdgeStatus(element, { cachedPageProgression } = {}) {
     validateArgument("element", element, {
