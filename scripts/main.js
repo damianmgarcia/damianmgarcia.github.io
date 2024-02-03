@@ -3143,28 +3143,29 @@ dateRangeContainers.forEach((dateRangeContainer) => {
     allowIntegerNumbersOnly: true,
   });
 
-  const startDateMonth = +startDateElement.dataset.month - 1;
+  const startDateMonth = +startDateElement.dataset.month;
   validateArgument("start-date data-month", startDateMonth, {
-    allowedMin: 0,
-    allowedMax: 11,
+    allowedMin: 1,
+    allowedMax: 12,
     allowIntegerNumbersOnly: true,
   });
+
+  const numberOfDaysInStartMonth = DateTools.getNumberOfDaysInMonth(
+    startDateMonth,
+    startDateYear
+  );
 
   const startDateDay =
     startDateElement.dataset.day === "last"
-      ? DateTools.getNumberOfDaysInTheMonth(
-          new Date(startDateYear, startDateMonth)
-        )
+      ? numberOfDaysInStartMonth
       : +startDateElement.dataset.day;
   validateArgument("start-date data-day", startDateDay, {
     allowedMin: 1,
-    allowedMax: DateTools.getNumberOfDaysInTheMonth(
-      new Date(startDateYear, startDateMonth)
-    ),
+    allowedMax: numberOfDaysInStartMonth,
     allowIntegerNumbersOnly: true,
   });
 
-  const startDate = new Date(startDateYear, startDateMonth, startDateDay);
+  const startDate = new Date(startDateYear, startDateMonth - 1, startDateDay);
   startDateElement.textContent = DateTools.getDateInISOFormat(startDate);
 
   const currentDate = new Date(today.year, today.month - 1, today.day);
@@ -3189,32 +3190,33 @@ dateRangeContainers.forEach((dateRangeContainer) => {
     const endDateMonth =
       endDateElement.dataset.month === "current" ||
       endDateElement.dataset.month === "indefinite"
-        ? today.month - 1
-        : +endDateElement.dataset.month - 1;
+        ? today.month
+        : +endDateElement.dataset.month;
     validateArgument("end-date data-month", endDateMonth, {
-      allowedMin: 0,
-      allowedMax: 11,
+      allowedMin: 1,
+      allowedMax: 12,
       allowIntegerNumbersOnly: true,
     });
+
+    const numberOfDaysInEndMonth = DateTools.getNumberOfDaysInMonth(
+      endDateMonth,
+      endDateYear
+    );
 
     const endDateDay =
       endDateElement.dataset.day === "current" ||
       endDateElement.dataset.day === "indefinite"
         ? today.day
         : endDateElement.dataset.day === "last"
-        ? DateTools.getNumberOfDaysInTheMonth(
-            new Date(endDateYear, endDateMonth)
-          )
+        ? numberOfDaysInEndMonth
         : +endDateElement.dataset.day;
     validateArgument("end-date data-day", endDateDay, {
       allowedMin: 1,
-      allowedMax: DateTools.getNumberOfDaysInTheMonth(
-        new Date(endDateYear, endDateMonth)
-      ),
+      allowedMax: numberOfDaysInEndMonth,
       allowIntegerNumbersOnly: true,
     });
 
-    endDate = new Date(endDateYear, endDateMonth, endDateDay);
+    endDate = new Date(endDateYear, endDateMonth - 1, endDateDay);
   }
 
   endDateElement.textContent =
