@@ -237,11 +237,12 @@ export class DateTools {
     const day = date.getDate();
     const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
     const month = date.getMonth() + 1;
+    const year = date.getFullYear();
 
     if (month === 10 && day === 31) {
       return "halloween";
     } else if (month === 11 && day >= 22 && dayName === "Thursday") {
-      const daysOfTheMonth = this.getDaysOfTheMonth(date);
+      const daysOfTheMonth = this.getDaysOfTheMonth(month, year);
       const [thanksgivingDay] = daysOfTheMonth.find(
         ([dayNumber, dayName]) => dayNumber >= 22 && dayName === "Thursday"
       );
@@ -267,18 +268,15 @@ export class DateTools {
     return `${year}-${month}-${day}`;
   }
 
-  static getDaysOfTheMonth(date = new Date()) {
-    validateArgument("date", date, {
-      allowedPrototypes: [Date],
-    });
-
-    const numberOfDaysInTheMonth = this.getNumberOfDaysInTheMonth(date);
-    const year = date.getFullYear();
-    const month = date.getMonth();
+  static getDaysOfTheMonth(
+    month = new Date().getMonth() + 1,
+    year = new Date().getFullYear()
+  ) {
+    const numberOfDaysInMonth = this.getNumberOfDaysInMonth(month, year);
 
     const daysOfTheMonth = [];
-    for (let dayNumber = 1; dayNumber <= numberOfDaysInTheMonth; dayNumber++) {
-      const dayName = new Date(year, month, dayNumber).toLocaleDateString(
+    for (let dayNumber = 1; dayNumber <= numberOfDaysInMonth; dayNumber++) {
+      const dayName = new Date(year, month - 1, dayNumber).toLocaleDateString(
         "en-US",
         { weekday: "long" }
       );
@@ -317,33 +315,27 @@ export class DateTools {
     }
   }
 
-  static getNumberOfDaysInTheMonth(date = new Date()) {
-    validateArgument("date", date, {
-      allowedPrototypes: [Date],
-    });
+  static getNumberOfDaysInMonth = (
+    month = new Date().getMonth() + 1,
+    year = new Date().getFullYear()
+  ) => {
+    if (!this.isValidMonth(month)) throw TypeError("Invalid month");
+    if (!this.isValidYear(year)) throw TypeError("Invalid year");
 
-    const month = date.getMonth() + 1;
+    return new Date(year, month, 0).getDate();
+  };
 
-    const monthsWithThirtyDays = [4, 6, 9, 11];
-    const monthsWithThirtyOneDays = [1, 3, 5, 7, 8, 10, 12];
-
-    if (monthsWithThirtyDays.includes(month)) {
-      return 30;
-    } else if (monthsWithThirtyOneDays.includes(month)) {
-      return 31;
-    } else if (!this.yearIsLeapYear()) {
-      return 28;
-    } else if (this.yearIsLeapYear()) {
-      return 29;
-    }
+  static isValidMonth(month) {
+    const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    return months.includes(month);
   }
 
-  static yearIsLeapYear(date = new Date()) {
-    validateArgument("date", date, {
-      allowedPrototypes: [Date],
-    });
+  static isValidYear(year) {
+    return Number.isInteger(year);
+  }
 
-    const year = date.getFullYear();
+  static isLeapYear(year = new Date().getFullYear()) {
+    if (!this.isValidYear(year)) throw TypeError("Invalid year");
 
     if (year % 4 !== 0) {
       return false;
@@ -419,100 +411,39 @@ export function flashAnimation(
   );
 }
 
-export class FunctionTools {
-  static addCallBlockingForRepetitiveCallsButAllowLastCall(
-    functionToCallBlock,
-    minCallFreeTimeRequiredBeforeAllowingNextCall = NaN
-  ) {
-    validateArgument("functionToCallBlock", functionToCallBlock, {
-      allowedTypes: ["function"],
-    });
+/**
+ * Returns a throttled function
+ * @param {function} func The function to throttle
+ * @param {number} throttleInterval The minimum time in milliseconds allowed between function calls
+ * @param {"interval" | "end" | "start"} returnOn Select whether calls to the throttled function should return on throttling intervals, at the end of throttling, or at the start of throttling
+ * @returns {function} The throttled function
+ */
+export function makeThrottled(
+  func,
+  throttleInterval = 0,
+  returnOn = "interval"
+) {
+  let timeoutId;
 
-    validateArgument(
-      "minCallFreeTimeRequiredBeforeAllowingNextCall",
-      minCallFreeTimeRequiredBeforeAllowingNextCall,
-      {
-        allowedTypes: ["number"],
-        allowedMin: 0,
-        allowFiniteNumbersOnly: true,
-      }
-    );
-
-    let callBlockingTimer;
-
-    const functionWithCallBlockingAdded = (...args) => {
-      clearTimeout(callBlockingTimer);
-      callBlockingTimer = setTimeout(
-        () => functionToCallBlock(...args),
-        minCallFreeTimeRequiredBeforeAllowingNextCall
-      );
+  if (returnOn === "interval") {
+    return function (...args) {
+      if (timeoutId) return;
+      timeoutId = setTimeout(() => {
+        func(...args);
+        timeoutId = null;
+      }, throttleInterval);
     };
-
-    return functionWithCallBlockingAdded;
-  }
-
-  static addCallBlockingForRepetitiveCallsButAllowFirstCall(
-    functionToCallBlock,
-    minCallFreeTimeRequiredBeforeAllowingNextCall = NaN
-  ) {
-    validateArgument("functionToCallBlock", functionToCallBlock, {
-      allowedTypes: ["function"],
-    });
-
-    validateArgument(
-      "minCallFreeTimeRequiredBeforeAllowingNextCall",
-      minCallFreeTimeRequiredBeforeAllowingNextCall,
-      {
-        allowedTypes: ["number"],
-        allowedMin: 0,
-        allowFiniteNumbersOnly: true,
-      }
-    );
-
-    let callBlockingTimer;
-
-    const functionWithCallBlockingAdded = (...args) => {
-      if (!callBlockingTimer) functionToCallBlock(...args);
-      clearTimeout(callBlockingTimer);
-      callBlockingTimer = setTimeout(
-        () => (callBlockingTimer = null),
-        minCallFreeTimeRequiredBeforeAllowingNextCall
-      );
+  } else if (returnOn === "end") {
+    return function (...args) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), throttleInterval);
     };
-
-    return functionWithCallBlockingAdded;
-  }
-
-  static addCallBlockingForRepetitiveCallsButAllowPeriodicCalls(
-    functionToCallBlock,
-    minTimeRequiredBeforeAllowingNextCall = NaN
-  ) {
-    validateArgument("functionToCallBlock", functionToCallBlock, {
-      allowedTypes: ["function"],
-    });
-
-    validateArgument(
-      "minTimeRequiredBeforeAllowingNextCall",
-      minTimeRequiredBeforeAllowingNextCall,
-      {
-        allowedTypes: ["number"],
-        allowedMin: 0,
-        allowFiniteNumbersOnly: true,
-      }
-    );
-
-    let callBlockingTimer;
-
-    const functionWithCallBlockingAdded = (...args) => {
-      if (callBlockingTimer) return;
-      functionToCallBlock(...args);
-      callBlockingTimer = setTimeout(
-        () => (callBlockingTimer = null),
-        minTimeRequiredBeforeAllowingNextCall
-      );
+  } else if (returnOn === "start") {
+    return function (...args) {
+      if (!timeoutId) func(...args);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => (timeoutId = null), throttleInterval);
     };
-
-    return functionWithCallBlockingAdded;
   }
 }
 
@@ -683,7 +614,7 @@ export function getRandomString(
 
   return Array.from({ length }, () =>
     permittedCharacters.charAt(
-      this.getRandomNumber({
+      getRandomNumber({
         min: 0,
         max: permittedCharacters.length - 1,
         randomIntegersOnly: true,
