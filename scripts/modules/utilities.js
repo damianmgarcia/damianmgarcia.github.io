@@ -411,39 +411,40 @@ export function flashAnimation(
   );
 }
 
-/**
- * Returns a throttled function
- * @param {function} func The function to throttle
- * @param {number} throttleInterval The minimum time in milliseconds allowed between function calls
- * @param {"interval" | "end" | "start"} returnOn Select whether calls to the throttled function should return on throttling intervals, at the end of throttling, or at the start of throttling
- * @returns {function} The throttled function
- */
-export function makeThrottled(
-  func,
-  throttleInterval = 0,
-  returnOn = "interval"
-) {
-  let timeoutId;
+export class FunctionDecorators {
+  /**
+   * Adds throttling to a function
+   * @param {function} func The function to throttle
+   * @param {number} throttleInterval The minimum time in milliseconds allowed between function calls
+   * @param {"interval" | "end" | "start"} returnOn Select whether the throttled function should return on throttling intervals, at the end of throttling, or at the start of throttling
+   * @returns {function} The throttled function
+   */
+  static addThrottling(func, throttleInterval = 0, returnOn = "interval") {
+    let timeoutId;
 
-  if (returnOn === "interval") {
-    return function (...args) {
-      if (timeoutId) return;
-      timeoutId = setTimeout(() => {
-        func(...args);
-        timeoutId = null;
-      }, throttleInterval);
-    };
-  } else if (returnOn === "end") {
-    return function (...args) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func(...args), throttleInterval);
-    };
-  } else if (returnOn === "start") {
-    return function (...args) {
-      if (!timeoutId) func(...args);
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => (timeoutId = null), throttleInterval);
-    };
+    if (returnOn === "interval") {
+      return function (...args) {
+        if (timeoutId) return;
+        timeoutId = setTimeout(() => {
+          func.call(this, ...args);
+          timeoutId = null;
+        }, throttleInterval);
+      };
+    } else if (returnOn === "end") {
+      return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(
+          () => func.call(this, ...args),
+          throttleInterval
+        );
+      };
+    } else if (returnOn === "start") {
+      return function (...args) {
+        if (!timeoutId) func.call(this, ...args);
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => (timeoutId = null), throttleInterval);
+      };
+    }
   }
 }
 
