@@ -416,33 +416,70 @@ export class FunctionDecorators {
    * Adds throttling to a function
    * @param {function} func The function to throttle
    * @param {number} throttleInterval The minimum time in milliseconds allowed between function calls
-   * @param {"interval" | "end" | "start"} returnOn Select whether the throttled function should return on throttling intervals, at the end of throttling, or at the start of throttling
+   * @param {"end" | "start" | "intervals excluding end" | "intervals including end"} returnOn Select whether the throttled function should return after the last call ("end"), on the first call ("start"), on the first call and calls at throttling intervals excluding the last call ("intervals excluding end"), or on the first call and calls at throttling intervals including the last call ("intervals including end")
    * @returns {function} The throttled function
    */
-  static addThrottling(func, throttleInterval = 0, returnOn = "interval") {
-    let timeoutId;
+  static addThrottling(func, throttleInterval = 0, returnOn = "") {
+    if (typeof func !== "function") throw TypeError("func must be a function");
+    if (!Number.isInteger(throttleInterval))
+      throw RangeError("throttleInterval must be an integer");
+    if (
+      ![
+        "end",
+        "start",
+        "intervals excluding end",
+        "intervals including end",
+      ].includes(returnOn)
+    )
+      throw RangeError(
+        "returnOn must be 'end', 'start', 'intervals excluding end', or 'intervals including end'"
+      );
 
-    if (returnOn === "interval") {
+    if (returnOn === "end") {
+      let isThrottled = false;
       return function (...args) {
-        if (timeoutId) return;
-        timeoutId = setTimeout(() => {
-          func.call(this, ...args);
-          timeoutId = null;
-        }, throttleInterval);
-      };
-    } else if (returnOn === "end") {
-      return function (...args) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(
+        clearTimeout(isThrottled);
+        isThrottled = setTimeout(
           () => func.call(this, ...args),
           throttleInterval
         );
       };
     } else if (returnOn === "start") {
+      let isThrottled = false;
       return function (...args) {
-        if (!timeoutId) func.call(this, ...args);
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => (timeoutId = null), throttleInterval);
+        if (!isThrottled) func.call(this, ...args);
+        clearTimeout(isThrottled);
+        isThrottled = setTimeout(() => (isThrottled = false), throttleInterval);
+      };
+    } else if (returnOn === "intervals excluding end") {
+      let isThrottled = false;
+      return function (...args) {
+        if (isThrottled) return;
+        func.call(this, ...args);
+        isThrottled = setTimeout(() => (isThrottled = false), throttleInterval);
+      };
+    } else if (returnOn === "intervals including end") {
+      let isThrottled = false;
+      let isNotFirstCall = false;
+      return function (...args) {
+        if (isNotFirstCall) {
+          clearTimeout(isNotFirstCall);
+          isNotFirstCall = setTimeout(
+            () => (isNotFirstCall = false),
+            throttleInterval
+          );
+          if (isThrottled) return;
+          isThrottled = setTimeout(() => {
+            func.call(this, ...args);
+            isThrottled = false;
+          }, throttleInterval);
+        } else {
+          func.call(this, ...args);
+          isNotFirstCall = setTimeout(
+            () => (isNotFirstCall = false),
+            throttleInterval
+          );
+        }
       };
     }
   }
