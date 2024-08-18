@@ -6,7 +6,7 @@ class VisiblePoint {
 }
 
 /**
- *
+ * Search for a visible point in a DOM element
  * @param {Element} element - The DOM element
  * @param {number} [minStep=16] - The minimum step in pixels to search the element for a visible point
  * @param {DOMRect} [elementRect] - The DOMRect of `element`. If not provided, it will be computed.
@@ -170,7 +170,7 @@ function getVisibleEdge(
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The y-coordinate of the visible top edge of `element`
  */
-export function getVisibleTop(element, elementRect, visiblePoint) {
+function getVisibleTop(element, elementRect, visiblePoint) {
   return getVisibleEdge(
     element,
     0,
@@ -191,7 +191,7 @@ export function getVisibleTop(element, elementRect, visiblePoint) {
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The y-coordinate of the visible bottom edge of `element`
  */
-export function getVisibleBottom(element, elementRect, visiblePoint) {
+function getVisibleBottom(element, elementRect, visiblePoint) {
   return getVisibleEdge(
     element,
     document.documentElement.clientHeight - 1,
@@ -212,7 +212,7 @@ export function getVisibleBottom(element, elementRect, visiblePoint) {
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The x-coordinate of the visible left edge of `element`
  */
-export function getVisibleLeft(element, elementRect, visiblePoint) {
+function getVisibleLeft(element, elementRect, visiblePoint) {
   return getVisibleEdge(
     element,
     0,
@@ -233,7 +233,7 @@ export function getVisibleLeft(element, elementRect, visiblePoint) {
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The x-coordinate of the visible right edge of `element`
  */
-export function getVisibleRight(element, elementRect, visiblePoint) {
+function getVisibleRight(element, elementRect, visiblePoint) {
   return getVisibleEdge(
     element,
     document.documentElement.clientWidth - 1,
@@ -264,7 +264,7 @@ class VisibleDOMRect {
  * @param {number} [minStep=16] - The minimum step in pixels to search the element for a visible point
  * @return {VisibleDOMRect}
  */
-export function getVisibleRect(element, minStep = 16) {
+function getVisibleRect(element, minStep = 16) {
   const elementRect = element.getBoundingClientRect();
   const visiblePoint = getVisiblePoint(element, minStep, elementRect);
   if (!visiblePoint) return new VisibleDOMRect();
@@ -276,3 +276,11 @@ export function getVisibleRect(element, minStep = 16) {
     getVisibleRight(element, elementRect, visiblePoint)
   );
 }
+
+export {
+  getVisibleRect,
+  getVisibleTop,
+  getVisibleBottom,
+  getVisibleLeft,
+  getVisibleRight,
+};
