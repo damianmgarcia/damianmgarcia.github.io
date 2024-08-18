@@ -170,7 +170,11 @@ function getVisibleEdge(
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The y-coordinate of the visible top edge of `element`
  */
-function getVisibleTop(element, elementRect, visiblePoint) {
+function getVisibleTop(
+  element,
+  elementRect = element.getBoundingClientRect(),
+  visiblePoint = getVisiblePoint(element)
+) {
   return getVisibleEdge(
     element,
     0,
@@ -179,8 +183,8 @@ function getVisibleTop(element, elementRect, visiblePoint) {
     (previousOffsetElementRect) => previousOffsetElementRect.bottom,
     (elementRect) => elementRect.top,
     (yOffset) => yOffset,
-    (elementRect = element.getBoundingClientRect()),
-    (visiblePoint = getVisiblePoint(element))
+    elementRect,
+    visiblePoint
   );
 }
 
@@ -191,7 +195,11 @@ function getVisibleTop(element, elementRect, visiblePoint) {
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The y-coordinate of the visible bottom edge of `element`
  */
-function getVisibleBottom(element, elementRect, visiblePoint) {
+function getVisibleBottom(
+  element,
+  elementRect = element.getBoundingClientRect(),
+  visiblePoint = getVisiblePoint(element)
+) {
   return getVisibleEdge(
     element,
     document.documentElement.clientHeight - 1,
@@ -200,8 +208,8 @@ function getVisibleBottom(element, elementRect, visiblePoint) {
     (previousOffsetElementRect) => previousOffsetElementRect.top,
     (elementRect) => elementRect.bottom,
     (yOffset) => yOffset + 1,
-    (elementRect = element.getBoundingClientRect()),
-    (visiblePoint = getVisiblePoint(element))
+    elementRect,
+    visiblePoint
   );
 }
 
@@ -212,7 +220,11 @@ function getVisibleBottom(element, elementRect, visiblePoint) {
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The x-coordinate of the visible left edge of `element`
  */
-function getVisibleLeft(element, elementRect, visiblePoint) {
+function getVisibleLeft(
+  element,
+  elementRect = element.getBoundingClientRect(),
+  visiblePoint = getVisiblePoint(element)
+) {
   return getVisibleEdge(
     element,
     0,
@@ -221,8 +233,8 @@ function getVisibleLeft(element, elementRect, visiblePoint) {
     (previousOffsetElementRect) => previousOffsetElementRect.right,
     (elementRect) => elementRect.left,
     (xOffset) => xOffset,
-    (elementRect = element.getBoundingClientRect()),
-    (visiblePoint = getVisiblePoint(element))
+    elementRect,
+    visiblePoint
   );
 }
 
@@ -233,7 +245,11 @@ function getVisibleLeft(element, elementRect, visiblePoint) {
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The x-coordinate of the visible right edge of `element`
  */
-function getVisibleRight(element, elementRect, visiblePoint) {
+function getVisibleRight(
+  element,
+  elementRect = element.getBoundingClientRect(),
+  visiblePoint = getVisiblePoint(element)
+) {
   return getVisibleEdge(
     element,
     document.documentElement.clientWidth - 1,
@@ -242,8 +258,8 @@ function getVisibleRight(element, elementRect, visiblePoint) {
     (previousOffsetElementRect) => previousOffsetElementRect.left,
     (elementRect) => elementRect.right,
     (xOffset) => xOffset + 1,
-    (elementRect = element.getBoundingClientRect()),
-    (visiblePoint = getVisiblePoint(element))
+    elementRect,
+    visiblePoint
   );
 }
 
