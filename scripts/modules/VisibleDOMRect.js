@@ -179,8 +179,8 @@ function getVisibleTop(element, elementRect, visiblePoint) {
     (previousOffsetElementRect) => previousOffsetElementRect.bottom,
     (elementRect) => elementRect.top,
     (yOffset) => yOffset,
-    elementRect,
-    visiblePoint
+    (elementRect = element.getBoundingClientRect()),
+    (visiblePoint = getVisiblePoint(element))
   );
 }
 
@@ -200,8 +200,8 @@ function getVisibleBottom(element, elementRect, visiblePoint) {
     (previousOffsetElementRect) => previousOffsetElementRect.top,
     (elementRect) => elementRect.bottom,
     (yOffset) => yOffset + 1,
-    elementRect,
-    visiblePoint
+    (elementRect = element.getBoundingClientRect()),
+    (visiblePoint = getVisiblePoint(element))
   );
 }
 
@@ -221,8 +221,8 @@ function getVisibleLeft(element, elementRect, visiblePoint) {
     (previousOffsetElementRect) => previousOffsetElementRect.right,
     (elementRect) => elementRect.left,
     (xOffset) => xOffset,
-    elementRect,
-    visiblePoint
+    (elementRect = element.getBoundingClientRect()),
+    (visiblePoint = getVisiblePoint(element))
   );
 }
 
@@ -242,8 +242,8 @@ function getVisibleRight(element, elementRect, visiblePoint) {
     (previousOffsetElementRect) => previousOffsetElementRect.left,
     (elementRect) => elementRect.right,
     (xOffset) => xOffset + 1,
-    elementRect,
-    visiblePoint
+    (elementRect = element.getBoundingClientRect()),
+    (visiblePoint = getVisiblePoint(element))
   );
 }
 
