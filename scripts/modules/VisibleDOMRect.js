@@ -1,33 +1,26 @@
-class VisiblePoint {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
+class ViewportCroppedDOMRect {
+  constructor(top, bottom, left, right) {
+    this.top = top;
+    this.bottom = bottom;
+    this.left = left;
+    this.right = right;
   }
 }
 
 /**
- * Search for a visible point in a DOM element
+ * Get a viewport-cropped DOM rectangle for a DOM element
  * @param {Element} element - The DOM element
- * @param {number} [minStep=16] - The minimum step in pixels to search the element for a visible point
- * @param {DOMRect} [elementRect] - The DOMRect of `element`. If not provided, it will be computed.
- * @returns
+ * @returns {ViewportCroppedDOMRect}
  */
-function getVisiblePoint(
-  element,
-  minStep = 16,
-  elementRect = element.getBoundingClientRect()
-) {
-  const viewportHeight = document.documentElement.clientHeight - 1;
-  const viewportWidth = document.documentElement.clientWidth - 1;
-
-  function getCroppedRange(lowerBound, upperBound, rMin, rMax) {
-    class CroppedRange {
-      constructor(min, max) {
-        this.min = min;
-        this.max = max;
-      }
+function getViewportCroppedRect(element) {
+  class CroppedRange {
+    constructor(min, max) {
+      this.min = min;
+      this.max = max;
     }
+  }
 
+  function cropRange(lowerBound, upperBound, rMin, rMax) {
     if (rMin < lowerBound && rMax < lowerBound) {
       return null;
     } else if (rMin > upperBound && rMax > upperBound) {
@@ -43,7 +36,11 @@ function getVisiblePoint(
     }
   }
 
-  const croppedXRange = getCroppedRange(
+  const elementRect = element.getBoundingClientRect();
+  const viewportHeight = document.documentElement.clientHeight - 1;
+  const viewportWidth = document.documentElement.clientWidth - 1;
+
+  const croppedXRange = cropRange(
     0,
     viewportWidth,
     elementRect.left,
@@ -51,7 +48,7 @@ function getVisiblePoint(
   );
   if (!croppedXRange) return null;
 
-  const croppedYRange = getCroppedRange(
+  const croppedYRange = cropRange(
     0,
     viewportHeight,
     elementRect.top,
@@ -59,6 +56,33 @@ function getVisiblePoint(
   );
   if (!croppedYRange) return null;
 
+  return new ViewportCroppedDOMRect(
+    croppedYRange.min,
+    croppedYRange.max,
+    croppedXRange.min,
+    croppedXRange.max
+  );
+}
+
+class VisiblePoint {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+/**
+ * Search for a visible point in a DOM element
+ * @param {Element} element - The DOM element
+ * @param {number} [minStep=16] - The minimum step in pixels to search the element for a visible point
+ * @param {ViewportCroppedDOMRect} [viewportCroppedRect] - The ViewportCroppedDOMRect of `element`. If not provided, it will be computed.
+ * @returns
+ */
+function getVisiblePoint(
+  element,
+  minStep = 16,
+  viewportCroppedRect = getViewportCroppedRect(element)
+) {
   function searchRect(top, left, bottom, right, predicate, minStep) {
     let previousYStep = bottom - top;
     if (previousYStep <= 0) return null;
@@ -97,10 +121,10 @@ function getVisiblePoint(
   }
 
   return searchRect(
-    croppedYRange.min,
-    croppedXRange.min,
-    croppedYRange.max,
-    croppedXRange.max,
+    viewportCroppedRect.top,
+    viewportCroppedRect.left,
+    viewportCroppedRect.bottom,
+    viewportCroppedRect.right,
     function (x, y) {
       const elementFromPoint = document.elementFromPoint(x, y);
       return elementFromPoint === element || element.contains(elementFromPoint);
@@ -118,7 +142,7 @@ function getVisiblePoint(
  * @param {function(DOMRect): number} getPreviousElementEdge - A function that returns the relevant edge (e.g., top, bottom) of the previous offset element's rectangle.
  * @param {function(DOMRect): number} getElementEdge - A function that returns the relevant edge of the main element's rectangle.
  * @param {function(number): number} adjustOffset - A function to adjust the offset when a match is found (e.g., return offset, offset + 1).
- * @param {DOMRect} [elementRect] - The DOMRect `element`. If not provided, it will be computed.
+ * @param {ViewportCroppedDOMRect} [viewportCroppedRect] - The ViewportCroppedDOMRect of `element`. If not provided, it will be computed.
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number|null} - The offset at which the visible edge is found, or null if no visible point is found.
  */
@@ -130,7 +154,7 @@ function getVisibleEdge(
   getPreviousElementEdge,
   getElementEdge,
   adjustOffset,
-  elementRect = element.getBoundingClientRect(),
+  viewportCroppedRect = getViewportCroppedRect(element),
   visiblePoint = getVisiblePoint(element)
 ) {
   if (!visiblePoint) return null;
@@ -146,7 +170,7 @@ function getVisibleEdge(
       const previousElementEdge = getPreviousElementEdge(
         previousOffsetElementRect
       );
-      const elementEdge = getElementEdge(elementRect);
+      const elementEdge = getElementEdge(viewportCroppedRect);
 
       if (Math.abs(adjustOffset(offset) - previousElementEdge) < 1) {
         return previousElementEdge;
@@ -166,24 +190,24 @@ function getVisibleEdge(
 /**
  * Get the y-coordinate of a DOM element's visible top edge
  * @param {Element} element - The DOM element
- * @param {DOMRect} [elementRect] - The DOMRect of `element`. If not provided, it will be computed.
+ * @param {ViewportCroppedDOMRect} [viewportCroppedRect] - The ViewportCroppedDOMRect of `element`. If not provided, it will be computed.
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The y-coordinate of the visible top edge of `element`
  */
 function getVisibleTop(
   element,
-  elementRect = element.getBoundingClientRect(),
+  viewportCroppedRect = getViewportCroppedRect(element),
   visiblePoint = getVisiblePoint(element)
 ) {
   return getVisibleEdge(
     element,
-    0,
+    viewportCroppedRect.top,
     (yOffset) => yOffset + 1,
     (yOffset) => document.elementFromPoint(visiblePoint.x, yOffset),
     (previousOffsetElementRect) => previousOffsetElementRect.bottom,
-    (elementRect) => elementRect.top,
+    (viewportCroppedRect) => viewportCroppedRect.top,
     (yOffset) => yOffset,
-    elementRect,
+    viewportCroppedRect,
     visiblePoint
   );
 }
@@ -191,24 +215,24 @@ function getVisibleTop(
 /**
  * Get the y-coordinate of a DOM element's visible bottom edge
  * @param {Element} element - The DOM element
- * @param {DOMRect} [elementRect] - The DOMRect of `element`. If not provided, it will be computed.
+ * @param {ViewportCroppedDOMRect} [viewportCroppedRect] - The ViewportCroppedDOMRect of `element`. If not provided, it will be computed.
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The y-coordinate of the visible bottom edge of `element`
  */
 function getVisibleBottom(
   element,
-  elementRect = element.getBoundingClientRect(),
+  viewportCroppedRect = getViewportCroppedRect(element),
   visiblePoint = getVisiblePoint(element)
 ) {
   return getVisibleEdge(
     element,
-    document.documentElement.clientHeight - 1,
+    viewportCroppedRect.bottom,
     (yOffset) => yOffset - 1,
     (yOffset) => document.elementFromPoint(visiblePoint.x, yOffset),
     (previousOffsetElementRect) => previousOffsetElementRect.top,
-    (elementRect) => elementRect.bottom,
+    (viewportCroppedRect) => viewportCroppedRect.bottom,
     (yOffset) => yOffset + 1,
-    elementRect,
+    viewportCroppedRect,
     visiblePoint
   );
 }
@@ -216,24 +240,24 @@ function getVisibleBottom(
 /**
  * Get the x-coordinate of a DOM element's visible left edge
  * @param {Element} element - The DOM element
- * @param {DOMRect} [elementRect] - The DOMRect of `element`. If not provided, it will be computed.
+ * @param {ViewportCroppedDOMRect} [viewportCroppedRect] - The ViewportCroppedDOMRect of `element`. If not provided, it will be computed.
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The x-coordinate of the visible left edge of `element`
  */
 function getVisibleLeft(
   element,
-  elementRect = element.getBoundingClientRect(),
+  viewportCroppedRect = getViewportCroppedRect(element),
   visiblePoint = getVisiblePoint(element)
 ) {
   return getVisibleEdge(
     element,
-    0,
+    viewportCroppedRect.left,
     (xOffset) => xOffset + 1,
     (xOffset) => document.elementFromPoint(xOffset, visiblePoint.y),
     (previousOffsetElementRect) => previousOffsetElementRect.right,
-    (elementRect) => elementRect.left,
+    (viewportCroppedRect) => viewportCroppedRect.left,
     (xOffset) => xOffset,
-    elementRect,
+    viewportCroppedRect,
     visiblePoint
   );
 }
@@ -241,24 +265,24 @@ function getVisibleLeft(
 /**
  * Get the x-coordinate of a DOM element's visible right edge
  * @param {Element} element - The DOM element
- * @param {DOMRect} [elementRect] - The DOMRect of `element`. If not provided, it will be computed.
+ * @param {ViewportCroppedDOMRect} [viewportCroppedRect] - The DOMRect of `element`. If not provided, it will be computed.
  * @param {VisiblePoint} [visiblePoint] - A VisiblePoint in `element`. If not provided, it will be computed.
  * @returns {number} The x-coordinate of the visible right edge of `element`
  */
 function getVisibleRight(
   element,
-  elementRect = element.getBoundingClientRect(),
+  viewportCroppedRect = getViewportCroppedRect(element),
   visiblePoint = getVisiblePoint(element)
 ) {
   return getVisibleEdge(
     element,
-    document.documentElement.clientWidth - 1,
+    viewportCroppedRect.right,
     (xOffset) => xOffset - 1,
     (xOffset) => document.elementFromPoint(xOffset, visiblePoint.y),
     (previousOffsetElementRect) => previousOffsetElementRect.left,
-    (elementRect) => elementRect.right,
+    (viewportCroppedRect) => viewportCroppedRect.right,
     (xOffset) => xOffset + 1,
-    elementRect,
+    viewportCroppedRect,
     visiblePoint
   );
 }
@@ -281,15 +305,15 @@ class VisibleDOMRect {
  * @return {VisibleDOMRect}
  */
 function getVisibleRect(element, minStep = 16) {
-  const elementRect = element.getBoundingClientRect();
-  const visiblePoint = getVisiblePoint(element, minStep, elementRect);
+  const viewportCroppedRect = getViewportCroppedRect(element);
+  const visiblePoint = getVisiblePoint(element, minStep, viewportCroppedRect);
   if (!visiblePoint) return new VisibleDOMRect();
 
   return new VisibleDOMRect(
-    getVisibleTop(element, elementRect, visiblePoint),
-    getVisibleBottom(element, elementRect, visiblePoint),
-    getVisibleLeft(element, elementRect, visiblePoint),
-    getVisibleRight(element, elementRect, visiblePoint)
+    getVisibleTop(element, viewportCroppedRect, visiblePoint),
+    getVisibleBottom(element, viewportCroppedRect, visiblePoint),
+    getVisibleLeft(element, viewportCroppedRect, visiblePoint),
+    getVisibleRight(element, viewportCroppedRect, visiblePoint)
   );
 }
 
