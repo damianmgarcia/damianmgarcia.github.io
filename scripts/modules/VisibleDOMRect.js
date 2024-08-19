@@ -37,8 +37,8 @@ function getViewportCroppedRect(element) {
   }
 
   const elementRect = element.getBoundingClientRect();
-  const viewportHeight = document.documentElement.clientHeight - 1;
-  const viewportWidth = document.documentElement.clientWidth - 1;
+  const viewportHeight = document.documentElement.clientHeight;
+  const viewportWidth = document.documentElement.clientWidth;
 
   const croppedXRange = cropRange(
     0,
