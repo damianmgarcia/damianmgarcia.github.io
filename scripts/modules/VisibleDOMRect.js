@@ -247,6 +247,7 @@ function getVisibleRect(element, maxDivisions) {
   const top = getVisibleEdge(
     viewportClippedRect.top,
     (yOffset) => yOffset + 0.1,
+    (yOffset) => yOffset > visiblePoint.y,
     (offsetElement) => offsetElement.getBoundingClientRect().bottom + 1,
     (yOffset) => document.elementFromPoint(visiblePoint.x, yOffset),
     (previousOffsetElementRect) => previousOffsetElementRect.bottom
@@ -255,6 +256,7 @@ function getVisibleRect(element, maxDivisions) {
   const bottom = getVisibleEdge(
     viewportClippedRect.bottom,
     (yOffset) => yOffset - 0.1,
+    (yOffset) => yOffset < visiblePoint.y,
     (offsetElement) => offsetElement.getBoundingClientRect().top - 1,
     (yOffset) => document.elementFromPoint(visiblePoint.x, yOffset),
     (previousOffsetElementRect) => previousOffsetElementRect.top
@@ -263,6 +265,7 @@ function getVisibleRect(element, maxDivisions) {
   const left = getVisibleEdge(
     viewportClippedRect.left,
     (xOffset) => xOffset + 0.1,
+    (xOffset) => xOffset > visiblePoint.x,
     (offsetElement) => offsetElement.getBoundingClientRect().right + 1,
     (xOffset) => document.elementFromPoint(xOffset, visiblePoint.y),
     (previousOffsetElementRect) => previousOffsetElementRect.right
@@ -271,6 +274,7 @@ function getVisibleRect(element, maxDivisions) {
   const right = getVisibleEdge(
     viewportClippedRect.right,
     (xOffset) => xOffset - 0.1,
+    (xOffset) => xOffset < visiblePoint.x,
     (offsetElement) => offsetElement.getBoundingClientRect().left - 1,
     (xOffset) => document.elementFromPoint(xOffset, visiblePoint.y),
     (previousOffsetElementRect) => previousOffsetElementRect.left
@@ -283,6 +287,7 @@ function getVisibleRect(element, maxDivisions) {
    *
    * @param {number} startOffset - The initial offset where the search begins.
    * @param {function(number): number} adjustStartOffset - A function to increment or decrement the `startOffset` at the beginning of the search.
+   * @param {function(number): boolean} exceedsMaxOffset - A function that takes an offset and returns a boolean indicating whether the point exceeds the maximum allowed offset.
    * @param {function(Element): number} incrementOffset - A function to increment or decrement the offset during the search.
    * @param {function(number): Element} getOffsetElement - A function that returns the element at the specified offset.
    * @param {function(DOMRect): number} getPreviousOffsetElementEdge - A function that returns the relevant edge (e.g., top, bottom) of the previous offset element's rectangle.
@@ -292,6 +297,7 @@ function getVisibleRect(element, maxDivisions) {
   function getVisibleEdge(
     startOffset,
     adjustStartOffset,
+    exceedsMaxOffset,
     incrementOffset,
     getOffsetElement,
     getPreviousOffsetElementEdge
@@ -311,7 +317,10 @@ function getVisibleRect(element, maxDivisions) {
               previousOffsetElement.getBoundingClientRect()
             );
       } else {
-        return checkPoint(incrementOffset(offsetElement), offsetElement);
+        const nextOffset = incrementOffset(offsetElement);
+        return exceedsMaxOffset(nextOffset)
+          ? checkPoint(adjustStartOffset(offset))
+          : checkPoint(nextOffset, offsetElement);
       }
     }
 
