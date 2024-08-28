@@ -286,9 +286,9 @@ function getVisibleRect(element, maxDivisions) {
    * Determine the visible edge of an element by recursively checking the points along an axis.
    *
    * @param {number} startOffset - The initial offset where the search begins.
-   * @param {function(number): number} adjustStartOffset - A function to increment or decrement the `startOffset` at the beginning of the search.
+   * @param {function(number): number} adjustOffset - A function to fine-tune the offset when recursive calls lead to repeat or null elements.
    * @param {function(number): boolean} exceedsMaxOffset - A function that takes an offset and returns a boolean indicating whether the point exceeds the maximum allowed offset.
-   * @param {function(Element): number} incrementOffset - A function to increment or decrement the offset during the search.
+   * @param {function(Element): number} getNextOffset - A function to increment or decrement the offset during the search.
    * @param {function(number): Element} getOffsetElement - A function that returns the element at the specified offset.
    * @param {function(DOMRect): number} getPreviousOffsetElementEdge - A function that returns the relevant edge (e.g., top, bottom) of the previous offset element's rectangle.
    *
@@ -296,18 +296,16 @@ function getVisibleRect(element, maxDivisions) {
    */
   function getVisibleEdge(
     startOffset,
-    adjustStartOffset,
+    adjustOffset,
     exceedsMaxOffset,
-    incrementOffset,
+    getNextOffset,
     getOffsetElement,
     getPreviousOffsetElementEdge
   ) {
     function checkPoint(offset, previousOffsetElement) {
       const offsetElement = getOffsetElement(offset);
       if (!offsetElement) {
-        return !previousOffsetElement
-          ? checkPoint(adjustStartOffset(offset))
-          : null;
+        return !previousOffsetElement ? checkPoint(adjustOffset(offset)) : null;
       }
 
       if (offsetElement === element || element.contains(offsetElement)) {
@@ -316,15 +314,17 @@ function getVisibleRect(element, maxDivisions) {
           : getPreviousOffsetElementEdge(
               previousOffsetElement.getBoundingClientRect()
             );
+      } else if (offsetElement === previousOffsetElement) {
+        return checkPoint(adjustOffset(offset), offsetElement);
       } else {
-        const nextOffset = incrementOffset(offsetElement);
+        const nextOffset = getNextOffset(offsetElement);
         return exceedsMaxOffset(nextOffset)
-          ? checkPoint(adjustStartOffset(offset))
+          ? checkPoint(adjustOffset(offset))
           : checkPoint(nextOffset, offsetElement);
       }
     }
 
-    return checkPoint(adjustStartOffset(startOffset));
+    return checkPoint(adjustOffset(startOffset));
   }
 }
 
