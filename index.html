@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-US">
   <head>
     <meta charset="UTF-8" />
@@ -68,7 +68,7 @@
             .insertAdjacentElement("beforeend", metaViewportElement);
 
           matchMedia("(orientation: portrait)").addEventListener("change", () =>
-            this.updateMetaViewportWidth()
+            this.updateMetaViewportWidth(),
           );
         }
 
@@ -129,7 +129,7 @@
               } else if (!matchMedia("(prefers-color-scheme: dark)").matches) {
                 this.applyAppearance("light");
               }
-            }
+            },
           );
         }
 
@@ -143,14 +143,14 @@
           if (appearance === "dark") {
             const appearanceWasReplaced = this.#parentElement.classList.replace(
               "light",
-              "dark"
+              "dark",
             );
             if (!appearanceWasReplaced)
               this.#parentElement.classList.add("dark");
           } else if (appearance === "light") {
             const appearanceWasReplaced = this.#parentElement.classList.replace(
               "dark",
-              "light"
+              "light",
             );
             if (!appearanceWasReplaced)
               this.#parentElement.classList.add("light");
@@ -165,7 +165,7 @@
 
         initializeAppearance() {
           const appearancePreference = localStorage.getItem(
-            "appearancePreference"
+            "appearancePreference",
           );
           if (appearancePreference) {
             this.applyAppearance(appearancePreference);
@@ -210,9 +210,10 @@
         font-style: normal;
         font-weight: 300;
         src: url(/fonts/open-sans-wght-300.woff2) format("woff2");
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
-          U+2212, U+2215, U+FEFF, U+FFFD;
+        unicode-range:
+          U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+          U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+          U+FEFF, U+FFFD;
       }
 
       @font-face {
@@ -222,9 +223,10 @@
         font-style: normal;
         font-weight: 400;
         src: url(/fonts/open-sans-wght-400.woff2) format("woff2");
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
-          U+2212, U+2215, U+FEFF, U+FFFD;
+        unicode-range:
+          U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+          U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+          U+FEFF, U+FFFD;
       }
 
       @font-face {
@@ -234,9 +236,10 @@
         font-style: italic;
         font-weight: 300;
         src: url(/fonts/open-sans-italic-wght-300.woff2) format("woff2");
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
-          U+2212, U+2215, U+FEFF, U+FFFD;
+        unicode-range:
+          U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+          U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+          U+FEFF, U+FFFD;
       }
 
       @font-face {
@@ -245,9 +248,10 @@
         font-style: normal;
         font-weight: 400;
         src: url(/fonts/comic-neue.woff2) format("woff2");
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
-          U+2212, U+2215, U+FEFF, U+FFFD;
+        unicode-range:
+          U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+          U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+          U+FEFF, U+FFFD;
       }
 
       * {
@@ -266,7 +270,9 @@
         --font-weight-light: 300;
         background: var(--body-background-color);
         color: var(--text-color);
-        font: 300 24px "Open Sans", sans-serif;
+        font:
+          300 24px "Open Sans",
+          sans-serif;
         height: 100%;
         line-height: 1.4;
         margin: 0;
@@ -277,8 +283,8 @@
       }
 
       :root.light {
-        --appearance-button-icon-box-shadow: inset calc(4rem / 1.7)
-            calc(-0.625rem / 1.7) 0 1px hsl(60, 100%, 50%),
+        --appearance-button-icon-box-shadow:
+          inset calc(4rem / 1.7) calc(-0.625rem / 1.7) 0 1px hsl(60, 100%, 50%),
           0 0 calc(1.5625rem / 1.7) 0 hsl(60, 100%, 50%);
         --body-background-color: hsl(0, 0%, 80%);
         --button-background-color: hsl(0, 0%, 85%);
@@ -301,8 +307,8 @@
       }
 
       :root.dark {
-        --appearance-button-icon-box-shadow: inset calc(1rem / 1.7)
-            calc(-0.625rem / 1.7) 0 1px hsl(60, 100%, 90%),
+        --appearance-button-icon-box-shadow:
+          inset calc(1rem / 1.7) calc(-0.625rem / 1.7) 0 1px hsl(60, 100%, 90%),
           0 0 0 calc(-2rem / 1.7) transparent;
         --body-background-color: hsl(0, 0%, 20%);
         --button-background-color: hsl(0, 0%, 25%);
@@ -335,7 +341,9 @@
         max-height: 100%;
         margin: 0 auto;
         padding: 0;
-        transition: background-color 400ms ease 0ms, color 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          color 400ms ease 0ms;
         width: 100%;
       }
 
@@ -438,7 +446,9 @@
         cursor: pointer;
         height: calc(750px / 17 / 6);
         overflow: hidden;
-        transition: background-color 400ms ease 0ms, filter 400ms ease 0ms,
+        transition:
+          background-color 400ms ease 0ms,
+          filter 400ms ease 0ms,
           width 400ms ease 0ms;
         width: calc(750px / 17 / 6);
       }
@@ -507,7 +517,9 @@
         outline: none;
         padding: calc(750px / 34 / 2);
         resize: none;
-        transition: background-color 400ms ease 0ms, border 400ms ease 0ms,
+        transition:
+          background-color 400ms ease 0ms,
+          border 400ms ease 0ms,
           color 400ms ease 0ms;
         -webkit-user-select: text;
         -moz-user-select: text;
@@ -578,7 +590,8 @@
 
       #momentum-scroller-demo-container[data-scroller-type="horizontal-only"]
         #momentum-scroller-demo-content {
-        background: url('data:image/svg+xml, <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><rect y="223.366" width="230.611" height="53.268" style="fill: rgb(245, 196, 0);"></rect></svg>'),
+        background:
+          url('data:image/svg+xml, <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><rect y="223.366" width="230.611" height="53.268" style="fill: rgb(245, 196, 0);"></rect></svg>'),
           linear-gradient(
               to right,
               hsl(0, 0%, 22.5%),
@@ -594,7 +607,8 @@
 
       #momentum-scroller-demo-container[data-scroller-type="vertical-only"]
         #momentum-scroller-demo-content {
-        background: url('data:image/svg+xml, <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><rect width="53.3" height="230.6" style="fill: rgb(245, 196, 0);" x="223.35"></rect></svg>'),
+        background:
+          url('data:image/svg+xml, <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><rect width="53.3" height="230.6" style="fill: rgb(245, 196, 0);" x="223.35"></rect></svg>'),
           linear-gradient(
               to bottom,
               hsl(0, 0%, 22.5%),
@@ -622,7 +636,9 @@
         border-radius: 4px;
         font-size: var(--font-size-small);
         padding: 2px 8px 2px 4px;
-        transition: background-color 400ms ease 0ms, border-color 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          border-color 400ms ease 0ms;
       }
 
       #smooth-scroller-demo-promise {
@@ -795,7 +811,9 @@
         cursor: pointer;
         height: auto;
         margin: 0 auto;
-        transition: background-color 400ms ease 0ms, color 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          color 400ms ease 0ms;
         -webkit-user-select: none;
         user-select: none;
         width: max-content;
@@ -829,14 +847,18 @@
         border: none;
         border-radius: calc(750px / 17 / 4);
         color: var(--text-color);
-        font: 300 24px "Open Sans", sans-serif;
+        font:
+          300 24px "Open Sans",
+          sans-serif;
         height: 60px;
         outline: none;
         padding: calc((60px - (98px / 3)) / 2) 0;
         resize: none;
         text-align: center;
         touch-action: none;
-        transition: background-color 400ms ease 0ms, color 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          color 400ms ease 0ms;
         -webkit-user-select: none;
         user-select: none;
         width: 4rem;
@@ -845,7 +867,8 @@
       .selector {
         background: var(--button-background-color-active);
         border-radius: calc(750px / 17 / 4);
-        box-shadow: 0 0 0.5rem 0.0625rem hsl(0, 0%, 0%, 0),
+        box-shadow:
+          0 0 0.5rem 0.0625rem hsl(0, 0%, 0%, 0),
           0 0 0.3125rem 0 hsl(0, 0%, 0%, 0);
         cursor: var(--kitteh-grab-cursor);
         display: inline-grid;
@@ -857,15 +880,20 @@
         text-align: right;
         touch-action: none;
         transform: scale(1) translateZ(0); /* Safari: translateZ(0) prevents selector-item overflow */
-        transition: background-color 400ms ease 0ms, box-shadow 200ms ease 0ms,
-          filter 200ms ease 0ms, opacity 200ms ease 0ms,
-          transform 200ms ease 0ms, width 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          box-shadow 200ms ease 0ms,
+          filter 200ms ease 0ms,
+          opacity 200ms ease 0ms,
+          transform 200ms ease 0ms,
+          width 400ms ease 0ms;
         -webkit-user-select: none;
         user-select: none;
       }
 
       .selector.pressed {
-        box-shadow: 0 0 0.5rem 0.0625rem hsl(0, 0%, 0%, 0.0625),
+        box-shadow:
+          0 0 0.5rem 0.0625rem hsl(0, 0%, 0%, 0.0625),
           0 0 0.3125rem 0 hsl(0, 0%, 0%, 0.125);
         filter: brightness(110%);
         transform: scale(1.4) translateZ(0);
@@ -989,14 +1017,14 @@
       }
 
       :root.light #appearance-switcher-button.pressed #appearance-button-icon {
-        box-shadow: inset calc(4rem / 1.7) calc(-0.625rem / 1.7) 0 1px
-            hsl(60, 100%, 90%),
+        box-shadow:
+          inset calc(4rem / 1.7) calc(-0.625rem / 1.7) 0 1px hsl(60, 100%, 90%),
           0 0 calc(1.5625rem / 1.7) 0 hsl(60, 100%, 90%);
       }
 
       :root.dark #appearance-switcher-button.pressed #appearance-button-icon {
-        box-shadow: inset calc(1rem / 1.7) calc(-0.625rem / 1.7) 0 1px
-            hsl(60, 100%, 50%),
+        box-shadow:
+          inset calc(1rem / 1.7) calc(-0.625rem / 1.7) 0 1px hsl(60, 100%, 50%),
           0 0 0 calc(-2rem / 1.7) transparent;
       }
 
@@ -1010,7 +1038,9 @@
         overflow: hidden;
         padding: calc(750px / 34 * 2) calc(750px / 34);
         touch-action: none;
-        transition: background-color 400ms ease 0ms, height 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          height 400ms ease 0ms;
         -webkit-user-select: none;
         user-select: none;
         width: 100%;
@@ -1040,7 +1070,9 @@
       svg ellipse,
       svg path,
       svg text {
-        transition: fill 400ms ease 0ms, stroke 400ms ease 0ms;
+        transition:
+          fill 400ms ease 0ms,
+          stroke 400ms ease 0ms;
       }
 
       .inside-left-pumpkin,
@@ -1076,7 +1108,9 @@
         position: absolute;
         top: calc((750px / 34 * 2) + (750px / 17 * 3 / 2 * 4 / 3));
         touch-action: none;
-        transition: background-color 400ms ease 0ms, opacity 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          opacity 400ms ease 0ms;
         -webkit-user-select: none;
         user-select: none;
         width: max-content;
@@ -1085,7 +1119,8 @@
             (
               ((750px - (750px / 17 * 15)) / 2) +
                 (750px / 17 * 3 / 2 * 4 / 3 / 2)
-            ) * 2
+            ) *
+            2
         );
         z-index: 3;
       }
@@ -1246,7 +1281,9 @@
         margin: calc(750px / 34 * 0.5) auto 0 auto;
         overflow: hidden;
         position: relative;
-        transition: background-color 400ms ease 0ms, border-color 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          border-color 400ms ease 0ms;
         width: 100%;
       }
 
@@ -1293,7 +1330,9 @@
       .start-date {
         grid-column: 1 / 2;
         margin-left: calc(750px / 34 / 2);
-        transition: background-color 400ms ease 0ms, border-color 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          border-color 400ms ease 0ms;
       }
 
       .status {
@@ -1301,14 +1340,18 @@
         color: var(--button-background-color);
         grid-column: 2 / 3;
         grid-row: 1 / 2;
-        transition: background-color 400ms ease 0ms, border-color 400ms ease 0ms,
+        transition:
+          background-color 400ms ease 0ms,
+          border-color 400ms ease 0ms,
           color 400ms ease 0ms;
       }
 
       .end-date {
         grid-column: 3 / 4;
         margin-right: calc(750px / 34 / 2);
-        transition: background-color 400ms ease 0ms, border-color 400ms ease 0ms;
+        transition:
+          background-color 400ms ease 0ms,
+          border-color 400ms ease 0ms;
       }
 
       .date-line {
@@ -1471,11 +1514,8 @@
       }
 
       .link-content {
-        background: linear-gradient(
-              to left,
-              transparent 50%,
-              var(--underline-color) 50%
-            )
+        background:
+          linear-gradient(to left, transparent 50%, var(--underline-color) 50%)
             left bottom / calc(750px / 34 / 6) calc(750px / 34 / 12) repeat-x,
           linear-gradient(to left, transparent 50%, var(--underline-color) 50%)
             left bottom / calc(750px / 34 / 6) calc(750px / 34 / 12) repeat-x;
@@ -1877,7 +1917,7 @@
                   transform="matrix(1, 0, 0, 1, 38.023438, 25.962273)"
                   style="
                     fill: var(--text-color);
-                    font-family: 'Comic Neue';
+                    font-family: &quot;Comic Neue&quot;;
                     font-size: 86px;
                     letter-spacing: 10px;
                     stroke-linecap: round;
@@ -2184,7 +2224,7 @@
                   transform="matrix(1, 0, 0, 1, 51.023438, 25.962273)"
                   style="
                     fill: var(--text-color);
-                    font-family: 'Comic Neue';
+                    font-family: &quot;Comic Neue&quot;;
                     font-size: 86px;
                     letter-spacing: -5px;
                     stroke-linecap: round;
@@ -3263,7 +3303,15 @@
                 src="https://www.youtube.com/embed/zhh7mI7bgRg"
                 title="YouTube video player"
                 frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allow="
+                  accelerometer;
+                  autoplay;
+                  clipboard-write;
+                  encrypted-media;
+                  gyroscope;
+                  picture-in-picture;
+                  web-share;
+                "
                 allowfullscreen
               ></iframe>
               <div class="paragraph">
@@ -4416,7 +4464,7 @@
                         transform="matrix(1, 0, 0, 1, 38.023438, 25.962273)"
                         style="
                           fill: hsl(0, 0%, 20%);
-                          font-family: 'Comic Neue';
+                          font-family: &quot;Comic Neue&quot;;
                           font-size: 86px;
                           letter-spacing: 10px;
                           stroke-linecap: round;
@@ -5591,6 +5639,40 @@
             <div class="date-range-container">
               <div
                 class="start-date"
+                data-year="2023"
+                data-month="10"
+                data-day="09"
+              ></div>
+              <div class="date-line"></div>
+              <div
+                class="status"
+                data-status-type="has-completed"
+                data-status-yes="get-duration"
+                data-status-no="get-duration"
+              ></div>
+              <div class="end-date" data-date="current"></div>
+            </div>
+            <div class="position-organization-container">
+              <div class="position">Software Developer</div>
+              <div class="organization">Confidential</div>
+            </div>
+          </div>
+          <div class="section-accomplishments">
+            <div class="list">
+              <div class="list-item">
+                <div class="paragraph">
+                  Designs and develops applications for an online platform
+                  (SaaS)
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section>
+          <div class="section-header">
+            <div class="date-range-container">
+              <div
+                class="start-date"
                 data-year="2021"
                 data-month="09"
                 data-day="01"
@@ -5686,7 +5768,7 @@
               <div class="list-item">
                 <div class="paragraph">
                   <span class="font-weight-normal">MomentaMouse</span
-                  >&thinsp;&mdash;&thinsp;An innovative, user-centered front-end
+                  >&thinsp;&mdash;&thinsp;An innovative, user-centered frontend
                   plugin that utilizes principles of kinematics and damped
                   harmonic oscillators to give mouse-users the ability to
                   navigate websites with delightfully tactile flicking gestures.
@@ -5746,7 +5828,7 @@
               <div class="list-item">
                 <div class="paragraph">
                   <span class="font-weight-normal">SmoothScroller</span
-                  >&thinsp;&mdash;&thinsp;A user-centered front-end plugin that
+                  >&thinsp;&mdash;&thinsp;A user-centered frontend plugin that
                   leverages Bézier curves and asynchrony to achieve adaptable,
                   visually stunning smooth scrolls.
                 </div>
@@ -5970,7 +6052,12 @@
                 data-status-yes="get-duration"
                 data-status-no="get-duration"
               ></div>
-              <div class="end-date" data-date="current"></div>
+              <div
+                class="end-date"
+                data-year="2023"
+                data-month="10"
+                data-day="09"
+              ></div>
             </div>
             <div class="position-organization-container">
               <div class="position">AI Training Specialist</div>
